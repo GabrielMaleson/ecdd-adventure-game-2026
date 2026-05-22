@@ -1,0 +1,949 @@
+fileFormatVersion: 2
+guid: 3c9d1ee1a163b14478dfc52507bb07b8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2123063932151304718
+    second: mainChatracter_Walking_Idle_TOP_0
+  - first:
+      213: 7921763007039221363
+    second: mainChatracter_Walking_Idle_TOP_1
+  - first:
+      213: 4524241608667985275
+    second: mainChatracter_Walking_Idle_TOP_2
+  - first:
+      213: -5063852161195506396
+    second: mainChatracter_Walking_Idle_TOP_3
+  - first:
+      213: 8430573821317866916
+    second: mainChatracter_Walking_Idle_TOP_4
+  - first:
+      213: -8154909591918724060
+    second: mainChatracter_Walking_Idle_TOP_5
+  - first:
+      213: -5132183857151368228
+    second: mainChatracter_Walking_Idle_TOP_6
+  - first:
+      213: 527184479082429725
+    second: mainChatracter_Walking_Idle_TOP_7
+  - first:
+      213: 6402659551090925651
+    second: mainChatracter_Walking_Idle_TOP_8
+  - first:
+      213: -2738855981104369113
+    second: mainChatracter_Walking_Idle_TOP_9
+  - first:
+      213: 1511370909735105248
+    second: mainChatracter_Walking_Idle_TOP_10
+  - first:
+      213: -8854743668754120828
+    second: mainChatracter_Walking_Idle_TOP_11
+  - first:
+      213: 3725763980328943495
+    second: mainChatracter_Walking_Idle_TOP_12
+  - first:
+      213: 2082321934716549103
+    second: mainChatracter_Walking_Idle_TOP_13
+  - first:
+      213: -3586824646877306380
+    second: mainChatracter_Walking_Idle_TOP_14
+  - first:
+      213: -1472043396070248407
+    second: mainChatracter_Walking_Idle_TOP_15
+  - first:
+      213: 2432555197610978406
+    second: mainChatracter_Walking_Idle_TOP_16
+  - first:
+      213: -2703002347008762780
+    second: mainChatracter_Walking_Idle_TOP_17
+  - first:
+      213: 5160616637387536765
+    second: mainChatracter_Walking_Idle_TOP_18
+  - first:
+      213: -6652995325930525651
+    second: mainChatracter_Walking_Idle_TOP_19
+  - first:
+      213: -5455600925148596839
+    second: mainChatracter_Walking_Idle_TOP_20
+  - first:
+      213: -5559638846106704870
+    second: mainChatracter_Walking_Idle_TOP_21
+  - first:
+      213: -5406418689214236314
+    second: mainChatracter_Walking_Idle_TOP_22
+  - first:
+      213: -7658863409903216806
+    second: mainChatracter_Walking_Idle_TOP_23
+  - first:
+      213: 555398977078023085
+    second: mainChatracter_Walking_Idle_TOP_24
+  - first:
+      213: 5863325840928153693
+    second: mainChatracter_Walking_Idle_TOP_25
+  - first:
+      213: -8272490606116291722
+    second: mainChatracter_Walking_Idle_TOP_26
+  - first:
+      213: 7696180629430873637
+    second: mainChatracter_Walking_Idle_TOP_27
+  - first:
+      213: 7281228521295577674
+    second: mainChatracter_Walking_Idle_TOP_28
+  - first:
+      213: 5386431259104056398
+    second: mainChatracter_Walking_Idle_TOP_29
+  - first:
+      213: -4229375669722304882
+    second: mainChatracter_Walking_Idle_TOP_30
+  - first:
+      213: 5827079442271316554
+    second: mainChatracter_Walking_Idle_TOP_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_0
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 316
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e029257d563a67d10800000000000000
+      internalID: 2123063932151304718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_1
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 316
+        width: 15
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37e276dcb71cfed60800000000000000
+      internalID: 7921763007039221363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_2
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 316
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7572bac5c559ce30800000000000000
+      internalID: 4524241608667985275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_3
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 316
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42509d0f94599b9b0800000000000000
+      internalID: -5063852161195506396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_4
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 271
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a5eb50393a6ff470800000000000000
+      internalID: 8430573821317866916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_5
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 271
+        width: 15
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42c3246cee0f3de80800000000000000
+      internalID: -8154909591918724060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_6
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 272
+        width: 18
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd3af7039f1d6c8b0800000000000000
+      internalID: -5132183857151368228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_7
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 273
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1dbec69d7fe05700800000000000000
+      internalID: 527184479082429725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_8
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 231
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 350698060f0dad850800000000000000
+      internalID: 6402659551090925651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_9
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 230
+        width: 15
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 722f15b0ff0adf9d0800000000000000
+      internalID: -2738855981104369113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_10
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 230
+        width: 18
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e2be96b5d779f410800000000000000
+      internalID: 1511370909735105248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_11
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 230
+        width: 16
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48f75c63c81ad1580800000000000000
+      internalID: -8854743668754120828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_12
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 188
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78fb374a99294b330800000000000000
+      internalID: 3725763980328943495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_13
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 188
+        width: 15
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe7b8ca54c4e5ec10800000000000000
+      internalID: 2082321934716549103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_14
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 188
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f1234bccf9093ec0800000000000000
+      internalID: -3586824646877306380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_15
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 188
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 920f54b9450429be0800000000000000
+      internalID: -1472043396070248407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_16
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 144
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66ce122601c22c120800000000000000
+      internalID: 2432555197610978406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_17
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 144
+        width: 15
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46cde7fbfa10d7ad0800000000000000
+      internalID: -2703002347008762780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_18
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 144
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7974755d713e9740800000000000000
+      internalID: 5160616637387536765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_19
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 145
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2ca3990000dba3a0800000000000000
+      internalID: -6652995325930525651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_20
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 99
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 995b9341ddfc944b0800000000000000
+      internalID: -5455600925148596839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_21
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 100
+        width: 15
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a14e85afce138d2b0800000000000000
+      internalID: -5559638846106704870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_22
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 101
+        width: 18
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6693a5ab8da88f4b0800000000000000
+      internalID: -5406418689214236314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_23
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 101
+        width: 16
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a575b7d9e4046b590800000000000000
+      internalID: -7658863409903216806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_24
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 59
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da3d9515d6c25b700800000000000000
+      internalID: 555398977078023085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_25
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 58
+        width: 15
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5024ee79c7be5150800000000000000
+      internalID: 5863325840928153693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_26
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 58
+        width: 18
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67bbeae8f95323d80800000000000000
+      internalID: -8272490606116291722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_27
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 58
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52e2870a1835eca60800000000000000
+      internalID: 7696180629430873637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_28
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 16
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a42044433ce1c0560800000000000000
+      internalID: 7281228521295577674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_29
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 16
+        width: 15
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4415fd01b270ca40800000000000000
+      internalID: 5386431259104056398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_30
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 16
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8ea5809c3d3e45c0800000000000000
+      internalID: -4229375669722304882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mainChatracter_Walking_Idle_TOP_31
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 15
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4a209a21e1fdd050800000000000000
+      internalID: 5827079442271316554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      mainChatracter_Walking_Idle_TOP_0: 2123063932151304718
+      mainChatracter_Walking_Idle_TOP_1: 7921763007039221363
+      mainChatracter_Walking_Idle_TOP_10: 1511370909735105248
+      mainChatracter_Walking_Idle_TOP_11: -8854743668754120828
+      mainChatracter_Walking_Idle_TOP_12: 3725763980328943495
+      mainChatracter_Walking_Idle_TOP_13: 2082321934716549103
+      mainChatracter_Walking_Idle_TOP_14: -3586824646877306380
+      mainChatracter_Walking_Idle_TOP_15: -1472043396070248407
+      mainChatracter_Walking_Idle_TOP_16: 2432555197610978406
+      mainChatracter_Walking_Idle_TOP_17: -2703002347008762780
+      mainChatracter_Walking_Idle_TOP_18: 5160616637387536765
+      mainChatracter_Walking_Idle_TOP_19: -6652995325930525651
+      mainChatracter_Walking_Idle_TOP_2: 4524241608667985275
+      mainChatracter_Walking_Idle_TOP_20: -5455600925148596839
+      mainChatracter_Walking_Idle_TOP_21: -5559638846106704870
+      mainChatracter_Walking_Idle_TOP_22: -5406418689214236314
+      mainChatracter_Walking_Idle_TOP_23: -7658863409903216806
+      mainChatracter_Walking_Idle_TOP_24: 555398977078023085
+      mainChatracter_Walking_Idle_TOP_25: 5863325840928153693
+      mainChatracter_Walking_Idle_TOP_26: -8272490606116291722
+      mainChatracter_Walking_Idle_TOP_27: 7696180629430873637
+      mainChatracter_Walking_Idle_TOP_28: 7281228521295577674
+      mainChatracter_Walking_Idle_TOP_29: 5386431259104056398
+      mainChatracter_Walking_Idle_TOP_3: -5063852161195506396
+      mainChatracter_Walking_Idle_TOP_30: -4229375669722304882
+      mainChatracter_Walking_Idle_TOP_31: 5827079442271316554
+      mainChatracter_Walking_Idle_TOP_4: 8430573821317866916
+      mainChatracter_Walking_Idle_TOP_5: -8154909591918724060
+      mainChatracter_Walking_Idle_TOP_6: -5132183857151368228
+      mainChatracter_Walking_Idle_TOP_7: 527184479082429725
+      mainChatracter_Walking_Idle_TOP_8: 6402659551090925651
+      mainChatracter_Walking_Idle_TOP_9: -2738855981104369113
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
