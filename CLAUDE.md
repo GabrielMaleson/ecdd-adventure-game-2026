@@ -4,6 +4,12 @@ This file is the living design reference for all collaborators (human and AI). U
 
 ---
 
+## REGRA ABSOLUTA PARA CLAUDE
+
+**Claude só lê e modifica arquivos `.cs`.** Nada mais. Prefab, scene, anim, controller, meta, sprite — Claude NÃO lê e NÃO edita. Para qualquer coisa fora de `.cs`, Claude pergunta ao usuário.
+
+---
+
 ## What Is This Game
 
 2D top-down mystery/horror narrative adventure. Point-and-click interactions, puzzle-solving, investigation. Third person. Target length: **1–2 hours**.
@@ -50,7 +56,7 @@ Knew the MC since childhood. Reliable, warm. The village anchor.
 Arc: Sent to one of the three puzzle locations. Begins acting erratic. Is taken by the mist at the third site.
 
 ### A Forasteira (The Outsider — female NPC)
-Came from outside the village. Was already investigating something when the game starts. Curious, pragmatic.
+Came from outside the village(?). Was already investigating something when the game starts. Curious, pragmatic.
 
 Arc: Instead of going to her assigned location alone, she waits for the MC at his chosen spot — she thinks splitting up is dumb. She witnesses Fragment during a possession puzzle. Is the last NPC standing, taken by the mist near the end.
 
