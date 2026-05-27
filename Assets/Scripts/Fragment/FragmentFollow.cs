@@ -10,6 +10,7 @@ public class FragmentFollow : MonoBehaviour
     Vector2 lastPlayerPos;
     Vector2 activeOffset;
     Vector2 desiredOffset;
+    public bool IsPossessing = false;
 
     void Awake()
     {
@@ -28,7 +29,7 @@ public class FragmentFollow : MonoBehaviour
     void LateUpdate()
     {
         if (player == null) return;
-
+        if (IsPossessing) return;
         Vector2 playerPos = player.position;
         float   deltaX    = playerPos.x - lastPlayerPos.x;
         float   deltaY    = playerPos.y - lastPlayerPos.y;
