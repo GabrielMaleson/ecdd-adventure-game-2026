@@ -1,8 +1,11 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class WeightedDragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    public bool IsPossessing = false;
+
     [Header("Drag Settings")]
     [SerializeField] private float weight = 1f;
     [SerializeField] private float baseDragSpeed = 1f;
@@ -40,6 +43,9 @@ public class WeightedDragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandle
 
     void Update()
     {
+        if (Keyboard.current.pKey.wasPressedThisFrame)
+            IsPossessing = !IsPossessing;
+
         if (isDragging)
         {
             // Get mouse position in world coordinates
@@ -67,7 +73,8 @@ public class WeightedDragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandle
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // Calculate offset between object position and mouse position
+        if (!IsPossessing) return;
+
         Vector3 mouseWorldPos = GetMouseWorldPosition();
         offset = transform.position - mouseWorldPos;
 

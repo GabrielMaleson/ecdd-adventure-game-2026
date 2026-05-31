@@ -6,6 +6,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float     moveSpeed       = 100f;
     [SerializeField] Transform visualTransform;
 
+    public bool IsPossessing = false;
+
     Animator animator;
     Vector2  targetPosition;
     bool     isMoving;
@@ -34,6 +36,18 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (Keyboard.current.pKey.wasPressedThisFrame)
+        {
+            IsPossessing = !IsPossessing;
+            if (IsPossessing)
+            {
+                isMoving = false;
+                SetDir(DIR_IDLE);
+            }
+        }
+
+        if (IsPossessing) return;
+
         if (Mouse.current.leftButton.wasPressedThisFrame)
             HandleClick();
         MoveToTarget();

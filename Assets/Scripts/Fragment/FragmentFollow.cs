@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class FragmentFollow : MonoBehaviour
 {
@@ -24,6 +25,12 @@ public class FragmentFollow : MonoBehaviour
         activeOffset   = offset;
         desiredOffset  = offset;
         transform.position = (Vector2)player.position + activeOffset;
+    }
+
+    void Update()
+    {
+        if (Keyboard.current.pKey.wasPressedThisFrame)
+            IsPossessing = !IsPossessing;
     }
 
     void LateUpdate()
