@@ -1745,7 +1745,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FragmentFollow
   player: {fileID: 1816846873}
-  followSpeed: 3
+  smoothTime: 0.25
   offset: {x: 1, y: 0.5}
   IsPossessing: 0
 --- !u!1 &684000533
