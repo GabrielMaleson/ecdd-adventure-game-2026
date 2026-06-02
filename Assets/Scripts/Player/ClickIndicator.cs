@@ -3,7 +3,7 @@ using UnityEngine;
 public class ClickIndicator : MonoBehaviour
 {
     [SerializeField] float duration   = 0.25f;
-    [SerializeField] float startScale = 0.05f;
+    [SerializeField] float startScale = 0.15f;
 
     float elapsed;
 
