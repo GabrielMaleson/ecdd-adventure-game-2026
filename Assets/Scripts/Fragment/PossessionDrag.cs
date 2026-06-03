@@ -1,8 +1,11 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class WeightedDragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    public bool IsPossessing = false;
+
     [Header("Drag Settings")]
     [SerializeField] private float weight = 1f;
     [SerializeField] private float baseDragSpeed = 1f;
@@ -13,6 +16,14 @@ public class WeightedDragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandle
     [SerializeField] private float collisionCheckRadius = 0.5f;
     [SerializeField] private int maxCollisionAttempts = 20;
 
+    [Header("Visual Feedback")]
+    [SerializeField] private float dragScaleMultiplier = 1.2f;
+    [SerializeField] private float scaleTransitionSpeed = 10f;
+
+    [Header("Outline")]
+    [SerializeField] private Color outlineColor = new Color(1f, 0.5f, 0f);
+    [SerializeField] private float outlineScale = 1.08f;
+
     private Vector3 offset;
     private Camera mainCamera;
     private Rigidbody2D rb2d;
@@ -20,8 +31,10 @@ public class WeightedDragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandle
     private bool isDragging = false;
     private Vector3 targetPosition;
     private Vector3 mouseWorldPosition;
+    private Vector3 originalScale;
+    private Vector3 targetScale;
+    private SpriteRenderer outlineRenderer;
 
-    // For smoothing the drag movement
     private Vector3 velocityRef = Vector3.zero;
     private float smoothTime = 0.05f;
 
@@ -29,17 +42,41 @@ public class WeightedDragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandle
     {
         mainCamera = Camera.main;
 
-        // Get rigidbody components (supports both 2D and 3D physics)
         rb2d = GetComponent<Rigidbody2D>();
         rb3d = GetComponent<Rigidbody>();
 
-        // Calculate drag speed based on weight
         float dragSpeedModifier = weightToSpeedCurve.Evaluate(weight);
         smoothTime = baseDragSpeed * dragSpeedModifier;
+
+        originalScale = transform.localScale;
+        targetScale = originalScale;
+
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            GameObject outlineObj = new GameObject("Outline");
+            outlineObj.transform.SetParent(transform);
+            outlineObj.transform.localPosition = Vector3.zero;
+            outlineObj.transform.localRotation = Quaternion.identity;
+            outlineObj.transform.localScale = Vector3.one * outlineScale;
+
+            outlineRenderer = outlineObj.AddComponent<SpriteRenderer>();
+            outlineRenderer.sprite = sr.sprite;
+            outlineRenderer.color = outlineColor;
+            outlineRenderer.sortingLayerID = sr.sortingLayerID;
+            outlineRenderer.sortingOrder = sr.sortingOrder - 1;
+            outlineRenderer.gameObject.SetActive(false);
+        }
     }
 
     void Update()
     {
+        if (Keyboard.current.pKey.wasPressedThisFrame)
+            IsPossessing = !IsPossessing;
+
+        if (outlineRenderer != null)
+            outlineRenderer.gameObject.SetActive(IsPossessing);
+
         if (isDragging)
         {
             // Get mouse position in world coordinates
@@ -60,20 +97,22 @@ public class WeightedDragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandle
                 targetPosition = validPosition;
             }
 
-            // Smooth movement to simulate weight and inertia
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocityRef, smoothTime);
         }
+
+        transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * scaleTransitionSpeed);
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // Calculate offset between object position and mouse position
+        if (!IsPossessing) return;
+
         Vector3 mouseWorldPos = GetMouseWorldPosition();
         offset = transform.position - mouseWorldPos;
 
         isDragging = true;
+        targetScale = originalScale * dragScaleMultiplier;
 
-        // Disable physics while dragging
         if (rb2d != null) rb2d.isKinematic = true;
         if (rb3d != null) rb3d.isKinematic = true;
     }
@@ -87,12 +126,11 @@ public class WeightedDragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandle
     public void OnEndDrag(PointerEventData eventData)
     {
         isDragging = false;
+        targetScale = originalScale;
 
-        // Re-enable physics
         if (rb2d != null) rb2d.isKinematic = false;
         if (rb3d != null) rb3d.isKinematic = false;
 
-        // Reset velocity reference
         velocityRef = Vector3.zero;
     }
 

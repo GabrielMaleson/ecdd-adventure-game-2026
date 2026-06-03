@@ -1,15 +1,18 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class FragmentFollow : MonoBehaviour
 {
     [SerializeField] Transform player;
-    [SerializeField] float     followSpeed = 9f;
+    [SerializeField] float     smoothTime = 0.25f;
     [SerializeField] Vector2   offset;
 
     SpriteRenderer spriteRenderer;
     Vector2        lastPlayerPos;
     Vector2        activeOffset;
     Vector2        desiredOffset;
+    Vector2        positionVelocity;
+    Vector2        offsetVelocity;
     public bool    IsPossessing = false;
 
     void Awake()
@@ -26,6 +29,12 @@ public class FragmentFollow : MonoBehaviour
         transform.position = (Vector2)player.position + activeOffset;
         // Ensure the visual child has no stale local position offset.
         spriteRenderer.transform.localPosition = Vector3.zero;
+    }
+
+    void Update()
+    {
+        if (Keyboard.current.pKey.wasPressedThisFrame)
+            IsPossessing = !IsPossessing;
     }
 
     void LateUpdate()
@@ -48,12 +57,13 @@ public class FragmentFollow : MonoBehaviour
         else if (deltaY < -0.001f)
             desiredOffset.y =  Mathf.Abs(offset.y);
 
-        activeOffset = Vector2.Lerp(activeOffset, desiredOffset, followSpeed * 4f * Time.deltaTime);
+        activeOffset = Vector2.SmoothDamp(activeOffset, desiredOffset, ref offsetVelocity, smoothTime * 0.25f);
 
-        transform.position = Vector2.Lerp(
+        transform.position = Vector2.SmoothDamp(
             transform.position,
             (Vector2)playerPos + activeOffset,
-            followSpeed * Time.deltaTime
+            ref positionVelocity,
+            smoothTime
         );
 
         spriteRenderer.flipX = (playerPos.x - transform.position.x) < 0;

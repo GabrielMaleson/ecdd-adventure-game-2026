@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Transform visualTransform;
     [SerializeField] float     stopThreshold = 0.05f;
 
+    public bool IsPossessing = false;
+
     Animator       animator;
     SpriteRenderer spriteRenderer;
     Vector2        targetPosition;
@@ -50,6 +52,18 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (Keyboard.current.pKey.wasPressedThisFrame)
+        {
+            IsPossessing = !IsPossessing;
+            if (IsPossessing)
+            {
+                isMoving = false;
+                SetDir(DIR_IDLE);
+            }
+        }
+
+        if (IsPossessing) return;
+
         if (Mouse.current.leftButton.wasPressedThisFrame)
             HandleClick();
         MoveToTarget();
