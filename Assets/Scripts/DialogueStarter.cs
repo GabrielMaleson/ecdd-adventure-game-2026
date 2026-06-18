@@ -8,20 +8,15 @@ public class DialogueStarter : MonoBehaviour
     public bool OnceTime;
     public bool DoneOnce = false;
     public GameObject Notification;
-    public DialogueEntry entry;
+    public Transform transformthing;
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            entry.currentDialogueText = Dialogue;
-        }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Player")
         {
-            Debug.Log("yeah it work");
             if (OnceTime)
             {
                 return;
@@ -36,6 +31,10 @@ public class DialogueStarter : MonoBehaviour
                 {
                     DialogueManager.StartConversation(Dialogue);
                 }
+            }
+            else
+            {
+                DialogueManager.Bark(Dialogue,transformthing);
             }
         }
     }
