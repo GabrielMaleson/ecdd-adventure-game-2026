@@ -1672,6 +1672,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100032, guid: e7a77adaa6b9c584bbace0646e8d049a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 523393811}
+    - targetCorrespondingSourceObject: {fileID: 100032, guid: e7a77adaa6b9c584bbace0646e8d049a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 523393813}
+    - targetCorrespondingSourceObject: {fileID: 100032, guid: e7a77adaa6b9c584bbace0646e8d049a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 523393812}
   m_SourcePrefab: {fileID: 100100000, guid: e7a77adaa6b9c584bbace0646e8d049a, type: 3}
 --- !u!1 &523393803 stripped
 GameObject:
@@ -1801,6 +1807,76 @@ MonoBehaviour:
   DoneOnce: 0
   Notification: {fileID: 0}
   transformthing: {fileID: 0}
+--- !u!114 &523393812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523393803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a64578247383140469c45370654a984a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp-firstpass::PixelCrushers.DialogueSystem.Wrappers.DialogueActor
+  actor: Enemy
+  persistentDataName: 
+  portrait: {fileID: 0}
+  spritePortrait: {fileID: 21300000, guid: 34c69e9a19a994b4c96aad3920938c3a, type: 3}
+  cameraAngles: {fileID: 0}
+  audioSource: {fileID: 0}
+  barkUISettings:
+    barkUI: {fileID: 11426712, guid: 21b4828b943afef4896267f31f98ee1a, type: 3}
+    barkUIOffset: {x: 0, y: 2, z: 0}
+  standardDialogueUISettings:
+    subtitlePanelNumber: 0
+    customSubtitlePanel: {fileID: 0}
+    customSubtitlePanelOffset: {x: 0, y: 0, z: 0}
+    menuPanelNumber: 0
+    customMenuPanel: {fileID: 0}
+    customMenuPanelOffset: {x: 0, y: 0, z: 0}
+    useMenuPanelFor: 0
+    portraitAnimatorController: {fileID: 0}
+    setSubtitleColor: 0
+    applyColorToPrependedName: 0
+    prependActorNameSeparator: ': '
+    prependActorNameFormat: '{0}{1}'
+    subtitleColor: {r: 1, g: 1, b: 1, a: 1}
+--- !u!114 &523393813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523393803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 505dcd4c4aa3a1741ab98b9ad39eb7a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp-firstpass::PixelCrushers.DialogueSystem.Wrappers.BarkOnIdle
+  once: 0
+  conversation: Enemy Barks
+  condition:
+    luaConditions: []
+    luaElementsMustBeTrue: 0
+    questConditions: []
+    acceptedTags: []
+    acceptedGameObjects: []
+    luaWizardIndex: -1
+    lastEvaluationValue: 0
+  skipIfNoValidEntries: 0
+  exclusive: 0
+  conversant: {fileID: 0}
+  useConversationTitlePicker: 1
+  selectedDatabase: {fileID: 0}
+  barkOrder: 2
+  allowDuringConversations: 0
+  cacheBarkLines: 0
+  barkOnStart: 0
+  barkOnEnable: 0
+  minSeconds: 5
+  maxSeconds: 10
+  target: {fileID: 0}
 --- !u!1 &537021796
 GameObject:
   m_ObjectHideFlags: 0
@@ -2549,7 +2625,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1003643122459378, guid: d4353500a4689e444a5a0ed100a259e5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 894268415}
   m_SourcePrefab: {fileID: 100100000, guid: d4353500a4689e444a5a0ed100a259e5, type: 3}
 --- !u!4 &803290307 stripped
 Transform:
@@ -3005,6 +3084,24 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c25e84c0d014e14f94787c6a1dc4255, type: 3}
+--- !u!1 &894268404 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1003643122459378, guid: d4353500a4689e444a5a0ed100a259e5, type: 3}
+  m_PrefabInstance: {fileID: 772619051}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &894268415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 894268404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8255b85076ab04ba320c703f84b665, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveManager
+  progress: []
 --- !u!1001 &900363538
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4067,87 +4164,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1490430926}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1190988010
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 125852, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_Name
-      value: Dialogue Manager
-      objectReference: {fileID: 0}
-    - target: {fileID: 125852, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 425660, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -24.58645
-      objectReference: {fileID: 0}
-    - target: {fileID: 425660, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 14.44473
-      objectReference: {fileID: 0}
-    - target: {fileID: 425660, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 425660, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 425660, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 425660, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 425660, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 425660, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 425660, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 425660, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11426072, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: initialDatabase
-      value: 
-      objectReference: {fileID: 11400000, guid: 388f5c88d095c5642b816f32f42bdf1a, type: 2}
-    - target: {fileID: 11471062, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_position
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11471062, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: 'm_prefabs.Array.data[0]'
-      value: 
-      objectReference: {fileID: 147116, guid: 4b372d6b3e80ce04e99683e81c7de9ca, type: 3}
-    - target: {fileID: 11471062, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: 'm_prefabs.Array.data[1]'
-      value: 
-      objectReference: {fileID: 1860548887524214, guid: 6cd14c0b7efe026498de3e3c210f4616, type: 3}
-    - target: {fileID: 22325660, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
-      propertyPath: m_RenderMode
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 58ac37417e60e534f91138088a3e6f70, type: 3}
 --- !u!1001 &1207091955
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11519,6 +11535,5 @@ SceneRoots:
   - {fileID: 1490430926}
   - {fileID: 523393802}
   - {fileID: 772619051}
-  - {fileID: 1190988010}
   - {fileID: 2006123369}
   - {fileID: 586038026}
