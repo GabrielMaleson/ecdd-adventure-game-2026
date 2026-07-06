@@ -2784,7 +2784,7 @@ MonoBehaviour:
     - id: 1
       fields:
       - title: Title
-        value: New Dialogue Entry
+        value: 
         type: 0
         typeString: CustomFieldType_Text
       - title: Pictures
@@ -2808,7 +2808,7 @@ MonoBehaviour:
         type: 0
         typeString: CustomFieldType_Text
       - title: Dialogue Text
-        value: Die!
+        value: Frase teste. Estou testando. Powpowpow
         type: 0
         typeString: CustomFieldType_Text
       - title: Parenthetical
@@ -2824,7 +2824,7 @@ MonoBehaviour:
         type: 0
         typeString: CustomFieldType_Text
       - title: Sequence
-        value: Audio(Enemy_6_1)
+        value: 
         type: 0
         typeString: CustomFieldType_Text
       conversationID: 6
@@ -2842,7 +2842,7 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 200
+        x: 201
         y: 30
         width: 160
         height: 30
