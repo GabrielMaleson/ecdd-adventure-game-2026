@@ -9,6 +9,10 @@ public class PlayerController : MonoBehaviour
 
     public bool IsPossessing = false;
 
+    // Direction the player is currently trying to move in (zero if idle). Read by
+    // things like PushableCrate to know whether the player is walking into them.
+    public Vector2 MoveDirection { get; private set; }
+
     Animator       animator;
     SpriteRenderer spriteRenderer;
     Vector2        targetPosition;
@@ -57,16 +61,43 @@ public class PlayerController : MonoBehaviour
             IsPossessing = !IsPossessing;
             if (IsPossessing)
             {
-                isMoving = false;
+                isMoving     = false;
+                MoveDirection = Vector2.zero;
                 SetDir(DIR_IDLE);
             }
         }
 
         if (IsPossessing) return;
 
+        Vector2 keyboardInput = ReadKeyboardInput();
+        if (keyboardInput != Vector2.zero)
+        {
+            isMoving      = false; // keyboard input overrides any active click-to-move target
+            MoveDirection = keyboardInput;
+            MoveWithKeyboard(keyboardInput);
+            return;
+        }
+
         if (Mouse.current.leftButton.wasPressedThisFrame)
             HandleClick();
         MoveToTarget();
+    }
+
+    Vector2 ReadKeyboardInput()
+    {
+        var kb = Keyboard.current;
+        Vector2 input = Vector2.zero;
+        if (kb.wKey.isPressed) input.y += 1f;
+        if (kb.sKey.isPressed) input.y -= 1f;
+        if (kb.aKey.isPressed) input.x -= 1f;
+        if (kb.dKey.isPressed) input.x += 1f;
+        return input.normalized;
+    }
+
+    void MoveWithKeyboard(Vector2 dir)
+    {
+        transform.position += (Vector3)(dir * (moveSpeed / PPU) * Time.deltaTime);
+        FaceDirection(dir);
     }
 
     void LateUpdate()
@@ -92,7 +123,12 @@ public class PlayerController : MonoBehaviour
 
     void MoveToTarget()
     {
-        if (!isMoving) return;
+        if (!isMoving)
+        {
+            MoveDirection = Vector2.zero;
+            SetDir(DIR_IDLE);
+            return;
+        }
 
         Vector2 pos  = transform.position;
         float   dist = Vector2.Distance(pos, targetPosition);
@@ -101,13 +137,19 @@ public class PlayerController : MonoBehaviour
         {
             transform.position = new Vector3(targetPosition.x, targetPosition.y, transform.position.z);
             isMoving           = false;
+            MoveDirection      = Vector2.zero;
             SetDir(DIR_IDLE);
             return;
         }
 
         Vector2 dir = (targetPosition - pos).normalized;
-        transform.position = Vector2.MoveTowards(pos, targetPosition, (moveSpeed / PPU) * Time.deltaTime);
+        MoveDirection       = dir;
+        transform.position  = Vector2.MoveTowards(pos, targetPosition, (moveSpeed / PPU) * Time.deltaTime);
+        FaceDirection(dir);
+    }
 
+    void FaceDirection(Vector2 dir)
+    {
         if (Mathf.Abs(dir.x) >= Mathf.Abs(dir.y))
         {
             SetDir(DIR_SIDE);
