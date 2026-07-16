@@ -1,8 +1,17 @@
+using System.Collections.Generic;
 using PixelCrushers.DialogueSystem;
 using UnityEngine;
 
 public class DialogueStarter : MonoBehaviour
 {
+    [System.Serializable]
+    public class DialogueCondition
+    {
+        public string Progress;
+        public bool PlaysOtherDialogue;
+        public string OtherDialogue;
+    }
+
     public string Dialogue;
     public bool IsClickNPC;
     public bool OnceTime;
@@ -10,9 +19,9 @@ public class DialogueStarter : MonoBehaviour
     public GameObject Notification;
     public Transform transformthing;
 
-    private void Update()
-    {
-    }
+    public bool HasConditions;
+    public List<DialogueCondition> Conditions;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Player")
@@ -27,15 +36,42 @@ public class DialogueStarter : MonoBehaviour
             }
             if (IsClickNPC)
             {
-                if (Input.GetKeyDown(KeyCode.E))
-                {
-                    DialogueManager.StartConversation(Dialogue);
-                }
+                SendToInteractButton();
             }
             else
             {
-                DialogueManager.Bark(Dialogue,transformthing);
+                StartDialogue();
             }
         }
+    }
+
+    private void SendToInteractButton()
+    {
+        InteractButton.Instance?.SetInteraction(Dialogue, HasConditions, Conditions);
+    }
+
+    private void StartDialogue()
+    {
+        EvaluateConditionsAndStart(Dialogue, HasConditions, Conditions);
+    }
+
+    // Shared by DialogueStarter (non-click NPCs) and InteractButton (click NPCs) so
+    // the condition check only lives in one place.
+    public static void EvaluateConditionsAndStart(string dialogue, bool hasConditions, List<DialogueCondition> conditions)
+    {
+        if (hasConditions && conditions != null)
+        {
+            foreach (var condition in conditions)
+            {
+                if (SaveManager.Instance != null && SaveManager.Instance.HasProgress(condition.Progress))
+                    continue;
+
+                if (condition.PlaysOtherDialogue)
+                    DialogueManager.StartConversation(condition.OtherDialogue);
+                return;
+            }
+        }
+
+        DialogueManager.StartConversation(dialogue);
     }
 }

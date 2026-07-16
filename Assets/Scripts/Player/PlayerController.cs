@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
@@ -78,7 +79,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        if (Mouse.current.leftButton.wasPressedThisFrame && !IsPointerOverUI())
             HandleClick();
         MoveToTarget();
     }
@@ -105,6 +106,10 @@ public class PlayerController : MonoBehaviour
         // Applied in LateUpdate so the Animator cannot overwrite it each frame.
         visualTransform.localScale = desiredScale;
     }
+
+    // Prevents clicking a UI element (e.g. the InteractButton) from also
+    // sending the player walking toward that screen position.
+    bool IsPointerOverUI() => EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
 
     void HandleClick()
     {
