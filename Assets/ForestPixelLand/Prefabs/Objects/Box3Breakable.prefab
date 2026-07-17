@@ -126,7 +126,6 @@ GameObject:
   - component: {fileID: 9202525862977565421}
   - component: {fileID: 1896371411110326313}
   - component: {fileID: 1264985308128518569}
-  - component: {fileID: -8136296369690347081}
   - component: {fileID: 3059981632375310199}
   - component: {fileID: 7278547629439833341}
   m_Layer: 0
@@ -186,7 +185,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.05851412, y: 0.42388153}
+  m_Offset: {x: 0.061828375, y: 0.42388153}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -196,7 +195,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.9927578, y: 0.9988098}
+  m_Size: {x: 0.9993863, y: 0.9988098}
   m_EdgeRadius: 0
 --- !u!114 &1264985308128518569
 MonoBehaviour:
@@ -212,23 +211,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anim: {fileID: 6889531537291705229}
   box: {fileID: 6838147988369077734}
---- !u!114 &-8136296369690347081
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6838147988369077734}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab1831aef509f05449e66fc475e9150b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PushableCrate
-  visual: {fileID: 7587261796061496607}
-  contactPadding: 0.1
-  pushRange: 0.9
-  moveDuration: 0.12
-  logRefusedPushes: 0
 --- !u!114 &3059981632375310199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -245,6 +227,7 @@ MonoBehaviour:
   contactPadding: 0.1
   pushRange: 1.5
   moveDuration: 0.15
+  minLineupOverlap: 0.06
   logRefusedPushes: 1
 --- !u!50 &7278547629439833341
 Rigidbody2D:

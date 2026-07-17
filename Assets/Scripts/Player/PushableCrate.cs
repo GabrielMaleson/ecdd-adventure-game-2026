@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 // Sokoban-style pushable crate driven by GRID LOGIC, not physics.
@@ -22,6 +23,9 @@ public class PushableCrate : GridOccupant
     [Tooltip("How long the slide from one cell to the next takes.")]
     [SerializeField] float moveDuration = 0.12f;
 
+    [Tooltip("Minimum overlap (world units) on the axis perpendicular to the push before a push counts. Rejects ultra edge cases where the player only clips a crate's corner by a sliver. Bigger = more alignment required; keep small (~0.15). 0 = any touch counts (old behaviour).")]
+    [SerializeField] float minLineupOverlap = 0.15f;
+
     [Tooltip("Print to the console why a push was refused, naming whatever holds the target cell. Debug aid — turn off when done.")]
     [SerializeField] bool logRefusedPushes = false;
 
@@ -34,6 +38,37 @@ public class PushableCrate : GridOccupant
     Collider2D       playerCol;
     PlayerController player;
     bool             isMoving;
+    Vector2Int       pushDir;      // the direction this crate registered this frame
+
+    // Priority ONLY when more than one crate is pushable at once. Each frame, every
+    // crate that passes the push gates adds itself to `candidates`; then one decision
+    // (guarded to run a single time per frame) picks the winner:
+    //   - one candidate  -> it moves, no comparison (a lone push is unchanged);
+    //   - many           -> the one the player OVERLAPS MOST wins.
+    // `committed` locks that winner to the whole key-hold, so the loser never sneaks a
+    // move in a later frame after the winner slides away — the choice belongs to the
+    // push gesture, and clears when the player stops pushing.
+    static readonly List<PushableCrate> candidates = new List<PushableCrate>();
+    static int             candFrame    = -1;
+    static int             decidedFrame = -1;
+    static PushableCrate   committed;
+
+    // Crates locked out for the rest of this key-hold because they were candidates
+    // TOGETHER with the committed crate (both under the player the same frame). Only
+    // the "together" case locks — a separate lone crate the player reaches later is
+    // never in here, so lone->lone pushing in one hold still works. Cleared on release.
+    static readonly HashSet<PushableCrate> lockedLosers = new HashSet<PushableCrate>();
+
+    // Clears the static arbitration state at the start of every Play (survives Fast
+    // Play Mode), so a previous run can't leave a stale committed crate behind.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetArbitration()
+    {
+        candidates.Clear();
+        lockedLosers.Clear();
+        candFrame = decidedFrame = -1;
+        committed = null;
+    }
 
     void Awake()
     {
@@ -52,12 +87,15 @@ public class PushableCrate : GridOccupant
 
     void Update()
     {
-        if (isMoving || player == null) return;
+        if (player == null) return;
 
-        Vector2 moveDir = player.MoveDirection;
-        if (moveDir == Vector2.zero) return;
+        // Player not pushing -> the gesture is over. Release the committed crate and
+        // unlock everyone, so a fresh press re-decides from scratch.
+        if (player.MoveDirection == Vector2.zero) { committed = null; lockedLosers.Clear(); return; }
 
-        Vector2Int dir = CardinalCell(moveDir);
+        if (isMoving) return;
+
+        Vector2Int dir = CardinalCell(player.MoveDirection);
 
         // Two gates, both size/offset independent:
         //   1) the player is actually TOUCHING the crate, and
@@ -82,8 +120,79 @@ public class PushableCrate : GridOccupant
         }
 
         gateStamp = default;   // a clean push resets the throttle
-        TryPush(dir);
+
+        // Register as this frame's candidate instead of pushing now. The single
+        // winner is chosen in LateUpdate, once every crate has had its say.
+        if (candFrame != Time.frameCount)
+        {
+            candFrame = Time.frameCount;
+            candidates.Clear();
+        }
+        pushDir = dir;
+        candidates.Add(this);
     }
+
+    // Runs after all Updates. Guarded so the decision happens exactly ONCE per frame
+    // no matter which crate's LateUpdate fires first.
+    void LateUpdate()
+    {
+        // candFrame != this frame means NOBODY registered this frame — the list still
+        // holds last frame's stale entries. Only act on a list filled this frame (else
+        // a stale candidate would be re-pushed every frame and fly off), and once.
+        if (candFrame != Time.frameCount || candidates.Count == 0 || decidedFrame == Time.frameCount)
+            return;
+        decidedFrame = Time.frameCount;
+
+        // Winner mid-slide: nobody moves during the slide.
+        if (committed != null && committed.isMoving)
+            return;
+
+        // Committed crate still under the player: keep pushing it. AND lock any OTHER
+        // crate that's a candidate this same frame — it's "together" with the committed
+        // one (e.g. the committed crate slid up beside it), so it can't be pushed until
+        // release. This is the two-crates-together rule.
+        if (committed != null && candidates.Contains(committed))
+        {
+            foreach (var c in candidates)
+                if (c != committed) lockedLosers.Add(c);
+            committed.TryPush(committed.pushDir);
+            return;
+        }
+
+        // Committed crate is null (fresh press) or stale (player walked off it to a
+        // SEPARATE crate). Pick the biggest overlap among candidates that aren't locked,
+        // and lock the rest of this frame's candidates (they competed = together). A
+        // lone crate reached after leaving another isn't locked, so lone->lone works.
+        PushableCrate w = BiggestOverlap();
+        if (w == null) return;
+
+        foreach (var c in candidates)
+            if (c != w) lockedLosers.Add(c);
+
+        committed = w;
+        w.TryPush(w.pushDir);
+    }
+
+    // The crate the player overlaps the most (collider distance smallest / most
+    // negative), skipping locked losers. Returns null if every candidate is locked.
+    static PushableCrate BiggestOverlap()
+    {
+        PushableCrate best = null;
+        float bestOverlap = float.MaxValue;
+        foreach (var c in candidates)
+        {
+            if (lockedLosers.Contains(c)) continue;
+            float o = c.PlayerOverlap();
+            if (o < bestOverlap) { bestOverlap = o; best = c; }
+        }
+        return best;
+    }
+
+    // Collider distance to the player: negative when overlapping, more negative the
+    // deeper — so the smallest value is the crate the player is hitting most.
+    float PlayerOverlap() =>
+        playerCol != null ? col.Distance(playerCol).distance
+                          : ((Vector2)transform.position - (Vector2)player.transform.position).magnitude;
 
     // On when EITHER this crate's own checkbox or the grid-wide toggle is set, so you
     // can flip logging once on the PuzzleGrid instead of per crate.
@@ -112,28 +221,10 @@ public class PushableCrate : GridOccupant
         return toCrate.sqrMagnitude <= pushRange * pushRange;
     }
 
-    // Is the player positioned to push the crate in `dir`?
-    //
-    // Lined up = same cell ROW/COLUMN as the crate. Behind = simply on the far side
-    // of the crate's cell centre. Neither reads a collider's size, offset or shape,
-    // which is the whole point: the old version compared collider BOUNDS, so it
-    // broke whenever the artwork or the collider changed — moving the player's
-    // collider to the feet was enough to kill pushing upward.
-    //
-    // Note this deliberately does NOT require the cells to be adjacent. Adjacency
-    // sounds right but isn't: with the crate's collider offset up 0.44 the player's
-    // feet stop INSIDE the crate's own cell, and an adjacency test would never fire.
-    // Proximity stays the job of PlayerTouching() — which is also what keeps pushing
-    // from feeling cartoonish, since the player must genuinely reach the crate first
-    // rather than nudge it from across a cell.
-    // Is the player positioned to push the crate in `dir`? Uses collider BOUNDS, not
-    // cell adjacency: when the player pushes from below, "touching" already puts
-    // their feet in the crate's OWN cell (see the log: feet == crate cell), so any
-    // adjacent-cell rule is impossible to satisfy and the crate never moves. This
-    // compares the two colliders' centres/extents instead, which works from a
-    // touching position. Known tradeoff: it can be fooled when the player jams deep
-    // into the crate, causing the rare "shove" — accepted for now over a crate that
-    // won't move at all.
+    // Is the player positioned to push the crate in `dir`? Uses collider BOUNDS: the
+    // player is "behind" if their collider centre is on the far side of the crate's
+    // centre for this direction, and "lined up" if the two colliders overlap on the
+    // perpendicular axis. Works from a touching position regardless of pivots.
     bool PlayerBehind(Vector2Int dir)
     {
         Bounds cb = col.bounds;
@@ -141,19 +232,28 @@ public class PushableCrate : GridOccupant
             ? playerCol.bounds
             : new Bounds(player.transform.position, Vector3.one * 0.1f);
 
+        // "linedUp" needs a MINIMUM overlap on the perpendicular axis, not just any
+        // touch. A 1-pixel corner clip (feet straddling a grid line, barely catching a
+        // crate's corner) has near-zero overlap, so it's rejected and the crate stays
+        // put — while a real edge-of-crate push keeps a solid overlap and still works.
+        // minLineupOverlap = 0 restores the old "any touch" behaviour.
         if (dir.x != 0)
         {
             bool behind  = dir.x > 0 ? pb.center.x <= cb.center.x : pb.center.x >= cb.center.x;
-            bool linedUp = pb.min.y < cb.max.y && pb.max.y > cb.min.y;   // overlap on Y
+            bool linedUp = OverlapDepth(pb.min.y, pb.max.y, cb.min.y, cb.max.y) >= minLineupOverlap;
             return behind && linedUp;
         }
         else
         {
             bool behind  = dir.y > 0 ? pb.center.y <= cb.center.y : pb.center.y >= cb.center.y;
-            bool linedUp = pb.min.x < cb.max.x && pb.max.x > cb.min.x;   // overlap on X
+            bool linedUp = OverlapDepth(pb.min.x, pb.max.x, cb.min.x, cb.max.x) >= minLineupOverlap;
             return behind && linedUp;
         }
     }
+
+    // How deep two 1-D ranges overlap; <= 0 means they only touch or miss.
+    static float OverlapDepth(float aMin, float aMax, float bMin, float bMax) =>
+        Mathf.Min(aMax, bMax) - Mathf.Max(aMin, bMin);
 
     void TryPush(Vector2Int dir)
     {

@@ -16,3 +16,12 @@ TODO / known bugs — ECDD adventure game
       the player and crate rigidbodies; likely fix is setting the player rigidbody
       back to Kinematic (or whatever it was before the MovePosition experiment).
     - Deferred by user 2026-07-17: irrelevant for now.
+
+NOTE (not a task — just documenting a known quirk):
+    Two-crates "only one moves per gesture" arbitration: the losing crate is locked
+    until the player RELEASES the movement input. There is one theoretical way to make
+    the loser move without releasing: keep the movement input held continuously the
+    whole time (never let go) while manoeuvring onto the other crate. In practice
+    players release/re-press constantly, so this is a non-issue. Decided NOT to add a
+    distance-based unlock (moved N units -> unlock) — it needs a magic threshold and
+    risks reopening the "wrong crate moves" bugs. Left as-is on purpose.
