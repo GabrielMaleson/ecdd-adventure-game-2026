@@ -43,7 +43,8 @@ GameObject:
   - component: {fileID: 5116930085411795009}
   - component: {fileID: 8607363281581225634}
   - component: {fileID: 6248083999398164047}
-  m_Layer: 0
+  - component: {fileID: -4347638019115727619}
+  m_Layer: 6
   m_Name: Bush_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,5 +172,18 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.006444037, y: 0.37866366}
-  m_Radius: 0.53023624
+  m_Offset: {x: -0.022772074, y: 0.3187952}
+  m_Radius: 0.41049743
+--- !u!114 &-4347638019115727619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746673332059297089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b34c9a99e06071f469e852077f0fc8e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridObstacle
+  visual: {fileID: 5116930085411795009}

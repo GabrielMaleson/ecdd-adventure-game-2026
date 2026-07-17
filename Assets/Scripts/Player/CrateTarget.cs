@@ -2,22 +2,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-// Optional goal marker for a Sokoban puzzle. Put one on each target cell.
-// After every crate settles, PushableCrate calls EvaluateWin: when every target
-// cell is covered by a crate, onAllTargetsCovered fires once.
+// Optional goal marker for a Sokoban puzzle (the rug). Put one on each target
+// cell. When every target is covered by a crate, onAllTargetsCovered fires once.
 //
 // Entirely optional — if a puzzle has no CrateTarget in the scene, crates still
 // push normally and nothing win-related happens.
-public class CrateTarget : MonoBehaviour
+//
+// It does NOT occupy its cell (it isn't a GridOccupant): a crate has to be able
+// to move onto it.
+public class CrateTarget : GridObject
 {
-    [Tooltip("Must match the crates' grid so cells line up.")]
-    [SerializeField] float tileSize = 1f;
-
-    [Tooltip("Must match the crates' Grid Origin so cells line up.")]
-    [SerializeField] Vector2 gridOrigin = Vector2.zero;
-
     [Tooltip("Fires once when all targets in the scene are covered by crates.")]
     public UnityEvent onAllTargetsCovered;
+
+    protected override Color DebugColor => Color.green;
 
     static readonly List<CrateTarget> all = new List<CrateTarget>();
     static bool solved;
@@ -30,30 +28,36 @@ public class CrateTarget : MonoBehaviour
         solved = false;
     }
 
-    Vector2Int cell;
-
     void OnEnable()
     {
-        cell = new Vector2Int(
-            Mathf.RoundToInt((transform.position.x - gridOrigin.x) / tileSize),
-            Mathf.RoundToInt((transform.position.y - gridOrigin.y) / tileSize));
+        if (!HasGrid()) return;
+        Cell = CurrentCell();
         all.Add(this);
     }
 
     void OnDisable() => all.Remove(this);
 
-    // Called by PushableCrate after each push. occupiedCells is the set of cells
-    // that currently hold a crate.
-    public static void EvaluateWin(ICollection<Vector2Int> occupiedCells)
+    // Runs after every target and crate has registered, so a puzzle authored
+    // already-solved reports it instead of waiting for a push that never comes.
+    void Start() => EvaluateWin();
+
+    // Called by PushableCrate after each push.
+    public static void EvaluateWin()
     {
         if (all.Count == 0) return;
 
         foreach (var target in all)
-            if (!occupiedCells.Contains(target.cell))
+        {
+            // An obstacle sitting on a target must not count as a solve — only a
+            // crate does.
+            bool covered = GridOccupant.TryGetOccupant(target.Cell, out var occupant)
+                           && occupant is PushableCrate;
+            if (!covered)
             {
                 solved = false;
                 return;
             }
+        }
 
         if (solved) return;             // don't re-fire while it stays solved
         solved = true;

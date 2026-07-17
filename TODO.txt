@@ -1,0 +1,18 @@
+TODO / known bugs — ECDD adventure game
+========================================
+
+[ ] Crates nudge slightly LEFT at scene start (low priority — cosmetic-ish)
+    - At Play start, all crates shift a little to the left even though they were
+      snapped to grid in the editor.
+    - NOT the push logic: no crate script moves crates at start (Awake only sets
+      kinematic, OnEnable only labels the cell — neither repositions). So it's
+      PHYSICS, not code.
+    - Leading suspicion: player Rigidbody2D was set to Dynamic (for the old
+      MovePosition movement) but movement code was later reverted to
+      transform.position. Dynamic + transform.position fight, and a player spawning
+      in contact with crates can nudge them on frame 1.
+    - To diagnose when it matters: turn on `Log Push Failures` on PuzzleGrid — if
+      NO "PUSH (-1,0)" lines appear at start, it's physics. Then check Body Type of
+      the player and crate rigidbodies; likely fix is setting the player rigidbody
+      back to Kinematic (or whatever it was before the MovePosition experiment).
+    - Deferred by user 2026-07-17: irrelevant for now.

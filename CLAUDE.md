@@ -135,3 +135,37 @@ The moment is a private, intimate final conversation between the MC and his brot
 - Boulder puzzle (possession use case — sketch exists)
 - NPC names (currently placeholder: Amigo Próximo, Forasteira)
 - Elder's house — what specific clues / objects tell the entity story
+
+---
+
+## Sokoban System (implemented — working, `Assets/Scripts/Player/`)
+
+Grid-based crate puzzle. Logic is grid-based; the player moves freely.
+
+**Core idea:** the grid is the single source of truth. `PuzzleGrid` (one per scene, holds the `BelowCliff` tilemap) does all world↔cell conversion — no tile size or grid origin is typed by hand anywhere. Everything that lives on the grid measures from its **visible sprite centre**, not its pivot, so "looks aligned" and "is aligned" never disagree.
+
+**Scripts:**
+- `PuzzleGrid` — the lattice (scene object; drag the ground tilemap in once). Also draws the grid gizmo (`Show Grid`: `Always` / `When Grid Selected` / `Never`) and an occupancy debug view (`Show Occupancy`).
+- `GridObject` (base) — visible-centre logic + editor Snap. `[DisallowMultipleComponent]`.
+- `GridOccupant` (base) — owns a cell in a shared occupancy map. Crate-vs-anything blocking is one dictionary lookup, no physics probe.
+- `PushableCrate` — the crate. Push decided by: player TOUCHING (collider distance, for realistic feel) + player on the correct SIDE, by cell row/column (no collider-bounds math). Slides one cell, all-or-nothing.
+- `CrateTarget` — the rug/goal. Fires `onAllTargetsCovered` when every target cell holds a crate.
+- `GridObstacle` — static blocker on the grid.
+- `ObstacleGroup` + `StatueSwitch` — the statue turns obstacle groups 90° clockwise. Which obstacles turn = which `GridObstacle`s are CHILDREN of the `ObstacleGroup` (parent = turns, unparented = static). Group's own object is the pivot cell. Statue activated with **E** while the player is in its trigger. **Not yet tested in Play.**
+- `PuzzleUndo` — test-build undo, press **Z**. Reverts the last board action (crate push OR statue rotation) LIFO; a crate push restores both the crate and the player's position (to be themed as the Fragment pulling him back). Put one in the scene. Not yet tested in Play.
+- `Pickup` — collectible item (key, lore fragment). `Grab Mode`: `OnTouch` (walk onto it) or `PressE` (in range + E). On pickup it swaps GameObjects (`hide[]` off, `show[]` on) — e.g. grid crypt → non-grid crypt — hides itself, and fires an optional `onCollected` UnityEvent. Needs a trigger Collider2D; player needs the `Player` tag. Not yet tested in Play.
+- Editor: `GridObjectEditor` (Snap buttons), `GridDuplicateCleaner` (`Tools → Grid → …`, removes duplicate grid components).
+
+**Reward / completion wiring (no code per puzzle — two decoupled moments):**
+- *Puzzle solved → world changes:* wire `CrateTarget.onAllTargetsCovered` in the Inspector (on just ONE target is enough — it fires only when ALL targets are covered). Typically `SetActive(false)` on the bush blocking the key, or opening a door.
+- *Pickup → effect:* the key/lore is a `Pickup`; its effect (crypt swap, door, flag) is wired per-instance. The puzzle doesn't know what the reward is, and the reward doesn't know the puzzle — new effect KINDS are added on request, not predicted up front.
+
+**Authoring:** one `PuzzleGrid` in the scene with the tilemap; add the right component to each crate/target/obstacle; position by eye; click **Snap ALL GridObjects in Scene**. Component goes on the prefab, Snap is pressed in the scene (never in Prefab Mode).
+
+**Player movement:** `PlayerController` moves via `Rigidbody2D.MovePosition` in `FixedUpdate` (was writing `transform.position`, which teleported past collision and caused shoving/jitter). Player rigidbody must be **Dynamic** (gravity 0, freeze rotation Z) or MovePosition won't stop on contact.
+
+**Known issues (good-enough for now, revisit later):**
+- Occasional stray crate movement — a crate sometimes slides in an odd/diagonal direction.
+- Occasional stalls — a push sometimes doesn't register / the crate briefly locks up.
+- FIXED (verify in Play): "crate shoved the player" — pushing up jammed the player's collider centre past the crate centre, so a tap back read as a valid opposite push and the kinematic crate slid into the player. `PlayerBehind` now uses the player's feet (transform pivot) + a margin, and `TryPush` refuses to slide onto the player's cell.
+- Approach gap: how close the player stops to a crate is set by the two colliders' sizes (prefab data), not by code. Realistic look needs the crate's solid collider to be a thin strip at its base, not a full box. Alternative (not done): stop the player by cell logic in code instead of physics.

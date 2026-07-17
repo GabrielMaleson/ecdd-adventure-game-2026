@@ -153,6 +153,19 @@ public class PlayerController : MonoBehaviour
         FaceDirection(dir);
     }
 
+    // Instantly places the player and cancels whatever move was in progress, so he
+    // doesn't immediately walk back toward an old click target. Used by the puzzle
+    // undo to yank him back to where he stood before a push (framed in-story as the
+    // Fragment pulling him back).
+    public void TeleportTo(Vector2 pos)
+    {
+        isMoving       = false;
+        MoveDirection  = Vector2.zero;
+        targetPosition = pos;
+        transform.position = new Vector3(pos.x, pos.y, transform.position.z);
+        SetDir(DIR_IDLE);
+    }
+
     void FaceDirection(Vector2 dir)
     {
         if (Mathf.Abs(dir.x) >= Mathf.Abs(dir.y))
