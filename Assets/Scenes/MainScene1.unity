@@ -9550,6 +9550,10 @@ PrefabInstance:
       value: NPCConversaTest
       objectReference: {fileID: 0}
     - target: {fileID: 2504409958273795947, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: Dialogue
+      value: Conversa1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2504409958273795947, guid: 1e559e97d61117f47964168230270db1, type: 3}
       propertyPath: IsClickNPC
       value: 1
       objectReference: {fileID: 0}
@@ -9559,7 +9563,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2838796611774751666, guid: 1e559e97d61117f47964168230270db1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.36
+      value: -2.33
       objectReference: {fileID: 0}
     - target: {fileID: 2838796611774751666, guid: 1e559e97d61117f47964168230270db1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -9593,7 +9597,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6865719735666613285, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: actor
+      value: Elder Amos
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 1983026573375405866, guid: 1e559e97d61117f47964168230270db1, type: 3}
+    - {fileID: 6865719735666613285, guid: 1e559e97d61117f47964168230270db1, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -12372,6 +12382,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5469446472252833442, guid: bec5900069c43e34ca04b1b111869401, type: 3}
   m_PrefabInstance: {fileID: 812111429}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &815777392 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7587261796061496607, guid: 703ffb3e3f9d3fe4981b6482527a182b, type: 3}
+  m_PrefabInstance: {fileID: 1872874820}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &830998084
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14723,6 +14738,75 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8463817718471897249, guid: d03c2bc6c63daaa4b82794f1a57e046c, type: 3}
   m_PrefabInstance: {fileID: 1011933763}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1018870996
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 847041953360821649, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: m_Name
+      value: NPCConversaTest (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2504409958273795947, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: Dialogue
+      value: Private Hart
+      objectReference: {fileID: 0}
+    - target: {fileID: 2504409958273795947, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: IsClickNPC
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2504409958273795947, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: Conditions.Array.data[0].Progress
+      value: TalkedElder
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838796611774751666, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5.17
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838796611774751666, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838796611774751666, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -6.242069
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838796611774751666, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8161082
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838796611774751666, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838796611774751666, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.57789916
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838796611774751666, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838796611774751666, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838796611774751666, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -70.6058
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838796611774751666, guid: 1e559e97d61117f47964168230270db1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1e559e97d61117f47964168230270db1, type: 3}
 --- !u!1001 &1025141706
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -52848,7 +52932,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4474648276818384332, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 76.51
+      value: 4.3
       objectReference: {fileID: 0}
     - target: {fileID: 4474648276818384332, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
       propertyPath: m_LocalPosition.z
@@ -54866,14 +54950,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab1831aef509f05449e66fc475e9150b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PushableCrate
-  tileSize: 1
-  gridOrigin: {x: 0, y: 0}
+  visual: {fileID: 815777392}
   contactPadding: 0.1
   pushRange: 1.5
   moveDuration: 0.15
-  blockingMask:
-    serializedVersion: 2
-    m_Bits: 64
+  logRefusedPushes: 0
 --- !u!1001 &1873320205
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -58504,5 +58585,6 @@ SceneRoots:
   - {fileID: 1872874820}
   - {fileID: 588596793}
   - {fileID: 611244192}
+  - {fileID: 1018870996}
   - {fileID: 1123775902}
   - {fileID: 1768549820}
