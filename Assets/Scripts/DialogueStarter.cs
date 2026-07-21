@@ -67,11 +67,11 @@ public class DialogueStarter : MonoBehaviour
                     continue;
 
                 if (condition.PlaysOtherDialogue)
-                    DialogueManager.StartConversation(condition.OtherDialogue);
+                    DialogueManager.StartDialogue(condition.OtherDialogue);
                 return;
             }
         }
 
-        DialogueManager.StartConversation(dialogue);
+        DialogueManager.StartDialogue(dialogue);
     }
 }

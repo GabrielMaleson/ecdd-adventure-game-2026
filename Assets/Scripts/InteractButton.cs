@@ -53,15 +53,4 @@ public class InteractButton : MonoBehaviour
         if (!string.IsNullOrEmpty(dialogue))
             DialogueStarter.EvaluateConditionsAndStart(dialogue, hasConditions, conditions);
     }
-
-    private string GetConversantName(string dialogueTitle)
-    {
-        if (DialogueManager.masterDatabase == null) return string.Empty;
-
-        Conversation conversation = DialogueManager.masterDatabase.GetConversation(dialogueTitle);
-        if (conversation == null) return string.Empty;
-
-        Actor conversant = DialogueManager.masterDatabase.GetActor(conversation.ConversantID);
-        return conversant != null ? conversant.Name : string.Empty;
-    }
 }
