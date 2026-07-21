@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using Yarn;
 
 public class PlayerController : MonoBehaviour
 {
@@ -125,7 +126,6 @@ public class PlayerController : MonoBehaviour
         isMoving       = true;
         ClickIndicator.Spawn(world);
     }
-
     void MoveToTarget()
     {
         if (!isMoving)
