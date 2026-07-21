@@ -54,6 +54,7 @@ public class DialogueManager : MonoBehaviour
     public int skipCount = 30; // Number of times to call next
 
     private static DialogueManager instance;
+    public static DialogueManager Instance => instance;
     private static Dictionary<string, Image> activeImages = new Dictionary<string, Image>();
     public DialogueRunner dialogueRunner; // Make this public
 
@@ -75,7 +76,11 @@ public class DialogueManager : MonoBehaviour
                 graphicRaycaster = GetComponent<GraphicRaycaster>();
 
             if (objectivePanel != null)
-                objectivePanel.GetComponent<CanvasGroup>().alpha = 0f;
+            {
+                CanvasGroup objectiveCanvasGroup = objectivePanel.GetComponent<CanvasGroup>();
+                if (objectiveCanvasGroup != null)
+                    objectiveCanvasGroup.alpha = 0f;
+            }
 
             dialogueRunner = GetComponent<DialogueRunner>();
             if (dialogueRunner == null)
@@ -337,36 +342,32 @@ public class DialogueManager : MonoBehaviour
     [YarnCommand("objective")]
     public static void SetObjective(string objective)
     {
+        if (instance == null) return;
+
         if (instance.objectiveText != null)
-        {
             instance.objectiveText.text = objective;
 
-            if (instance.objectivePanel != null)
-            {
-                CanvasGroup canvasGroup = instance.objectivePanel.GetComponent<CanvasGroup>();
-                if (canvasGroup != null)
-                {
-                    canvasGroup.alpha = 1f;
-                }
-            }
+        if (instance.objectivePanel != null)
+        {
+            CanvasGroup canvasGroup = instance.objectivePanel.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+                canvasGroup.alpha = 1f;
         }
     }
 
     [YarnCommand("clearobjective")]
     public static void ClearObjective()
     {
+        if (instance == null) return;
+
         if (instance.objectiveText != null)
-        {
             instance.objectiveText.text = "";
 
-            if (instance.objectivePanel != null)
-            {
-                CanvasGroup canvasGroup = instance.objectivePanel.GetComponent<CanvasGroup>();
-                if (canvasGroup != null)
-                {
-                    canvasGroup.alpha = 0f;
-                }
-            }
+        if (instance.objectivePanel != null)
+        {
+            CanvasGroup canvasGroup = instance.objectivePanel.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+                canvasGroup.alpha = 0f;
         }
     }
 

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using PixelCrushers.DialogueSystem;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,13 +30,13 @@ public class InteractButton : MonoBehaviour
     }
 
     // Called by DialogueStarter when the player enters a click-NPC's trigger.
-    public void SetInteraction(string dialogueTitle, bool conditionsEnabled, List<DialogueStarter.DialogueCondition> dialogueConditions)
+    public void SetInteraction(string dialogueTitle, string conversantName, bool conditionsEnabled, List<DialogueStarter.DialogueCondition> dialogueConditions)
     {
         dialogue = dialogueTitle;
         hasConditions = conditionsEnabled;
         conditions = dialogueConditions;
 
-        SetLabel($"Interact ({GetConversantName(dialogueTitle)})");
+        SetLabel($"Interact ({conversantName})");
     }
 
     public void SetLabel(string text)
