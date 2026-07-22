@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using Yarn;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,7 +18,9 @@ public class PlayerController : MonoBehaviour
 
     Animator       animator;
     SpriteRenderer spriteRenderer;
+    Rigidbody2D    rb;
     Vector2        targetPosition;
+    Vector2        keyboardDir;    // current WASD input, zero if none (applied in FixedUpdate)
     Vector3        originalScale;
     Vector3        desiredScale;
     Vector2        visualOffset;   // world-space offset: root → sprite visual center
@@ -37,6 +38,7 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         animator       = GetComponentInChildren<Animator>();
+        rb             = GetComponent<Rigidbody2D>();
         if (visualTransform == null)
             visualTransform = transform.Find("PlayerVisual");
         originalScale  = visualTransform.localScale;
@@ -58,15 +60,21 @@ public class PlayerController : MonoBehaviour
             visualOffset = (Vector2)spriteRenderer.bounds.center - (Vector2)transform.position;
     }
 
+    // Input, facing and MoveDirection are decided here every frame; the ACTUAL motion
+    // happens in FixedUpdate via Rigidbody2D.MovePosition, so the player stops CLEANLY
+    // on contact with crates and walls. (The old code wrote transform.position on a
+    // Dynamic body, which never reached real contact — it rested ~0.1 short, so a push
+    // right next to a crate silently failed even though it looked like he was touching.)
     void Update()
     {
         // Frozen while the player is piloting the ghost (see GhostControl): no
         // walking, no click-to-move — just stand idle.
         if (!InputEnabled)
         {
-            if (isMoving || MoveDirection != Vector2.zero)
+            if (isMoving || MoveDirection != Vector2.zero || keyboardDir != Vector2.zero)
             {
                 isMoving      = false;
+                keyboardDir   = Vector2.zero;
                 MoveDirection = Vector2.zero;
                 SetDir(DIR_IDLE);
             }
@@ -77,14 +85,50 @@ public class PlayerController : MonoBehaviour
         if (keyboardInput != Vector2.zero)
         {
             isMoving      = false; // keyboard input overrides any active click-to-move target
+            keyboardDir   = keyboardInput;
             MoveDirection = keyboardInput;
-            MoveWithKeyboard(keyboardInput);
+            FaceDirection(keyboardInput);
             return;
         }
+        keyboardDir = Vector2.zero;
 
         if (Mouse.current.leftButton.wasPressedThisFrame && !IsPointerOverUI())
             HandleClick();
-        MoveToTarget();
+
+        // Click-to-move: decide direction / arrival here; FixedUpdate does the moving.
+        if (isMoving)
+        {
+            Vector2 pos = rb.position;
+            if (Vector2.Distance(pos, targetPosition) < stopThreshold)
+            {
+                isMoving      = false;
+                MoveDirection = Vector2.zero;
+                SetDir(DIR_IDLE);
+            }
+            else
+            {
+                Vector2 dir   = (targetPosition - pos).normalized;
+                MoveDirection = dir;
+                FaceDirection(dir);
+            }
+        }
+        else
+        {
+            MoveDirection = Vector2.zero;
+            SetDir(DIR_IDLE);
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (!InputEnabled) return;
+
+        float step = (moveSpeed / PPU) * Time.fixedDeltaTime;
+
+        if (keyboardDir != Vector2.zero)
+            rb.MovePosition(rb.position + keyboardDir * step);
+        else if (isMoving)
+            rb.MovePosition(Vector2.MoveTowards(rb.position, targetPosition, step));
     }
 
     Vector2 ReadKeyboardInput()
@@ -96,12 +140,6 @@ public class PlayerController : MonoBehaviour
         if (kb.aKey.isPressed) input.x -= 1f;
         if (kb.dKey.isPressed) input.x += 1f;
         return input.normalized;
-    }
-
-    void MoveWithKeyboard(Vector2 dir)
-    {
-        transform.position += (Vector3)(dir * (moveSpeed / PPU) * Time.deltaTime);
-        FaceDirection(dir);
     }
 
     void LateUpdate()
@@ -128,32 +166,6 @@ public class PlayerController : MonoBehaviour
         isMoving       = true;
         ClickIndicator.Spawn(world);
     }
-    void MoveToTarget()
-    {
-        if (!isMoving)
-        {
-            MoveDirection = Vector2.zero;
-            SetDir(DIR_IDLE);
-            return;
-        }
-
-        Vector2 pos  = transform.position;
-        float   dist = Vector2.Distance(pos, targetPosition);
-
-        if (dist < stopThreshold)
-        {
-            transform.position = new Vector3(targetPosition.x, targetPosition.y, transform.position.z);
-            isMoving           = false;
-            MoveDirection      = Vector2.zero;
-            SetDir(DIR_IDLE);
-            return;
-        }
-
-        Vector2 dir = (targetPosition - pos).normalized;
-        MoveDirection       = dir;
-        transform.position  = Vector2.MoveTowards(pos, targetPosition, (moveSpeed / PPU) * Time.deltaTime);
-        FaceDirection(dir);
-    }
 
     // Instantly places the player and cancels whatever move was in progress, so he
     // doesn't immediately walk back toward an old click target. Used by the puzzle
@@ -162,9 +174,11 @@ public class PlayerController : MonoBehaviour
     public void TeleportTo(Vector2 pos)
     {
         isMoving       = false;
+        keyboardDir    = Vector2.zero;
         MoveDirection  = Vector2.zero;
         targetPosition = pos;
         transform.position = new Vector3(pos.x, pos.y, transform.position.z);
+        if (rb != null) rb.position = pos;   // keep the physics body in step with the teleport
         SetDir(DIR_IDLE);
     }
 

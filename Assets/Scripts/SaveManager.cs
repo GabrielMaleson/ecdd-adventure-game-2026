@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PixelCrushers.DialogueSystem;
 using UnityEngine;
 
 public class SaveManager : MonoBehaviour
@@ -18,6 +19,18 @@ public class SaveManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    void OnEnable()
+    {
+        if (Instance != this) return;
+        Lua.RegisterFunction(nameof(AddProgress), this, SymbolExtensions.GetMethodInfo(() => AddProgress(string.Empty)));
+    }
+
+    void OnDisable()
+    {
+        if (Instance != this) return;
+        Lua.UnregisterFunction(nameof(AddProgress));
     }
 
     public void AddProgress(string tag)
