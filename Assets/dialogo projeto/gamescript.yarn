@@ -1,14 +1,153 @@
 ﻿title: gamescript
 ---
-This is an example of a Yarn Spinner script. Write your dialogue here!
+	Josh: There's more mist than usual...
 ===
 
-title: shopkeep
+title: square_initial
 ---
-	<<darken>>
-	Cara No Intervalo: O que você tá olhando? Não tá vendo que eu to na minha...
-	Cara No Intervalo: Espera. Você não é desse navio. Simon, porque você deixou esse pivete andar aqui?
-	Cara No Intervalo: Quer saber? Não me importo o suficiente para te ouvir. Também não estou fazendo o que eu devia.
-	Cara No Intervalo: Eu geralmente vendo as armas extras para os cidadãos enquanto ninguém olha, então se você tem algum interesse... eu sou seu homem.
-	<<brighten>>
+	Josh: What's up Elder Amos?
+	Elder Amos: Hmm, fine, fine indeed. I'm fine, yes. How about you, young one?
+	Josh: I'm good. Kind of a misty day, don't you think?
+	Elder Amos: Yes, the mist. The mist is strong. I- very good. 
+	-> Uh... what's very good?
+		Josh: Uh... what's very good?
+		Elder Amos: Yes, indeed. Very good.
+	-> Yup. Very good...?
+		Josh: Yup. Very good...?
+		Elder Amos: The mist. Very good. It's strong. Very good.
+	Josh: Ok... good talk, I guess.
+	Josh: ... I swear this geezer wasn't as weird a few days ago.
+===
+
+title: square_marcus_erika
+---
+Marcus: What's up Joshy?
+Josh: 'Sup
+Erika: Wow, look who's in a good mood today.
+Josh: Yup, brimmin' with joy.
+Marcus: Ah, come on Joshy it's a beautiful day! Everyone's having fun, doing their things... a little misty, but beautiful anyway.
+Josh: You have a weird concept of beauty. Anyway... have you talked to elder Amos? He seems to be out of it.
+Marcus: Ah, old man's always been like this, nothing new.
+Josh: I don't know man, he seems worse.
+Erika: Screw that fossil, what are we doing today?
+Josh: I'm heading home I guess.
+Marcus: Come on Joshy, you know I don't have much time...
+Josh: He's really leaving, then.
+Erika: Don't be a shut in for once, Josh.
+Josh: Ok ok. I'll just relax for a bit, and I'll meet you.
+Marcus: Nice, okay.
+Erika: We meet here in an hour-ish.
+Josh: 'Kay.
+===
+
+title: home_outside_first
+---
+Josh: What's this?! (noise?)
+... 
+Haze: Hm... Hello sir.
+Josh: Wha—who—what are you?
+Haze: Hmm... a fine question indeed. One I don't know the answer to.
+Josh: Okay..? And what are you doing here?
+Haze: Hmm... a fine question indeed. One i don—
+Josh: Okay just—stop. Come inside or else you'll freak people out.
+Haze: Why would I freak them out?
+Josh: Cause you're a talking smoke?
+Haze: I... am?
+Josh: Pretty much, yeah.
+Haze: And you're not freaked out?
+Josh: You don't seem hostile.
+Haze: I don't feel hostile
+Josh: Just come on in man.
+===
+
+title: home_inside
+---
+Haze: Wow your home is so pretty!
+Josh: It really isn't.
+Haze: Then why are you here?
+Josh: A fine question indeed.
+Haze: Ha!
+Haze: What's this?
+Josh: That's a TV, basically shows moving images.
+Haze: Well, why do you need that for? Isn't that everything already?
+Josh: Real life's just not engaging enough I guess.
+Haze: What?! You're weird.
+Josh: I'm weird? Says the floating orange talking piece of mist who appeared out of nowhere.
+Haze: Mist...
+Josh: Yeah, mist. What do I even call you anyway?
+Haze: Hmm. I'm not sure.
+Josh: Okay then, you're Haze now.
+Haze: Haze... I guess it fits.
+Josh: So you have no idea how you wound up here? Really?
+Haze: Nuh uh. I feel like I just woke up from a really long nap. Like, reeeeally long.
+Josh: Not a nap then.
+Haze: A long nap.
+Josh: ...
+Josh: Ugh, now what?
+Haze: It grows stronger...
+Josh: What?
+Haze: Hm?
+Josh: You just said something.
+Haze: Weird, I don't remember it.
+Josh: Whatever. I'm gonna watch som—
+Haze: I'm gonna go for a walk!
+Josh: No you're not, you'll stand out and freak out ev—hey, WAIT!
+===
+
+title: square_haze
+---
+Josh: HEY, wa— huff... huff... wait. Are you insane? I told you you would freak everyone out, there's already something going on, do you want people more on edge?
+Haze: Relax my friend, I found something out! Look.
+Haze: Ta-dah!
+Josh: ...
+Haze: ...
+Josh: You know nothing happened right.
+Haze: Well, for you it didn't, but that's because you're the only one who can see me right now.
+Josh: What? I don't believe you one bit. Come back to my hou—
+Villager: Josh! What are you doing just standing here?
+Josh: Hum... nothing really, I was just... taking a walk. Yes, a walk.
+Villager: Taking a walk? Are you insane? Can't you hear the noise coming from Elder Amos' house?
+Josh: Oh, yeah. So that's where all the ruckus' coming from.
+Villager: Yeah. Anyway, meet me there then, after you finish your... walk or whatever. Hurry.
+Haze: Turns out you're the insane one!
+Josh: Shut up.
+Haze: Trust me now?
+Josh: Yeah, let's go.
+Haze: Let'sss.
+===
+
+title: elders_house_outside
+---
+Erika: Hey slowpoke.
+Marcus: Joshy!
+Josh: Hey guys, what happened?
+Erika: Basically, elder Amos disappeared. People are saying they saw him go into the mist, speaking nonsense.
+Haze: ...
+Marcus: Everyone's scared, people are afraid to enter his house. Saying it's cursed.
+Josh: What? No one went looking for him?
+Erika: They did, but didn't go very far.
+Marcus: Yeah, people are afraid, Joshy. The mist suddenly getting worse, and now this. I don't know... it's weird.
+Erika: What, you believe them? You think this place is cursed?
+Marcus: I'm saying it's weird, Erika, just that.
+Josh: Ok, I'm going to check his place.
+Erika: We'll go with you.
+Haze: Tell them you'll go alone.
+Josh: ...
+Josh: Guys, I'd rather go alone, if you don't mind.
+Erika: What? Why?
+Josh: I don't know, intuition, I guess.
+Marcus: That's seems not very effective, Joshy.
+Erika: It seems dumb. But since it's the first time I've seen you being proactive in ages, I'll leave you to it.
+Marcus: Ok then, me too. Go on.
+===
+
+title: elders_house_inside
+---
+Josh: Why did you tell me to come alone?
+Haze: I... don't know. You said you don't want me to reveal myself.
+Josh: How is that relevant here?
+Haze: ...
+Josh: You have something to do with all of this, don't you?
+Haze: ...I don't know, really. Maybe I do.
+Josh: ...
 ===
