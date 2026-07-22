@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using PixelCrushers.DialogueSystem;
 using UnityEngine;
 
 public class DialogueStarter : MonoBehaviour
@@ -13,6 +12,7 @@ public class DialogueStarter : MonoBehaviour
     }
 
     public string Dialogue;
+    public string ConversantName;
     public bool IsClickNPC;
     public bool OnceTime;
     public bool DoneOnce = false;
@@ -47,7 +47,7 @@ public class DialogueStarter : MonoBehaviour
 
     private void SendToInteractButton()
     {
-        InteractButton.Instance?.SetInteraction(Dialogue, HasConditions, Conditions);
+        InteractButton.Instance?.SetInteraction(Dialogue, ConversantName, HasConditions, Conditions);
     }
 
     private void StartDialogue()
@@ -67,11 +67,11 @@ public class DialogueStarter : MonoBehaviour
                     continue;
 
                 if (condition.PlaysOtherDialogue)
-                    DialogueManager.StartConversation(condition.OtherDialogue);
+                    DialogueManager.Instance?.StartDialogue(condition.OtherDialogue);
                 return;
             }
         }
 
-        DialogueManager.StartConversation(dialogue);
+        DialogueManager.Instance?.StartDialogue(dialogue);
     }
 }
