@@ -25,3 +25,86 @@ NOTE (not a task — just documenting a known quirk):
     players release/re-press constantly, so this is a non-issue. Decided NOT to add a
     distance-based unlock (moved N units -> unlock) — it needs a magic threshold and
     risks reopening the "wrong crate moves" bugs. Left as-is on purpose.
+
+
+========================================================================
+SESSION 2026-07-22 — Ghost control + statue puzzles (crypt/graveyard dungeon)
+========================================================================
+
+Code written this session (compile-check in Unity first!):
+  GhostControl.cs (new), CameraFollow2D.cs (new — NOT used, going Cinemachine),
+  TileCycle.cs (new), + edits to CrateTarget, PlayerController, FragmentFollow,
+  StatueSwitch, ObstacleGroup, PossessionDrag.
+
+------------------------------------------------------------------------
+TO DO — Ghost control (replaces the old possession)
+------------------------------------------------------------------------
+[ ] Add GhostControl component to a scene object. Assign:
+      - MC        = the object with PlayerController
+      - Ghost Follow = the FragmentFollow on the ghost
+      - Ghost     = the ghost's root transform
+      - Toggle Key = Q
+[ ] BUG seen: MC does NOT freeze while piloting the ghost. Almost certainly the
+    MC slot in GhostControl is empty / wrong object. Fill it with the PlayerController
+    object. (Code freezes MC via mc.InputEnabled only if mc is assigned.)
+[ ] Ghost needs Collider2D with IS TRIGGER = true + Rigidbody2D KINEMATIC, so the
+    statue's trigger detects it (ghost passes through everything, blocks nothing).
+[ ] Wire the camera switch: GhostControl -> On Camera Target Changed -> drag the
+    CinemachineCamera -> pick CinemachineCamera.Follow (dynamic Transform). Without
+    this the camera won't follow the ghost while piloting.
+    (Camera already fixed: Tracking Target = MC, Position Control = Position Composer,
+     Damping 0, Game View Guides = Disabled. Bug that was fixed: Tracking Target had
+     been set to MainCamera instead of the MC.)
+[ ] Remove the WeightedDragAndDrop component (old possession, dormant now) from
+    whatever scene object has it. THEN ask Claude to delete PossessionDrag.cs.
+
+------------------------------------------------------------------------
+TO DO — Statue puzzles / crate goals
+------------------------------------------------------------------------
+[ ] VERIFY box==goal per sub-puzzle (2 rugs = 2 crates). Flagged as suspect: the
+    top area and the middle area looked like they had a rug/crate mismatch.
+[ ] Per-puzzle grouping: set Puzzle Id on each rug (same id = one puzzle). Wire
+    onAllTargetsCovered on ONE rug per group -> SetActive(false) on that puzzle's
+    wall. Blank id = default single puzzle (old behaviour).
+[ ] Middle puzzle = Idea A: one statue opens one rug's path while closing the other
+    (coupled). Keep the rugs OUT of the rotation sweep, OR make Z-undo available to
+    the player, or the crate placed on a rug can block the next rotation = softlock.
+[ ] Final exit wall (opens only when ALL sub-puzzles done): needs a PuzzleGate
+    helper. NOT built yet — ask Claude to write it (listens to N puzzles -> fires
+    when all complete).
+[ ] Undo (Z) should be enabled ONLY inside puzzle zones (framed as the Fragment's
+    power), disabled in the overworld. NOT built yet — ask Claude when ready.
+
+------------------------------------------------------------------------
+OPEN BUG — ghost/stale grid registration
+------------------------------------------------------------------------
+[ ] Some crate/box near the BOTTOM of the dungeon registers a WRONG grid cell (long
+    lines up to mid-map in PuzzleGrid > Show Occupancy). The statue is now immune to
+    it (ObstacleGroup ignores ghost claims + computes from live positions), but
+    PushableCrate could still be falsely blocked by the same ghost. Root cause NOT
+    found. To diagnose: Show Occupancy ON, click the object the long line comes from,
+    check its components + whether it's snapped, tell Claude the name + components.
+    Claude can also add the same ghost-guard to PushableCrate if it turns out to bite.
+
+------------------------------------------------------------------------
+NEW MECHANIC I want to build — what Claude understood (TileCycle)
+------------------------------------------------------------------------
+The "cycling bushes / moving gap" puzzle, driven by the statue:
+  - A RING of cells. Bushes CYCLE through them, one step each time the statue is used
+    (E). With FEWER bushes than cells, one cell is always empty — a GAP that
+    circulates around the ring, opening a path where a bush just vacated.
+  - TOP crate: 2 bushes / 3 cells (the 3 cells directly adjacent to the top crate:
+    left, up, right). 1 gap circulates.
+  - BOTTOM crate: 1 bush / 3 cells. 2 gaps.
+  - This is DIFFERENT from the statue's rigid 90-degree rotation (ObstacleGroup):
+    that turns a whole shape; this shifts occupancy around a fixed ring.
+
+  TileCycle.cs is written. Setup per cycle:
+    1. Parent GameObject + TileCycle component.
+    2. Children, in cycle order: the bushes (each with GridObstacle) + a Create-Empty
+       marker on each GAP cell (top: 1 empty; bottom: 2 empties). Snap all.
+    3. Add the TileCycle to the statue's StatueSwitch -> Cycles list (new field,
+       alongside Groups). Statue moves groups + cycles together, all-or-nothing.
+    4. Direction = the Reverse checkbox on TileCycle. Flip it if the gap goes the
+       wrong way. (No coordinates needed — the component reads the children.)
+    Still owed to Claude: confirm the design reading above is correct.
