@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class FragmentFollow : MonoBehaviour
 {
@@ -7,13 +6,15 @@ public class FragmentFollow : MonoBehaviour
     [SerializeField] float     smoothTime = 0.25f;
     [SerializeField] Vector2   offset;
 
+    [Tooltip("Cap on how fast the ghost moves while following (world units/sec). Stops it from zipping/teleporting back when it re-attaches from far away (e.g. after being parked at a statue) — it walks back instead. Keep it a bit above the MC's speed so normal following never lags. Set very high to disable the cap.")]
+    [SerializeField] float     maxFollowSpeed = 4f;
+
     SpriteRenderer spriteRenderer;
     Vector2        lastPlayerPos;
     Vector2        activeOffset;
     Vector2        desiredOffset;
     Vector2        positionVelocity;
     Vector2        offsetVelocity;
-    public bool    IsPossessing = false;
 
     void Awake()
     {
@@ -31,16 +32,19 @@ public class FragmentFollow : MonoBehaviour
         spriteRenderer.transform.localPosition = Vector3.zero;
     }
 
-    void Update()
+    // Re-enabling after the ghost was piloted or parked: it may be far from the
+    // player. Reset the smoothing state so it eases back cleanly instead of
+    // lurching from a stale velocity.
+    void OnEnable()
     {
-        if (Keyboard.current.pKey.wasPressedThisFrame)
-            IsPossessing = !IsPossessing;
+        if (player != null) lastPlayerPos = player.position;
+        positionVelocity = Vector2.zero;
+        offsetVelocity   = Vector2.zero;
     }
 
     void LateUpdate()
     {
         if (player == null) return;
-        if (IsPossessing) return;
 
         Vector2 playerPos = player.position;
         float   deltaX    = playerPos.x - lastPlayerPos.x;
@@ -63,7 +67,8 @@ public class FragmentFollow : MonoBehaviour
             transform.position,
             (Vector2)playerPos + activeOffset,
             ref positionVelocity,
-            smoothTime
+            smoothTime,
+            maxFollowSpeed
         );
 
         spriteRenderer.flipX = (playerPos.x - transform.position.x) < 0;

@@ -115,15 +115,24 @@ public class ObstacleGroup : GridObject
 
         Vector2Int pivot = CurrentCell();
 
+        // Read each member's cell from where its ARTWORK actually is right now, not
+        // from its cached claim. A stale or failed claim (Cell left at a default, or
+        // a ghost value) would otherwise send a target flying to a random far cell
+        // and collide with whatever legitimately sits there. Live positions can't be
+        // stale, so the turn is computed from what you actually see.
+        var memberCells = new Vector2Int[members.Length];
+        for (int i = 0; i < members.Length; i++)
+            memberCells[i] = grid.WorldToCell(members[i].VisualCenter);
+
         // Cells the group currently holds. A target landing here is fine — that's
         // a member vacating for another member, not a collision.
         var ownCells = new HashSet<Vector2Int>();
-        foreach (var m in members) ownCells.Add(m.Cell);
+        foreach (var c in memberCells) ownCells.Add(c);
 
         targets = new Vector2Int[members.Length];
         for (int i = 0; i < members.Length; i++)
         {
-            Vector2Int offset = members[i].Cell - pivot;
+            Vector2Int offset = memberCells[i] - pivot;
             Vector2Int turned = clockwise
                 ? new Vector2Int(offset.y, -offset.x)
                 : new Vector2Int(-offset.y, offset.x);
@@ -151,12 +160,19 @@ public class ObstacleGroup : GridObject
             }
 
             if (ownCells.Contains(t)) continue;   // a member is leaving this cell
-            if (!GridOccupant.IsFree(t))
-            {
-                GridOccupant.TryGetOccupant(t, out var occ);
-                reason = $"a bush would land on cell {t}, already held by '{(occ != null ? occ.name : "?")}'";
-                return false;
-            }
+            if (GridOccupant.IsFree(t)) continue;
+
+            GridOccupant.TryGetOccupant(t, out var occ);
+
+            // Only an occupant that's ACTUALLY on the cell blocks. A stale claim —
+            // registered here but whose artwork really sits somewhere else — is a
+            // ghost and must not veto the turn, or a mis-registered object across the
+            // map blocks a rotation it has nothing to do with.
+            if (occ == null || grid.WorldToCell(occ.VisualCenter) != t)
+                continue;
+
+            reason = $"a bush would land on cell {t}, already held by '{occ.name}'";
+            return false;
         }
         return true;
     }

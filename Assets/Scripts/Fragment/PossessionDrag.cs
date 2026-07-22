@@ -71,9 +71,10 @@ public class WeightedDragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandle
 
     void Update()
     {
-        if (Keyboard.current.pKey.wasPressedThisFrame)
-            IsPossessing = !IsPossessing;
-
+        // Old possession (mouse drag) is retired — kept dormant (IsPossessing stays
+        // false, so dragging never begins) until this component is removed from the
+        // scene, after which this file can be deleted. Ghost interaction now lives
+        // in GhostControl.
         if (outlineRenderer != null)
             outlineRenderer.gameObject.SetActive(IsPossessing);
 

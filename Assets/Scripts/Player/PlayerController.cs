@@ -8,7 +8,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Transform visualTransform;
     [SerializeField] float     stopThreshold = 0.05f;
 
-    public bool IsPossessing = false;
+    // Set false by GhostControl while the player is piloting the ghost: the MC
+    // ignores all input and stands idle until control returns to him.
+    public bool InputEnabled = true;
 
     // Direction the player is currently trying to move in (zero if idle). Read by
     // things like PushableCrate to know whether the player is walking into them.
@@ -57,18 +59,18 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (Keyboard.current.pKey.wasPressedThisFrame)
+        // Frozen while the player is piloting the ghost (see GhostControl): no
+        // walking, no click-to-move — just stand idle.
+        if (!InputEnabled)
         {
-            IsPossessing = !IsPossessing;
-            if (IsPossessing)
+            if (isMoving || MoveDirection != Vector2.zero)
             {
-                isMoving     = false;
+                isMoving      = false;
                 MoveDirection = Vector2.zero;
                 SetDir(DIR_IDLE);
             }
+            return;
         }
-
-        if (IsPossessing) return;
 
         Vector2 keyboardInput = ReadKeyboardInput();
         if (keyboardInput != Vector2.zero)
