@@ -22,6 +22,13 @@ public class TileCycle : GridObject
     [Tooltip("Reverse the cycle direction. Off = forward (hierarchy order). Tick it if the gap circulates the wrong way.")]
     [SerializeField] bool reverse = false;
 
+    [Tooltip("Optional. When the puzzle with THIS Puzzle Id is solved (its rug covered by a crate), the statue STOPS stepping this cycle — a 'cleared' sub-puzzle drops out of the sweep so it can't block the rest. Re-arms if the crate is pulled off. Blank = always steps.")]
+    [SerializeField] string clearedWhenPuzzleSolved = "";
+
+    // True while this cycle's gate-puzzle is solved: the statue skips it entirely.
+    public bool IsCleared =>
+        !string.IsNullOrEmpty(clearedWhenPuzzleSolved) && CrateTarget.IsSolved(clearedWhenPuzzleSolved);
+
     [Tooltip("How long one step-slide takes.")]
     [SerializeField] float stepDuration = 0.2f;
 

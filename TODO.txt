@@ -69,11 +69,23 @@ TO DO — Statue puzzles / crate goals
 [ ] Middle puzzle = Idea A: one statue opens one rug's path while closing the other
     (coupled). Keep the rugs OUT of the rotation sweep, OR make Z-undo available to
     the player, or the crate placed on a rug can block the next rotation = softlock.
+[x] "Clear" a solved sub-puzzle (DONE 2026-07-22): a crate parked on a rug used to
+    freeze the whole statue (all-or-nothing refused because the crate blocked a
+    cycle/rotation). Now: a group/ObstacleGroup/TileCycle with "Cleared When Puzzle
+    Solved" = <id> DROPS OUT of the statue's sweep once the rug with that Puzzle Id is
+    covered by a crate — stops moving, stops blocking the rest; re-arms if the crate is
+    pulled off. Opt-in: blank field = old behaviour. Wiring: rug.PuzzleId == group/
+    cycle.clearedWhenPuzzleSolved. Rug counts as solved ONLY with a PushableCrate on it.
 [ ] Final exit wall (opens only when ALL sub-puzzles done): needs a PuzzleGate
     helper. NOT built yet — ask Claude to write it (listens to N puzzles -> fires
     when all complete).
 [ ] Undo (Z) should be enabled ONLY inside puzzle zones (framed as the Fragment's
     power), disabled in the overworld. NOT built yet — ask Claude when ready.
+[x] StatueSwitch per-group direction (DONE 2026-07-22): each group in the StatueSwitch
+    Groups list has its own "Counter Clockwise" checkbox — marking it flips THAT group
+    opposite to the un-marked groups, the rest unaffected. Global `Clockwise` checkbox
+    REMOVED (did nothing useful). Groups list changed type (ObstacleGroup ->
+    RotatingGroup wrapper), so RE-DRAG the groups in the inspector.
 
 ------------------------------------------------------------------------
 OPEN BUG — ghost/stale grid registration
@@ -107,4 +119,87 @@ The "cycling bushes / moving gap" puzzle, driven by the statue:
        alongside Groups). Statue moves groups + cycles together, all-or-nothing.
     4. Direction = the Reverse checkbox on TileCycle. Flip it if the gap goes the
        wrong way. (No coordinates needed — the component reads the children.)
-    Still owed to Claude: confirm the design reading above is correct.
+
+  DESIGN CONFIRMED 2026-07-22 (matches the crypt sketch): TOP cycle = 2 bushes / 3
+  cells (left, up, right of the top crate), counterclockwise, 1 gap. BOTTOM cycle =
+  1 bush / 3 cells (left, down, right of the bottom crate), clockwise, 2 gaps. Code
+  already does all of it — remaining work is pure scene authoring:
+    - Child order must make CONSECUTIVE ring entries ADJACENT cells, or a bush slides
+      diagonally across the gap. CW vs CCW = child order + the Reverse checkbox (the
+      script has no built-in handedness).
+    - Two separate TileCycle parents (top, bottom); add BOTH to the statue's Cycles.
+    - GAP MARKERS must use the new GridMarker component, NOT GridObstacle. GridObstacle
+      inherits GridOccupant (claims a cell even with no collider) AND TileCycle reads
+      "has GridObstacle" as "this is a bush" — so empties-as-GridObstacle made the cycle
+      see 0 gaps. GridMarker is snappable (GridObject) but owns no cell. (GridObject
+      itself is abstract, which is why GridObstacle was used before.) DONE 2026-07-22.
+
+[!] ROOT CAUSE of the "crate won't push" saga (2026-07-22): the push was NOT blocked
+    physically — it FIRED and was REFUSED because the target cell was held by an
+    'EmptyTile' with a GridObstacle component (claims the cell even with no collider).
+    The "not touching gap 0.11" logs were just the player walking up; the smoking gun
+    was "push into (2,69) refused — held by 'EmptyTile' (GridObstacle)". FIX: swap every
+    EmptyTile's GridObstacle -> GridMarker (see above). Also: PlayerController movement
+    was switched to Rigidbody2D.MovePosition in FixedUpdate (kept — user liked the feel;
+    revert available). Chased physics/colliders far too long before reading the refusal.
+
+========================================================================
+STILL OPEN after 2026-07-22 session (what did NOT get done)
+========================================================================
+
+--- Y-SORT (analysed, NOT built) ---
+[ ] Bring the Y-sort system over (mainly for TREES + PLAYER; also crates/bushes since
+    they move). Decision: OPT-IN per-object, NOT global — static art (roads, the praça,
+    floor, rugs) stays manual and must NOT get Y-sort.
+[ ] Reliable Scene-view + Play preview needs YSort with [ExecuteAlways] + change-guard
+    (camera transparencySortAxis alone does NOT show in Scene view). Scripts to write:
+    YSort.cs (ExecuteAlways, feet-based, guard), YSortSetup.cs, maybe YSortGroup.cs for
+    the torch. NOT written yet — waiting on 3 decisions:
+      1. Any WALL/tall-tile the player walks BEHIND? (tilemaps can't YSort per-tile the
+         same way — those would need to be sprites or individual-mode).
+      2. Torch+fire: fire is a ParticleSystem (YSort only does SpriteRenderer). Plan =
+         Sorting Group on the torch root + a YSortGroup variant. (Also fixes the fire-
+         behind-crate bug.) OK to build?
+      3. ClickIndicator (fixed order 99) -> Ground or Overlay layer?
+[ ] Sorting Layers to create (Project Settings): Ground (floor/roads/praça/rugs) <
+    Entities (Y-sorted stuff). Protect the praça with a Sorting Group (locks internal
+    layer order). None of this is .cs — user does the scene/project setup.
+
+--- FEEDBACK / HOOKS ---
+[ ] Wire visual+SFX feedback for a BLOCKED statue -> StatueSwitch.onRefused (the ONE
+    hook that fires; ObstacleGroup.onBlocked / TileCycle.onBlocked are DEAD in the statue
+    flow — statue pre-checks and refuses before TryRotate/TryStep, so they never fire).
+[ ] PushableCrate has NO event for a blocked/failed push — only logs. If we want a
+    'clunk' on a crate that can't move, add onPushBlocked (+ maybe onPushed). NOT built.
+
+--- REWARD / CONTENT ---
+[ ] Reward for the crypt/cycle room: wire CrateTarget.onAllTargetsCovered -> open wall /
+    Pickup(lore) / whatever. Hooks ready, nothing wired yet. (User will do "depois".)
+[ ] Final exit wall (all sub-puzzles done) -> PuzzleGate helper. STILL not built.
+[ ] Undo (Z) enabled ONLY inside puzzle zones. STILL not built. (Extra relevant now —
+    the hard rotation room needs safe experimentation, see below.)
+
+--- POLISH / RELIABILITY (the "polish pass" the user leaned toward) ---
+[ ] Reliability bugs still open: occasional stray/diagonal crate movement, occasional
+    push stalls, and the isolated crate-into-bush occupancy ghost. Need a REPRO with
+    Show Occupancy + Log Push Failures ON before touching code (don't guess — see the
+    2026-07-22 saga). Could add the same ghost-guard PushableCrate that ObstacleGroup has.
+[ ] Dead-code cleanup: PossessionDrag.cs + WeightedDragAndDrop (old possession),
+    CameraFollow2D.cs (unused). Also consider removing the dead onBlocked hooks on
+    ObstacleGroup/TileCycle so they don't mislead whoever wires feedback.
+[ ] Verify EmptyTile -> GridMarker swap was applied to ALL gap markers, not just the one.
+
+--- DESIGN / PLAYTEST ---
+[ ] Hard rotation room: one part is only solvable via clever rotation, single solution
+    found so far. Not necessarily bad. Before shipping/deciding: (1) confirm rotation was
+    TAUGHT by an easier puzzle earlier, (2) make sure Z-undo works there, (3) PLAYTEST
+    with someone who isn't the designer. User expects noobs to struggle; leaving the room
+    as-is for now, will tune after playtest.
+
+--- KEPT THIS SESSION (verify no regressions) ---
+[ ] PlayerController now moves via Rigidbody2D.MovePosition (FixedUpdate). Confirm click-
+    to-move still lands right, undo teleport doesn't drift, no wall jitter. Revert path
+    exists if needed.
+[x] StatueSwitch: per-group Counter Clockwise toggle; global Clockwise checkbox removed;
+    GridMarker.cs added; "Cleared When Puzzle Solved" clears a solved sub-puzzle out of
+    the statue sweep. (All DONE 2026-07-22.)

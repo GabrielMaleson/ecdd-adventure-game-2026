@@ -13,14 +13,23 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Collider2D))]
 public class StatueSwitch : MonoBehaviour
 {
-    [Tooltip("Rotating bush groups this statue turns. All of them turn together, or none do.")]
-    [SerializeField] List<ObstacleGroup> groups = new List<ObstacleGroup>();
+    // One rotating group + its own direction override. The little "Counter Clockwise"
+    // checkbox next to each group flips THAT group against the statue's base direction,
+    // leaving the others alone.
+    [System.Serializable]
+    public class RotatingGroup
+    {
+        public ObstacleGroup group;
+
+        [Tooltip("Turn this specific group the OTHER way from the statue's base direction.")]
+        public bool counterClockwise;
+    }
+
+    [Tooltip("Rotating bush groups this statue turns. All of them turn together, or none do. Each has its own Counter Clockwise toggle.")]
+    [SerializeField] List<RotatingGroup> groups = new List<RotatingGroup>();
 
     [Tooltip("Tile cycles this statue advances one step. Turn together with the groups, all-or-nothing.")]
     [SerializeField] List<TileCycle> cycles = new List<TileCycle>();
-
-    [Tooltip("Clockwise, per the design. Uncheck for a statue that turns the other way. (Tile cycles use their own Reverse toggle.)")]
-    [SerializeField] bool clockwise = true;
 
     [Tooltip("Prompt shown on the interact label while the parked ghost can use this.")]
     [SerializeField] string interactLabel = "Statue (E)";
@@ -83,20 +92,27 @@ public class StatueSwitch : MonoBehaviour
         // the board in a state the player never asked for and can't undo. The flip
         // side is that ONE bad group/cycle refuses the whole statue — so name it, or
         // a misconfigured second one looks like "the statue just stopped working".
-        foreach (var g in groups)
+        //
+        // CLEARED sub-puzzles are skipped everywhere below: once a group/cycle's rug is
+        // covered by a crate it drops out of the sweep, so it neither moves nor blocks
+        // the rest. That's what stops a crate parked on a rug from freezing the statue.
+        int active = 0;
+        foreach (var entry in groups)
         {
-            if (g == null)
+            if (entry == null || entry.group == null)
             {
                 Debug.LogWarning($"{name}: an empty slot is in the Groups list — fill or remove it.", this);
                 onRefused?.Invoke();
                 return;
             }
-            if (!g.CanRotate(clockwise, out string reason))
+            if (entry.group.IsCleared) continue;
+            if (!entry.group.CanRotate(DirectionFor(entry), out string reason))
             {
-                Debug.Log($"{name}: won't turn because group '{g.name}' can't rotate — {reason}.", g);
+                Debug.Log($"{name}: won't turn because group '{entry.group.name}' can't rotate — {reason}.", entry.group);
                 onRefused?.Invoke();
                 return;
             }
+            active++;
         }
         foreach (var c in cycles)
         {
@@ -106,24 +122,36 @@ public class StatueSwitch : MonoBehaviour
                 onRefused?.Invoke();
                 return;
             }
+            if (c.IsCleared) continue;
             if (!c.CanStep(out string reason))
             {
                 Debug.Log($"{name}: won't turn because cycle '{c.name}' can't step — {reason}.", c);
                 onRefused?.Invoke();
                 return;
             }
+            active++;
         }
+
+        // Everything the statue drives is cleared — nothing left to move, so it just
+        // sits (no refuse buzz: this is a solved state, not a blocked one).
+        if (active == 0) return;
 
         // Record ONE undo step for the whole activation, captured before anything
         // moves. A single Z then reverts every group AND cycle this statue moved,
-        // atomically — matching the fact that they moved together.
+        // atomically — matching the fact that they moved together. (Cleared ones are
+        // excluded — they didn't move, so undo must not touch them.)
         var restores = new List<System.Action>();
-        foreach (var g in groups) restores.Add(g.CaptureRestore());
-        foreach (var c in cycles) restores.Add(c.CaptureRestore());
+        foreach (var entry in groups) if (!entry.group.IsCleared) restores.Add(entry.group.CaptureRestore());
+        foreach (var c in cycles) if (!c.IsCleared) restores.Add(c.CaptureRestore());
         PuzzleUndo.Record(() => { foreach (var r in restores) r(); });
 
-        foreach (var g in groups) g.TryRotate(clockwise);
-        foreach (var c in cycles) c.TryStep();
+        foreach (var entry in groups) if (!entry.group.IsCleared) entry.group.TryRotate(DirectionFor(entry));
+        foreach (var c in cycles) if (!c.IsCleared) c.TryStep();
         onActivated?.Invoke();
     }
+
+    // Groups turn the default direction unless a group opts into the other way with
+    // its Counter Clockwise toggle. (This preserves the exact behaviour from when the
+    // statue's global direction was left unchecked — no global base anymore.)
+    bool DirectionFor(RotatingGroup entry) => entry.counterClockwise;
 }

@@ -18,6 +18,13 @@ public class ObstacleGroup : GridObject
     [Tooltip("How long one 90-degree turn takes.")]
     [SerializeField] float rotateDuration = 0.35f;
 
+    [Tooltip("Optional. When the puzzle with THIS Puzzle Id is solved (its rug covered by a crate), the statue STOPS turning this group — a 'cleared' sub-puzzle drops out of the rotation so it can't block the rest. Re-arms if the crate is pulled off. Blank = always turns.")]
+    [SerializeField] string clearedWhenPuzzleSolved = "";
+
+    // True while this group's gate-puzzle is solved: the statue skips it entirely.
+    public bool IsCleared =>
+        !string.IsNullOrEmpty(clearedWhenPuzzleSolved) && CrateTarget.IsSolved(clearedWhenPuzzleSolved);
+
     [Tooltip("Fires when a turn is refused because something is standing where an obstacle would land. Good place for a 'clunk' sound.")]
     public UnityEvent onBlocked;
 

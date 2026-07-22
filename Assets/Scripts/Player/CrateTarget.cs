@@ -27,6 +27,13 @@ public class CrateTarget : GridObject
 
     public string PuzzleId => puzzleId ?? "";
 
+    // Lets other systems ask whether a puzzle is currently solved. Used by the statue
+    // to DROP a group/cycle out of its sweep once that sub-puzzle's rug is covered —
+    // a "cleared" sub-puzzle stops moving and stops blocking the rest. Re-arms
+    // automatically if the crate is later pulled off (solvedByGroup flips back).
+    public static bool IsSolved(string id)
+        => solvedByGroup.TryGetValue(id ?? "", out bool s) && s;
+
     protected override Color DebugColor => Color.green;
 
     static readonly List<CrateTarget> all = new List<CrateTarget>();
