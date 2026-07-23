@@ -1,0 +1,122 @@
+﻿title: pirateintro
+---
+<<declare $first_intro = true as bool>>
+
+<<if $first_intro>>
+	<<darken>>
+	<<sprite benito.confused icon>>
+	Benito: Não consigo ver nada...
+	<<playerflip>>
+	<<surprise>>
+	<<sprite benito.fear icon>>
+	Benito: Que som foi esse?
+	Benito: Tenho que correr!
+	<<runaway>>
+	<<dooropen>>
+	<<simonenter>>
+	<<timonenter>>
+	<<playerflip>>
+	<<removesprite icon>>
+	Soldado Desconhecido 1: Esse general é um arrogante e meio, sinto falta do nosso comandante.
+	<<sprite simon.neutral icon>>
+	Soldado Desconhecido 2: Estamos aqui para obedecer ordens, não dar opiniões alheias.
+	<<simonflip>>
+	Soldado Desconhecido 2:	Ah, sabia que eu tinha carregado essa caixa. Frutas exóticas da península do Peru! 
+	<<removesprite icon>>
+	Soldado Desconhecido 1: Era só o que me faltava... Sendo garçom do meu general de guerra...
+	<<sprite simon.mad icon>>
+	Soldado Desconhecido 2: Pare de reclamar e leve logo para ele antes que ele expulse a gente desse pelotão.
+	<<removesprite icon>>
+	Soldado Desconhecido 1: Simon... Antes da gente morrer juntos nas colinas italianas... Cobertos de sangue e óleo de peixe... Eu quero que você saiba... 
+	Soldado Desconhecido 1: Você é o maior puxa-saco militar que eu já tive o desprazer de conhecer. Te amo irmão.
+	<<sprite simon.happy icon>>
+	Simon: Ha. Ha. E você é a pessoa mais engraçada que eu conheço. Tá vendo? Nós dois podemos mentir livremente!
+	<<wait 1>>
+	<<playerflip>>
+	<<sprite benito.confused icon>>
+	Benito: (Aquela insígnia deles...)
+	<<removesprite icon>>
+	Narração: Benito inspeciona os uniformes dos soldados.
+	Narração: "<b><color=\#ff0000>Resistência Peruana - Morte aos Afogadores</color></b>"
+	<<sprite benito.fear icon>>
+	Benito: ...
+	<<guysleave>>
+	<<wait 2>>
+	<<doorclose>>
+	<<wait 1>>
+	<<simonflip>>
+	<<sprite simon.pissed icon>>
+	Simon: Quem está aí?
+	<<sprite benito.fear icon>>
+	Benito: !!!
+	<<sprite simon.pissed icon>>
+	Simon: Eu o ordeno em nome do Exército Peruano! Saia agora ou vire comida de pássaro!
+	<<sprite benito.fear icon>>
+	Benito: Por favor não me mate-
+	<<simonflip>>
+	<<sprite simon.neutral icon>>
+	Simon: Quem é você?! Um espião? Ladrão? Ou um assassino?  
+	<<playerphew>>
+	<<sprite benito.fear icon>>
+	Benito: Não não — Quer dizer... Eu não sei... Provavelmente er —
+	<<sprite simon.mad icon>>
+	Simon: Olha garoto... Não sei que ideia de jerico você teve, mas invasão de propriedade militar privada é um crime sério!
+	<<sprite simon.pissed icon>>
+	Simon: Eu não sei quem você ou de onde você veio, mas se alguém me encontrar nesse navio com uma criança, você não será o único expulso! Isso é uma ordem!
+	<<brighten>>
+	<<wait 1>>
+	<<progress candothing>>
+	<<startencounter>>
+	<<endif>>
+===
+
+title: simonbattleend
+---
+	<<darken>>
+	<<sprite simon.hurt icon>>
+	Simon: Acabou... Minha chance acabou... Anos treinando pra me alistar na guerra... Para perder pra um moleque aleatório e um peixe...
+	<<sprite benito.confused icon>>
+	Benito: Eu não sabia que esse era um barco militar, eu juro... Eu achei que era um cargueiro levando suprimentos para os civis na Europa! E também... 
+	<<sprite benito.neutral icon>>
+	Benito: E... E-Eu meio que não sou um moleque qualquer... 
+	<<sprite benito.happy icon>>
+	Benito: O meu pai era o Capitão Mansur.
+	<<sprite simon.mad icon>>
+	Simon: V- Você é filho d-do líder da resistência?! Do Capitão Sarper?!
+	<<sprite benito.happy icon>>
+	Benito: Benito Sarper, sim! O- Olha, eu posso explicar depois, mas eu tenho um plano!
+	<<sprite simon.pissed icon>>
+	Simon: Plano?! Que plano?! Se esgueirar no meio da Guerra mais brutal e violenta da história?  
+	Simon: Navegar as nuvens sob um mar cheio de criaturas desconhecidas? Viajar mais de 25 noites até a China, entrar no palácio da Imperatriz e pedir por favorzinho que ela se renda?  
+	<<sprite simon.smug icon>>
+	Simon: Esse é seu plano? 
+	<<sprite benito.fear icon>>
+	Benito: . . .
+	<<sprite simon.mad icon>>
+	Simon: (... Urgh.)
+	Simon: Olha, Benito... Me desculpa... Essa falta de controle, principalmente depois da perda do seu pai, é algo que eu entendo muito.  
+	<<sprite simon.neutral icon>>
+	Simon: ... Eu não sei o que eu posso fazer pela sua missão suicida, mas eu posso tentar garantir a sua segurança. 
+	<<sprite benito.confused icon>>
+	Benito: M-Me desculpa, Simon...
+	<<sprite simon.happy icon>>
+	Simon: Tá tudo bem, guri... Vamos arrancar esse curativo, meu Comandante novo deve estar no deck esgoelando mais ordens, vou te levar até ele.
+	<<removesprite icon>>
+	Narração: Objetivo atualizado. Clique no símbolo de alvo para ver suas Quests.
+	Narração: Quando ver uma notificação, aperte a barra de espaço.
+	Narração: Para abrir o menu, aperte no ícone.
+	<<addsimon>>
+	<<add_objective "Mar calmo nunca fez bom marinheiro">>
+	<<set $first_intro to false>>
+	<<brighten>>
+===
+
+title: cantprogressyet
+---
+	<<darken>>
+	<<sprite simon.neutral icon>>
+	Simon: Espera aí. Temos que falar com meu comandante.
+	Simon: Se você quer ficar aqui, o MÍNIMO que deveria fazer é obedecer.
+	<<removesprite icon>>
+	<<brighten>>
+===
