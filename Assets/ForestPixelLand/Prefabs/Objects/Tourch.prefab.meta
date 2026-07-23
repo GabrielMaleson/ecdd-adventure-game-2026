@@ -1,14 +1,7 @@
 fileFormatVersion: 2
-guid: d68266678be92bb4b93c8f8547f74e6e
+guid: 5a19cea0916313645a5f1b69009efa35
 PrefabImporter:
   externalObjects: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 315158
-  packageName: Pixel World - Forest and Village
-  packageVersion: 1.0
-  assetPath: Assets/ForestPixelLand/Prefabs/Objects/Tourch.prefab
-  uploadId: 745488
