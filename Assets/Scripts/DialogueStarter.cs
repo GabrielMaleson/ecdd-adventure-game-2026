@@ -54,6 +54,7 @@ public class DialogueStarter : MonoBehaviour
     {
         EvaluateConditionsAndStart(Dialogue, HasConditions, Conditions, ConditionsCancel);
     }
+
     public static void EvaluateConditionsAndStart(string dialogue, bool hasConditions, List<DialogueCondition> conditions, bool conditionsCancel)
     {
         if (hasConditions && conditions != null)
@@ -66,19 +67,23 @@ public class DialogueStarter : MonoBehaviour
                 {
                     return;
                 }
-                if (conditionsCancel && !hasProgress)
-                    continue;
-                if (hasProgress && condition.PlaysOtherDialogue)
+
+                if (!conditionsCancel && !hasProgress)
                 {
-                    DialogueManager.Instance?.StartDialogue(condition.OtherDialogue);
+                    if (condition.PlaysOtherDialogue)
+                    {
+                        DialogueManager.Instance?.StartDialogue(condition.OtherDialogue);
+                    }
                     return;
                 }
-                if (hasProgress)
+
+                if (!conditionsCancel && hasProgress)
                 {
                     continue;
                 }
             }
         }
+
         DialogueManager.Instance?.StartDialogue(dialogue);
     }
 }

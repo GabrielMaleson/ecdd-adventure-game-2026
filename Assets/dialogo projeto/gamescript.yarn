@@ -46,7 +46,11 @@ title: square_marcus_erika
 	Josh: 'Kay.
 	<<progress TalkedFriends>>
 ===
-
+title: not_talked_friends
+---
+Josh: Hmm... Maybe I should go see my friends before heading home. We haven't talked in a bit.
+<<progress NotTalkedFriendsYet>>
+===
 title: home_outside_first
 ---
 Josh: What's this?! (noise?)
