@@ -19,10 +19,16 @@ title: square_initial
 	Josh: ... I swear this geezer wasn't as weird a few days ago.
 ===
 
+title: not_talked_friends
+---
+Josh: Hmm... Maybe I should go see my friends before heading home. We haven't talked in a bit.
+<<progress NotTalkedFriendsYet>>
+===
+
 title: square_marcus_erika
 ---
 Marcus: What's up Joshy?
-Josh: 'Sup
+Josh: 'Sup.
 Erika: Wow, look who's in a good mood today.
 Josh: Yup, brimmin' with joy.
 Marcus: Ah, come on Joshy it's a beautiful day! Everyone's having fun, doing their things... a little misty, but beautiful anyway.
@@ -38,6 +44,7 @@ Josh: Ok ok. I'll just relax for a bit, and I'll meet you.
 Marcus: Nice, okay.
 Erika: We meet here in an hour-ish.
 Josh: 'Kay.
+<<progress TalkedFriends>>
 ===
 
 title: home_outside_first

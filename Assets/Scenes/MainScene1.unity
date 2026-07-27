@@ -1984,6 +1984,109 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1418515630}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &187098874
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 187098875}
+  - component: {fileID: 187098877}
+  - component: {fileID: 187098876}
+  m_Layer: 0
+  m_Name: FriendNotTalkedStarter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &187098875
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187098874}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 529092510}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &187098876
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187098874}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -1.8325679, y: -5.4977036}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 4.665136, y: 2.7055588}
+  m_EdgeRadius: 0
+--- !u!114 &187098877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187098874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ddccb00f9e47af42ad4bb60cba6a005, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueStarter
+  Dialogue: not_talked_friends
+  ConversantName: 
+  IsClickNPC: 0
+  OnceTime: 0
+  Notification: {fileID: 0}
+  transformthing: {fileID: 0}
+  HasConditions: 1
+  ConditionsCancel: 1
+  Conditions:
+  - Progress: TalkedFriends
+    PlaysOtherDialogue: 0
+    OtherDialogue: 
 --- !u!1001 &203039205
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6449,6 +6552,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5141951973917360511, guid: 39da750d074167945b5c7daa4b099a1c, type: 3}
   m_PrefabInstance: {fileID: 473610340}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &478365515 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8401506921409497735, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+  m_PrefabInstance: {fileID: 1740616064}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &479722302
 GameObject:
   m_ObjectHideFlags: 0
@@ -6991,7 +7099,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 529092510}
-  - component: {fileID: 529092509}
   m_Layer: 0
   m_Name: Friends
   m_TagString: Untagged
@@ -6999,27 +7106,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &529092509
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 529092508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ddccb00f9e47af42ad4bb60cba6a005, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueStarter
-  Dialogue: 
-  ConversantName: 
-  IsClickNPC: 0
-  OnceTime: 0
-  DoneOnce: 0
-  Notification: {fileID: 0}
-  transformthing: {fileID: 0}
-  HasConditions: 0
-  Conditions: []
 --- !u!4 &529092510
 Transform:
   m_ObjectHideFlags: 0
@@ -7033,6 +7119,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 187098875}
+  - {fileID: 1173161536}
   - {fileID: 1008937026}
   - {fileID: 392503314}
   m_Father: {fileID: 0}
@@ -7992,7 +8080,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0778c39c1a6ebd74ba22910044773c3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FragmentFollow
-  player: {fileID: 1740616065}
+  player: {fileID: 0}
   smoothTime: 0.25
   offset: {x: -3.57, y: 0.87}
   maxFollowSpeed: 4
@@ -13898,6 +13986,106 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 771415380827780065, guid: ccdc7bb3e550a89479b159fd3f373092, type: 3}
   m_PrefabInstance: {fileID: 1155053852}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1173161535
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1173161536}
+  - component: {fileID: 1173161538}
+  - component: {fileID: 1173161537}
+  m_Layer: 0
+  m_Name: FriendDialogue
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1173161536
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173161535}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.75, y: -0.19000006, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 529092510}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &1173161537
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173161535}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 1.1876917, y: 0.57263684}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 3.3753834, y: 2.1452737}
+  m_EdgeRadius: 0
+--- !u!114 &1173161538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173161535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ddccb00f9e47af42ad4bb60cba6a005, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueStarter
+  Dialogue: square_marcus_erika
+  ConversantName: Friends
+  IsClickNPC: 1
+  OnceTime: 0
+  Notification: {fileID: 0}
+  transformthing: {fileID: 0}
+  HasConditions: 0
+  ConditionsCancel: 0
+  Conditions: []
 --- !u!1001 &1173436366
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35506,6 +35694,11 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!4 &1256274517 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8688688454449714593, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+  m_PrefabInstance: {fileID: 1740616064}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1264847561
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38835,8 +39028,7 @@ GameObject:
   - component: {fileID: 1528429751}
   - component: {fileID: 1528429750}
   - component: {fileID: 1528429749}
-  - component: {fileID: 1528429748}
-  - component: {fileID: 1528429747}
+  - component: {fileID: 1528429753}
   m_Layer: 0
   m_Name: NPC Bark Test
   m_TagString: Untagged
@@ -38844,30 +39036,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1528429747
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1528429746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a64578247383140469c45370654a984a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp-firstpass::PixelCrushers.DialogueSystem.Wrappers.DialogueActor
---- !u!114 &1528429748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1528429746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 505dcd4c4aa3a1741ab98b9ad39eb7a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp-firstpass::PixelCrushers.DialogueSystem.Wrappers.BarkOnIdle
 --- !u!95 &1528429749
 Animator:
   serializedVersion: 7
@@ -38996,13 +39164,40 @@ Transform:
   m_GameObject: {fileID: 1528429746}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.29, y: -0.14, z: 0}
+  m_LocalPosition: {x: -7.82, y: -4.97, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1418515630}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1528429753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1528429746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecc3434effb8cd5499cc007cec71b0ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterBark
+  quotes:
+  - Hello there!
+  - I'm feeling great today!
+  - What's new?
+  - Time for an adventure!
+  - Did you know I can talk?
+  - The weather is nice!
+  - I love this place!
+  - Let's do something fun!
+  barkDuration: 2.5
+  minBarkDelay: 3
+  maxBarkDelay: 8
+  animateBark: 1
+  animationScale: 1.2
+  animationDuration: 0.3
 --- !u!1 &1529662109
 GameObject:
   m_ObjectHideFlags: 0
@@ -48059,7 +48254,7 @@ MonoBehaviour:
   m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 1740616065}
+    TrackingTarget: {fileID: 0}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -48226,13 +48421,27 @@ PrefabInstance:
     - {fileID: 8479006691666454357, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8401506921409497735, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1740616066}
   m_SourcePrefab: {fileID: 100100000, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
---- !u!4 &1740616065 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4474648276818384332, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
-  m_PrefabInstance: {fileID: 1740616064}
+--- !u!114 &1740616066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478365515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ea55a8118e164d41b1e9cb5fe2927d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  moveSpeed: 400
+  visualTransform: {fileID: 1256274517}
+  stopThreshold: 0.05
+  InputEnabled: 1
 --- !u!1 &1740955066
 GameObject:
   m_ObjectHideFlags: 0
@@ -52980,7 +53189,6 @@ SceneRoots:
   - {fileID: 699563410}
   - {fileID: 1727887240}
   - {fileID: 749812316}
-  - {fileID: 1528429752}
   - {fileID: 377015625}
   - {fileID: 1802132237}
   - {fileID: 2054459736}
@@ -52998,6 +53206,7 @@ SceneRoots:
   - {fileID: 506079166}
   - {fileID: 229242830}
   - {fileID: 1740955068}
+  - {fileID: 1528429752}
   - {fileID: 588872479}
   - {fileID: 915007958601207052}
   - {fileID: 120878810}

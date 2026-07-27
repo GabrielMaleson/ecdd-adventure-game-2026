@@ -17,6 +17,7 @@ public class InteractButton : MonoBehaviour
 
     private string dialogue;
     private bool hasConditions;
+    private bool conditionsCancel;
     private List<DialogueStarter.DialogueCondition> conditions;
 
     private void Awake()
@@ -30,11 +31,12 @@ public class InteractButton : MonoBehaviour
     }
 
     // Called by DialogueStarter when the player enters a click-NPC's trigger.
-    public void SetInteraction(string dialogueTitle, string conversantName, bool conditionsEnabled, List<DialogueStarter.DialogueCondition> dialogueConditions)
+    public void SetInteraction(string dialogueTitle, string conversantName, bool conditionsEnabled, List<DialogueStarter.DialogueCondition> dialogueConditions, bool cancelConditions)
     {
         dialogue = dialogueTitle;
         hasConditions = conditionsEnabled;
         conditions = dialogueConditions;
+        conditionsCancel = cancelConditions;
 
         SetLabel($"Interact ({conversantName})");
     }
@@ -50,6 +52,6 @@ public class InteractButton : MonoBehaviour
         OnPressed?.Invoke();
 
         if (!string.IsNullOrEmpty(dialogue))
-            DialogueStarter.EvaluateConditionsAndStart(dialogue, hasConditions, conditions);
+            DialogueStarter.EvaluateConditionsAndStart(dialogue, hasConditions, conditions, conditionsCancel);
     }
 }

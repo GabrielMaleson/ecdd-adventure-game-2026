@@ -15,11 +15,11 @@ public class DialogueStarter : MonoBehaviour
     public string ConversantName;
     public bool IsClickNPC;
     public bool OnceTime;
-    public bool DoneOnce = false;
     public GameObject Notification;
     public Transform transformthing;
 
     public bool HasConditions;
+    public bool ConditionsCancel;
     public List<DialogueCondition> Conditions;
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -47,31 +47,32 @@ public class DialogueStarter : MonoBehaviour
 
     private void SendToInteractButton()
     {
-        InteractButton.Instance?.SetInteraction(Dialogue, ConversantName, HasConditions, Conditions);
+        InteractButton.Instance?.SetInteraction(Dialogue, ConversantName, HasConditions, Conditions, ConditionsCancel);
     }
 
     private void StartDialogue()
     {
-        EvaluateConditionsAndStart(Dialogue, HasConditions, Conditions);
+        EvaluateConditionsAndStart(Dialogue, HasConditions, Conditions, ConditionsCancel);
     }
-
-    // Shared by DialogueStarter (non-click NPCs) and InteractButton (click NPCs) so
-    // the condition check only lives in one place.
-    public static void EvaluateConditionsAndStart(string dialogue, bool hasConditions, List<DialogueCondition> conditions)
+    public static void EvaluateConditionsAndStart(string dialogue, bool hasConditions, List<DialogueCondition> conditions, bool conditionsCancel)
     {
         if (hasConditions && conditions != null)
         {
             foreach (var condition in conditions)
             {
-                if (SaveManager.Instance != null && SaveManager.Instance.HasProgress(condition.Progress))
-                    continue;
+                bool hasProgress = SaveManager.Instance != null && SaveManager.Instance.HasProgress(condition.Progress);
 
-                if (condition.PlaysOtherDialogue)
+                if (conditionsCancel && hasProgress)
+                {
+                    return;
+                }
+                if (conditionsCancel && !hasProgress)
+                    continue;
+                if (hasProgress && condition.PlaysOtherDialogue)
                     DialogueManager.Instance?.StartDialogue(condition.OtherDialogue);
                 return;
             }
         }
-
         DialogueManager.Instance?.StartDialogue(dialogue);
     }
 }
