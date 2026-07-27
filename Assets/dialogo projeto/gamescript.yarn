@@ -1,5 +1,6 @@
 ﻿title: gamescript
 ---
+<<declare $YarnTalkedElder = false>>
 	Josh: There's more mist than usual...
 ===
 
@@ -17,34 +18,33 @@ title: square_initial
 		Elder Amos: The mist. Very good. It's strong. Very good.
 	Josh: Ok... good talk, I guess.
 	Josh: ... I swear this geezer wasn't as weird a few days ago.
+	<<set $YarnTalkedElder = true>>
 ===
-
-title: not_talked_friends
----
-Josh: Hmm... Maybe I should go see my friends before heading home. We haven't talked in a bit.
-<<progress NotTalkedFriendsYet>>
-===
-
 title: square_marcus_erika
 ---
-Marcus: What's up Joshy?
-Josh: 'Sup.
-Erika: Wow, look who's in a good mood today.
-Josh: Yup, brimmin' with joy.
-Marcus: Ah, come on Joshy it's a beautiful day! Everyone's having fun, doing their things... a little misty, but beautiful anyway.
-Josh: You have a weird concept of beauty. Anyway... have you talked to elder Amos? He seems to be out of it.
-Marcus: Ah, old man's always been like this, nothing new.
-Josh: I don't know man, he seems worse.
-Erika: Screw that fossil, what are we doing today?
-Josh: I'm heading home I guess.
-Marcus: Come on Joshy, you know I don't have much time...
-Josh: He's really leaving, then.
-Erika: Don't be a shut in for once, Josh.
-Josh: Ok ok. I'll just relax for a bit, and I'll meet you.
-Marcus: Nice, okay.
-Erika: We meet here in an hour-ish.
-Josh: 'Kay.
-<<progress TalkedFriends>>
+	Marcus: What's up Joshy?
+	Josh: 'Sup.
+	Erika: Wow, look who's in a good mood today.
+	Josh: Yup, brimmin' with joy.
+	Marcus: Ah, come on Joshy it's a beautiful day! Everyone's having fun, doing their things... a little misty, but beautiful anyway.
+	Josh: You have a weird concept of beauty.
+	<<if $YarnTalkedElder is true>>
+		Josh: Anyway... have you talked to Elder Amos? He seems to be out of it.
+		Marcus: Ah, old man's always been like this, nothing new.
+		Josh: I don't know man, he seems worse.
+		Erika: Screw that fossil, what are we doing today?
+	<<else>>
+		Erika: So, what are we doing today?
+	<<endif>>
+	Josh: I'm heading home I guess.
+	Marcus: Come on Joshy, you know I don't have much time...
+	Josh: He's really leaving, then.
+	Erika: Don't be a shut in for once, Josh.
+	Josh: Ok ok. I'll just relax for a bit, and I'll meet you.
+	Marcus: Nice, okay.
+	Erika: We meet here in an hour-ish.
+	Josh: 'Kay.
+	<<progress TalkedFriends>>
 ===
 
 title: home_outside_first
@@ -63,7 +63,7 @@ Haze: I... am?
 Josh: Pretty much, yeah.
 Haze: And you're not freaked out?
 Josh: You don't seem hostile.
-Haze: I don't feel hostile
+Haze: I don't feel hostile.
 Josh: Just come on in man.
 ===
 

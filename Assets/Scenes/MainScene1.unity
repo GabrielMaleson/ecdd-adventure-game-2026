@@ -2076,7 +2076,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogueStarter
   Dialogue: not_talked_friends
-  ConversantName: 
+  ConversantName: me
   IsClickNPC: 0
   OnceTime: 0
   Notification: {fileID: 0}
@@ -2085,6 +2085,9 @@ MonoBehaviour:
   ConditionsCancel: 1
   Conditions:
   - Progress: TalkedFriends
+    PlaysOtherDialogue: 0
+    OtherDialogue: 
+  - Progress: NotTalkedFriendsYet
     PlaysOtherDialogue: 0
     OtherDialogue: 
 --- !u!1001 &203039205
@@ -53030,6 +53033,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 984375149643054127, guid: d33549f3cc378db49b474ee70d9a3278, type: 3}
+      propertyPath: autoStart
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2822305846282158175, guid: d33549f3cc378db49b474ee70d9a3278, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

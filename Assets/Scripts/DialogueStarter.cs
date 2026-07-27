@@ -69,8 +69,14 @@ public class DialogueStarter : MonoBehaviour
                 if (conditionsCancel && !hasProgress)
                     continue;
                 if (hasProgress && condition.PlaysOtherDialogue)
+                {
                     DialogueManager.Instance?.StartDialogue(condition.OtherDialogue);
-                return;
+                    return;
+                }
+                if (hasProgress)
+                {
+                    continue;
+                }
             }
         }
         DialogueManager.Instance?.StartDialogue(dialogue);
