@@ -19,6 +19,7 @@ public class InteractButton : MonoBehaviour
     private bool hasConditions;
     private bool conditionsCancel;
     private List<DialogueStarter.DialogueCondition> conditions;
+    private DialogueStarter currentDialogueStarter; // Track which starter set this interaction
 
     private void Awake()
     {
@@ -47,11 +48,32 @@ public class InteractButton : MonoBehaviour
             label.text = text;
     }
 
+    // New method to clear the interaction when player leaves trigger area
+    public void ClearInteraction()
+    {
+        dialogue = null;
+        hasConditions = false;
+        conditions = null;
+        conditionsCancel = false;
+        currentDialogueStarter = null;
+
+        SetLabel(string.Empty);
+    }
+
     private void OnClicked()
     {
         OnPressed?.Invoke();
 
         if (!string.IsNullOrEmpty(dialogue))
+        {
             DialogueStarter.EvaluateConditionsAndStart(dialogue, hasConditions, conditions, conditionsCancel);
+
+            // If this dialogue was set by a DialogueStarter with OnceTime enabled,
+            // mark it as played so it won't trigger again
+            if (currentDialogueStarter != null && currentDialogueStarter.OnceTime)
+            {
+                currentDialogueStarter.MarkAsPlayed();
+            }
+        }
     }
 }

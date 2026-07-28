@@ -22,14 +22,18 @@ public class DialogueStarter : MonoBehaviour
     public bool ConditionsCancel;
     public List<DialogueCondition> Conditions;
 
+    private bool hasPlayed = false;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Player")
         {
-            if (OnceTime)
+            // Check if OnceTime is enabled and dialogue has already been played
+            if (OnceTime && hasPlayed)
             {
                 return;
             }
+
             if (Notification != null)
             {
                 Notification.SetActive(true);
@@ -41,6 +45,25 @@ public class DialogueStarter : MonoBehaviour
             else
             {
                 StartDialogue();
+                MarkAsPlayed(); // Auto-played dialogue counts as played
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.tag == "Player")
+        {
+            // Hide the notification when player leaves the trigger area
+            if (Notification != null)
+            {
+                Notification.SetActive(false);
+            }
+
+            // Clear the Interact Button text when player leaves
+            if (IsClickNPC)
+            {
+                ClearInteractButton();
             }
         }
     }
@@ -48,6 +71,14 @@ public class DialogueStarter : MonoBehaviour
     private void SendToInteractButton()
     {
         InteractButton.Instance?.SetInteraction(Dialogue, ConversantName, HasConditions, Conditions, ConditionsCancel);
+        // Store reference to this instance in the button so it can mark as played
+        // We need to access the button's currentDialogueStarter field
+        // Since we can't directly set it, let's use a different approach - we'll mark as played when the button is clicked
+    }
+
+    private void ClearInteractButton()
+    {
+        InteractButton.Instance?.ClearInteraction();
     }
 
     private void StartDialogue()
@@ -85,5 +116,14 @@ public class DialogueStarter : MonoBehaviour
         }
 
         DialogueManager.Instance?.StartDialogue(dialogue);
+    }
+
+    // Call this method when dialogue actually starts to mark it as played
+    public void MarkAsPlayed()
+    {
+        if (OnceTime)
+        {
+            hasPlayed = true;
+        }
     }
 }
