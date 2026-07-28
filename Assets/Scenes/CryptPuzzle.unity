@@ -2277,6 +2277,7 @@ GameObject:
   m_Component:
   - component: {fileID: 605957279}
   - component: {fileID: 605957280}
+  - component: {fileID: 605957281}
   m_Layer: 0
   m_Name: CycleGroup
   m_TagString: Untagged
@@ -2314,6 +2315,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c04e08eb3c5a344bae3ea8f9b5ad627, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileCycle
+--- !u!114 &605957281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605957278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dea37ae0f81d3143954f950bef66a99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TileCycle
+  visual: {fileID: 0}
+  reverse: 0
+  clearedWhenPuzzleSolved: 
+  stepDuration: 0.35
+  onBlocked:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &617497665
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7542,6 +7562,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1317292770}
   - component: {fileID: 1317292771}
+  - component: {fileID: 1317292772}
   m_Layer: 0
   m_Name: ObstacleGroup2
   m_TagString: Untagged
@@ -7579,6 +7600,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a2a7a3ee8d9f534c95973f67a22fcca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObstacleGroup
+--- !u!114 &1317292772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317292769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf00491a70137124fab7b28190e2b5ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObstacleGroup
+  visual: {fileID: 0}
+  rotateDuration: 0.35
+  clearedWhenPuzzleSolved: 
+  onBlocked:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &1354082619
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8821,6 +8860,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1654164508}
   - component: {fileID: 1654164509}
+  - component: {fileID: 1654164510}
   m_Layer: 0
   m_Name: CycleGroup2
   m_TagString: Untagged
@@ -8858,6 +8898,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c04e08eb3c5a344bae3ea8f9b5ad627, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileCycle
+--- !u!114 &1654164510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1654164507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dea37ae0f81d3143954f950bef66a99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TileCycle
+  visual: {fileID: 0}
+  reverse: 0
+  clearedWhenPuzzleSolved: 
+  stepDuration: 0.35
+  onBlocked:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &1659675273 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7233394036857339045, guid: 52dcec8bf054e3a49b3c6a7d6651d06c, type: 3}
@@ -8992,6 +9051,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1696693790}
   - component: {fileID: 1696693791}
+  - component: {fileID: 1696693792}
   m_Layer: 0
   m_Name: CycleGroup3
   m_TagString: Untagged
@@ -9030,6 +9090,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c04e08eb3c5a344bae3ea8f9b5ad627, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileCycle
+--- !u!114 &1696693792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1696693789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dea37ae0f81d3143954f950bef66a99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TileCycle
+  visual: {fileID: 0}
+  reverse: 0
+  clearedWhenPuzzleSolved: 
+  stepDuration: 0.35
+  onBlocked:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1703994426
 GameObject:
   m_ObjectHideFlags: 0
@@ -9040,6 +9119,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1703994427}
   - component: {fileID: 1703994428}
+  - component: {fileID: 1703994429}
   m_Layer: 0
   m_Name: ObstacleGroup
   m_TagString: Untagged
@@ -9080,6 +9160,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a2a7a3ee8d9f534c95973f67a22fcca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObstacleGroup
+--- !u!114 &1703994429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1703994426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf00491a70137124fab7b28190e2b5ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObstacleGroup
+  visual: {fileID: 0}
+  rotateDuration: 0.35
+  clearedWhenPuzzleSolved: 
+  onBlocked:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &1731042562
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10102,6 +10200,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1988312141}
   - component: {fileID: 1988312142}
+  - component: {fileID: 1988312143}
   m_Layer: 0
   m_Name: CycleGroup4
   m_TagString: Untagged
@@ -10140,6 +10239,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c04e08eb3c5a344bae3ea8f9b5ad627, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileCycle
+--- !u!114 &1988312143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1988312140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dea37ae0f81d3143954f950bef66a99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TileCycle
+  visual: {fileID: 0}
+  reverse: 0
+  clearedWhenPuzzleSolved: 
+  stepDuration: 0.35
+  onBlocked:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2027850192
 GameObject:
   m_ObjectHideFlags: 0
