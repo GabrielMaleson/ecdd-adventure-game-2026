@@ -19,7 +19,7 @@ public class InteractButton : MonoBehaviour
     private bool hasConditions;
     private bool conditionsCancel;
     private List<DialogueStarter.DialogueCondition> conditions;
-    private DialogueStarter currentDialogueStarter; // Track which starter set this interaction
+    private DialogueStarter source; // Which DialogueStarter set this interaction, so it can be marked as played
 
     private void Awake()
     {
@@ -32,8 +32,9 @@ public class InteractButton : MonoBehaviour
     }
 
     // Called by DialogueStarter when the player enters a click-NPC's trigger.
-    public void SetInteraction(string dialogueTitle, string conversantName, bool conditionsEnabled, List<DialogueStarter.DialogueCondition> dialogueConditions, bool cancelConditions)
+    public void SetInteraction(DialogueStarter starter, string dialogueTitle, string conversantName, bool conditionsEnabled, List<DialogueStarter.DialogueCondition> dialogueConditions, bool cancelConditions)
     {
+        source = starter;
         dialogue = dialogueTitle;
         hasConditions = conditionsEnabled;
         conditions = dialogueConditions;
@@ -48,14 +49,14 @@ public class InteractButton : MonoBehaviour
             label.text = text;
     }
 
-    // New method to clear the interaction when player leaves trigger area
+    // Clears the interaction when the player leaves the trigger area.
     public void ClearInteraction()
     {
+        source = null;
         dialogue = null;
         hasConditions = false;
         conditions = null;
         conditionsCancel = false;
-        currentDialogueStarter = null;
 
         SetLabel(string.Empty);
     }
@@ -64,16 +65,12 @@ public class InteractButton : MonoBehaviour
     {
         OnPressed?.Invoke();
 
-        if (!string.IsNullOrEmpty(dialogue))
-        {
-            DialogueStarter.EvaluateConditionsAndStart(dialogue, hasConditions, conditions, conditionsCancel);
+        if (string.IsNullOrEmpty(dialogue))
+            return;
 
-            // If this dialogue was set by a DialogueStarter with OnceTime enabled,
-            // mark it as played so it won't trigger again
-            if (currentDialogueStarter != null && currentDialogueStarter.OnceTime)
-            {
-                currentDialogueStarter.MarkAsPlayed();
-            }
-        }
+        DialogueStarter.EvaluateConditionsAndStart(dialogue, hasConditions, conditions, conditionsCancel);
+
+        if (source != null && source.OnceTime)
+            source.MarkAsPlayed();
     }
 }

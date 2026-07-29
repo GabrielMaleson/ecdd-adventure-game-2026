@@ -1,347 +1,193 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System.Collections;
 
+// A portal: walking in either teleports immediately (teleportOnTrigger) or arms an
+// InteractButton prompt and waits for E — the same interact pattern SceneLoadTrigger
+// and StatueSwitch use elsewhere in the project.
+[RequireComponent(typeof(Collider2D))]
 public class TeleporterScript : MonoBehaviour
 {
     [Header("Teleport Settings")]
-    public Transform destination; // Where to teleport to
-    public bool teleportOnTrigger = true; // Teleport when player enters trigger
-    public KeyCode interactKey = KeyCode.Space; // Alternative: teleport on key press
+    public Transform destination;
+    public bool teleportOnTrigger = true;
 
-    [Header("Teleport Targets")]
-    public bool teleportPlayer = true; // Whether to teleport the player
-    public bool teleportAllies = true; // Whether to teleport objects tagged "Ally"
+    [Tooltip("Only used when Teleport On Trigger is off — prompt shown on the interact label while in range.")]
+    public string interactLabel = "Teleport (E)";
+
+    [Header("Camera Switch")]
+    [Tooltip("Enabled after the transition — the camera for the destination area.")]
     public GameObject Camera;
+    [Tooltip("Disabled after the transition — the camera for the area being left.")]
     public GameObject OldCamera;
-    public List<GameObject> additionalObjects = new List<GameObject>(); // Specific objects to teleport
+
+    [Tooltip("Other objects that move with the player, e.g. the Fragment ghost (it follows with a speed cap and would otherwise lag behind across a teleport).")]
+    public List<GameObject> additionalObjects = new List<GameObject>();
 
     [Header("Screen Transition")]
-    public bool useScreenTransition = true; // Whether to use the screen transition effect
-    public float transitionDelay = 0.5f; // Delay after transition before teleporting
+    public bool useScreenTransition = true;
+    public float transitionDelay = 0.5f;
 
     [Header("Cooldown")]
-    public float teleportCooldown = 2f; // Time before player can teleport again
-    private bool isOnCooldown = false;
+    public float teleportCooldown = 2f;
 
     [Header("Effects")]
-    public GameObject teleportEffect; // Optional effect to play at origin and destination
+    public GameObject teleportEffect;
     public float effectDuration = 1f;
-    public AudioClip teleportSound; // Optional sound effect
+    public AudioClip teleportSound;
 
-    [Header("Visual Feedback")]
-    public SpriteRenderer spriteRenderer; // For animation/sprite change if needed
-    public Sprite activeSprite; // Optional sprite to show when active
-    public Sprite cooldownSprite; // Optional sprite to show during cooldown
-
-    [Header("Interaction")]
-    public GameObject interactionPopup; // Optional popup to show when player is nearby
-
-    private bool playerInRange = false;
-    private bool teleportPending = false; // Track if teleport is pending activation
+    private bool isOnCooldown;
+    private float cooldownTimer;
+    private bool playerInRange;
+    private bool promptShown;
     private GameObject player;
-    private GameObject cachedPlayer; // Store player reference for teleport even if they leave trigger
-    private List<GameObject> allies = new List<GameObject>();
-    private Sprite originalSprite;
-    private float cooldownTimer = 0f;
-
-    private void Start()
-    {
-        // Store original sprite if using sprite change
-        if (spriteRenderer != null && spriteRenderer.sprite != null)
-            originalSprite = spriteRenderer.sprite;
-
-        // Hide interaction popup initially
-        if (interactionPopup != null)
-            interactionPopup.SetActive(false);
-    }
 
     private void Update()
     {
-        // Update cooldown timer
         if (isOnCooldown)
         {
             cooldownTimer -= Time.deltaTime;
-            if (cooldownTimer <= 0)
-            {
+            if (cooldownTimer <= 0f)
                 isOnCooldown = false;
-                UpdateVisualState();
-            }
         }
 
-        // Check for input if teleport is triggered by key press
-        if (!teleportOnTrigger && playerInRange && !isOnCooldown && Input.GetKeyDown(interactKey))
+        if (teleportOnTrigger || !playerInRange)
+            return;
+
+        bool canUse = !isOnCooldown;
+        if (canUse != promptShown)
         {
-            // Cache the player reference before they might leave
-            cachedPlayer = player;
-            teleportPending = true;
-            PerformTeleport();
+            InteractButton.Instance?.SetLabel(canUse ? interactLabel : string.Empty);
+            promptShown = canUse;
         }
+
+        if (!canUse)
+            return;
+
+        var kb = Keyboard.current;
+        if (kb != null && kb.eKey.wasPressedThisFrame)
+            Teleport();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
-        {
-            player = collision.gameObject;
-            playerInRange = true;
+        if (!collision.CompareTag("Player"))
+            return;
 
-            // Show popup
-            ShowPopup();
+        player = collision.gameObject;
+        playerInRange = true;
 
-            // Auto-teleport if enabled and not on cooldown
-            if (teleportOnTrigger && !isOnCooldown)
-            {
-                // Cache the player reference
-                cachedPlayer = player;
-                teleportPending = true;
-                PerformTeleport();
-            }
-        }
+        if (teleportOnTrigger && !isOnCooldown)
+            Teleport();
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
-        {
-            playerInRange = false;
+        if (!collision.CompareTag("Player"))
+            return;
 
-            // Don't clear player reference if teleport is pending
-            if (!teleportPending)
-            {
-                player = null;
-            }
-
-            // Hide popup
-            HidePopup();
-        }
+        playerInRange = false;
+        HidePrompt();
     }
 
-    private void ShowPopup()
+    private void OnDisable()
     {
-        GameObject popup = GameObject.FindWithTag("Notification");
-        if (popup != null)
-        {
-            SpriteRenderer spriteRend = popup.GetComponent<SpriteRenderer>();
-            if (spriteRend != null)
-            {
-                Color color = spriteRend.color;
-                color.a = 1f;
-                spriteRend.color = color;
-            }
-        }
-
-        // Update visual state
-        UpdateVisualState();
+        playerInRange = false;
+        HidePrompt();
     }
 
-    private void HidePopup()
+    private void HidePrompt()
     {
-        GameObject popup = GameObject.FindWithTag("Notification");
-        if (popup != null)
-        {
-            SpriteRenderer spriteRend = popup.GetComponent<SpriteRenderer>();
-            if (spriteRend != null)
-            {
-                Color color = spriteRend.color;
-                color.a = 0f;
-                spriteRend.color = color;
-            }
-        }
+        if (!promptShown)
+            return;
 
-        // Only restore sprite if no teleport is pending
-        if (!teleportPending && spriteRenderer != null && originalSprite != null)
-        {
-            spriteRenderer.sprite = originalSprite;
-        }
+        InteractButton.Instance?.SetLabel(string.Empty);
+        promptShown = false;
     }
 
-    private void UpdateVisualState()
-    {
-        if (spriteRenderer == null) return;
-
-        if (isOnCooldown && cooldownSprite != null)
-        {
-            spriteRenderer.sprite = cooldownSprite;
-        }
-        else if (!isOnCooldown && activeSprite != null && playerInRange)
-        {
-            spriteRenderer.sprite = activeSprite;
-        }
-        else
-        {
-            spriteRenderer.sprite = originalSprite;
-        }
-    }
-
-    private void PerformTeleport()
+    // Public so a UnityEvent (a puzzle solve, a dialogue) can trigger a teleport directly.
+    public void Teleport()
     {
         if (destination == null)
         {
-            Debug.LogError("Teleporter destination not set!");
-            teleportPending = false; // Clear pending flag on error
-            cachedPlayer = null;
+            Debug.LogError($"{name}: Teleporter has no destination set.", this);
             return;
         }
 
         if (isOnCooldown)
-        {
-            Debug.Log("Teleporter is on cooldown!");
-            teleportPending = false; // Clear pending flag on cooldown
-            cachedPlayer = null;
             return;
-        }
+
+        GameObject target = player;
 
         if (useScreenTransition && ScreenTransition.Instance != null)
-        {
-            // Use screen transition, then wait for delay, then teleport
-            StartCoroutine(TransitionThenTeleport());
-        }
+            StartCoroutine(TransitionThenTeleport(target));
         else
-        {
-            // No transition, teleport immediately
-            ExecuteTeleport();
-            teleportPending = false; // Clear pending flag after teleport
-            cachedPlayer = null;
-        }
+            ExecuteTeleport(target);
     }
 
-    private IEnumerator TransitionThenTeleport()
+    private IEnumerator TransitionThenTeleport(GameObject target)
     {
-        // Start cooldown immediately to prevent multiple triggers
         StartCooldown();
+        ScreenTransition.Instance.PlayTransition();
 
-        // Play the screen transition
-        if (ScreenTransition.Instance != null)
-        {
-            ScreenTransition.Instance.PlayTransition();
-        }
-
-        // Additional delay before teleporting
         yield return new WaitForSeconds(transitionDelay);
 
-        // Switch cameras
         if (Camera != null && OldCamera != null)
         {
             Camera.SetActive(true);
             OldCamera.SetActive(false);
         }
-        else
-        {
-            Debug.LogWarning("Camera or OldCamera not assigned!");
-        }
 
-        // Now teleport
-        ExecuteTeleport();
-        teleportPending = false; // Clear pending flag after teleport
-        cachedPlayer = null;
+        ExecuteTeleport(target);
     }
 
     private void StartCooldown()
     {
         isOnCooldown = true;
         cooldownTimer = teleportCooldown;
-        UpdateVisualState();
     }
 
-    private void ExecuteTeleport()
+    private void ExecuteTeleport(GameObject target)
     {
-        // Use cached player if available, otherwise use current player
-        GameObject targetPlayer = cachedPlayer != null ? cachedPlayer : player;
+        if (!isOnCooldown)
+            StartCooldown();
 
-        // Play effect at origin
         if (teleportEffect != null)
-        {
-            GameObject effect = Instantiate(teleportEffect, transform.position, Quaternion.identity);
-            Destroy(effect, effectDuration);
-        }
+            Destroy(Instantiate(teleportEffect, transform.position, Quaternion.identity), effectDuration);
 
-        // Play sound
         if (teleportSound != null)
-        {
             AudioSource.PlayClipAtPoint(teleportSound, transform.position);
-        }
 
-        // Teleport player
-        if (teleportPlayer && targetPlayer != null)
-        {
-            targetPlayer.transform.position = destination.position;
-            Debug.Log($"Player teleported to {destination.position}");
-        }
-        else if (teleportPlayer && targetPlayer == null)
-        {
-            Debug.LogWarning("No player reference available for teleport!");
-        }
+        if (target != null)
+            target.transform.position = destination.position;
+        else
+            Debug.LogWarning($"{name}: no player reference available for teleport.", this);
 
-        // Teleport allies
-        if (teleportAllies)
-        {
-            // Find all objects with "Ally" tag
-            GameObject[] foundAllies = GameObject.FindGameObjectsWithTag("Ally");
-            foreach (GameObject ally in foundAllies)
-            {
-                ally.transform.position = destination.position;
-            }
-        }
-
-        // Teleport additional specified objects
-        foreach (GameObject obj in additionalObjects)
+        foreach (var obj in additionalObjects)
         {
             if (obj != null)
-            {
                 obj.transform.position = destination.position;
-            }
         }
 
-        // Play effect at destination
         if (teleportEffect != null)
-        {
-            GameObject destEffect = Instantiate(teleportEffect, destination.position, Quaternion.identity);
-            Destroy(destEffect, effectDuration);
-        }
+            Destroy(Instantiate(teleportEffect, destination.position, Quaternion.identity), effectDuration);
 
-        Debug.Log($"Teleported to {destination.name}");
-
-        // Clear references after teleport
-        player = null;
         playerInRange = false;
+        HidePrompt();
     }
 
-    // Public method to manually trigger teleport (for buttons or other scripts)
-    public void Teleport()
-    {
-        if (player != null)
-        {
-            cachedPlayer = player;
-        }
-        teleportPending = true;
-        PerformTeleport();
-    }
-
-    // Public method to check cooldown status
-    public bool IsOnCooldown()
-    {
-        return isOnCooldown;
-    }
-
-    // Public method to get remaining cooldown time
-    public float GetRemainingCooldown()
-    {
-        return isOnCooldown ? cooldownTimer : 0f;
-    }
-
-    // Draw gizmos to visualize teleporter connection
     private void OnDrawGizmosSelected()
     {
-        if (destination != null)
-        {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(transform.position, destination.position);
+        if (destination == null)
+            return;
 
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(transform.position, 0.5f);
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(destination.position, 0.5f);
-        }
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawLine(transform.position, destination.position);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, 0.5f);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(destination.position, 0.5f);
     }
 }
