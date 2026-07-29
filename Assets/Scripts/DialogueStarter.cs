@@ -26,54 +26,41 @@ public class DialogueStarter : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Player")
-        {
-            // Check if OnceTime is enabled and dialogue has already been played
-            if (OnceTime && hasPlayed)
-            {
-                return;
-            }
+        if (!collision.CompareTag("Player"))
+            return;
 
-            if (Notification != null)
-            {
-                Notification.SetActive(true);
-            }
-            if (IsClickNPC)
-            {
-                SendToInteractButton();
-            }
-            else
-            {
-                StartDialogue();
-                MarkAsPlayed(); // Auto-played dialogue counts as played
-            }
+        if (OnceTime && hasPlayed)
+            return;
+
+        if (Notification != null)
+            Notification.SetActive(true);
+
+        if (IsClickNPC)
+        {
+            SendToInteractButton();
+        }
+        else
+        {
+            StartDialogue();
+            MarkAsPlayed(); // Auto-played dialogue counts as played
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.tag == "Player")
-        {
-            // Hide the notification when player leaves the trigger area
-            if (Notification != null)
-            {
-                Notification.SetActive(false);
-            }
+        if (!collision.CompareTag("Player"))
+            return;
 
-            // Clear the Interact Button text when player leaves
-            if (IsClickNPC)
-            {
-                ClearInteractButton();
-            }
-        }
+        if (Notification != null)
+            Notification.SetActive(false);
+
+        if (IsClickNPC)
+            ClearInteractButton();
     }
 
     private void SendToInteractButton()
     {
-        InteractButton.Instance?.SetInteraction(Dialogue, ConversantName, HasConditions, Conditions, ConditionsCancel);
-        // Store reference to this instance in the button so it can mark as played
-        // We need to access the button's currentDialogueStarter field
-        // Since we can't directly set it, let's use a different approach - we'll mark as played when the button is clicked
+        InteractButton.Instance?.SetInteraction(this, Dialogue, ConversantName, HasConditions, Conditions, ConditionsCancel);
     }
 
     private void ClearInteractButton()
@@ -95,22 +82,14 @@ public class DialogueStarter : MonoBehaviour
                 bool hasProgress = SaveManager.Instance != null && SaveManager.Instance.HasProgress(condition.Progress);
 
                 if (conditionsCancel && hasProgress)
-                {
                     return;
-                }
 
                 if (!conditionsCancel && !hasProgress)
                 {
                     if (condition.PlaysOtherDialogue)
-                    {
                         DialogueManager.Instance?.StartDialogue(condition.OtherDialogue);
-                    }
-                    return;
-                }
 
-                if (!conditionsCancel && hasProgress)
-                {
-                    continue;
+                    return;
                 }
             }
         }
