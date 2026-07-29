@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8168877852980711756}
   - component: {fileID: 8223566499020737225}
   m_Layer: 0
-  m_Name: Fragment
+  m_Name: Haze
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,7 +64,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b879e3e8feb882e4b9867d21727d74ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostControl
-  mc: {fileID: 6849718781407961828, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+  mc: {fileID: 0}
   ghostFollow: {fileID: 8152032474710857191}
   ghost: {fileID: 4228216706130249140}
   ghostMoveSpeed: 4
