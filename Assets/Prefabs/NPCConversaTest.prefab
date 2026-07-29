@@ -9,13 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2838796611774751666}
-  - component: {fileID: 6001923641105527309}
   - component: {fileID: 650640861439713227}
   - component: {fileID: 385469914975609124}
   - component: {fileID: 6654388011865749348}
   - component: {fileID: 2504409958273795947}
-  - component: {fileID: 1983026573375405866}
-  - component: {fileID: 6865719735666613285}
   m_Layer: 0
   m_Name: NPCConversaTest
   m_TagString: Untagged
@@ -38,20 +35,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -70.6058, z: 0}
---- !u!114 &6001923641105527309
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 847041953360821649}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6dc48c641bb39742af066b7a0250f33, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_note: This Usable NPC's Dialogue System Trigger runs a conversation. The conversation
-    branches based on the state of the Get the Launch Codes quest.
 --- !u!95 &650640861439713227
 Animator:
   serializedVersion: 7
@@ -131,7 +114,7 @@ SpriteRenderer:
   m_Size: {x: 1.0546875, y: 1.09375}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!61 &6654388011865749348
 BoxCollider2D:
@@ -192,83 +175,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   Dialogue: Private Hart
+  ConversantName: 
   IsClickNPC: 0
   OnceTime: 0
-  DoneOnce: 0
   Notification: {fileID: 0}
   transformthing: {fileID: 0}
   HasConditions: 1
+  ConditionsCancel: 0
   Conditions:
   - Progress: DoneThing
     PlaysOtherDialogue: 0
     OtherDialogue: 
---- !u!114 &1983026573375405866
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 847041953360821649}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 505dcd4c4aa3a1741ab98b9ad39eb7a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp-firstpass::PixelCrushers.DialogueSystem.Wrappers.BarkOnIdle
-  once: 0
-  conversation: Enemy Barks
-  condition:
-    luaConditions: []
-    luaElementsMustBeTrue: 0
-    questConditions: []
-    acceptedTags: []
-    acceptedGameObjects: []
-    luaWizardIndex: -1
-    lastEvaluationValue: 0
-  skipIfNoValidEntries: 0
-  exclusive: 0
-  conversant: {fileID: 0}
-  useConversationTitlePicker: 1
-  selectedDatabase: {fileID: 0}
-  barkOrder: 2
-  allowDuringConversations: 0
-  cacheBarkLines: 0
-  barkOnStart: 0
-  barkOnEnable: 0
-  minSeconds: 5
-  maxSeconds: 10
-  target: {fileID: 0}
---- !u!114 &6865719735666613285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 847041953360821649}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a64578247383140469c45370654a984a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp-firstpass::PixelCrushers.DialogueSystem.Wrappers.DialogueActor
-  actor: Enemy
-  persistentDataName: 
-  portrait: {fileID: 0}
-  spritePortrait: {fileID: 21300000, guid: 34c69e9a19a994b4c96aad3920938c3a, type: 3}
-  cameraAngles: {fileID: 0}
-  audioSource: {fileID: 0}
-  barkUISettings:
-    barkUI: {fileID: 11426712, guid: 21b4828b943afef4896267f31f98ee1a, type: 3}
-    barkUIOffset: {x: 0, y: 2, z: 0}
-  standardDialogueUISettings:
-    subtitlePanelNumber: 0
-    customSubtitlePanel: {fileID: 0}
-    customSubtitlePanelOffset: {x: 0, y: 0, z: 0}
-    menuPanelNumber: 0
-    customMenuPanel: {fileID: 0}
-    customMenuPanelOffset: {x: 0, y: 0, z: 0}
-    useMenuPanelFor: 0
-    portraitAnimatorController: {fileID: 0}
-    setSubtitleColor: 0
-    applyColorToPrependedName: 0
-    prependActorNameSeparator: ': '
-    prependActorNameFormat: '{0}{1}'
-    subtitleColor: {r: 1, g: 1, b: 1, a: 1}

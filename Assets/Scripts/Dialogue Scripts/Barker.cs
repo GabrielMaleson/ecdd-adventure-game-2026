@@ -4,6 +4,10 @@ using System.Collections;
 
 public class CharacterBark : MonoBehaviour
 {
+    [Header("Text Component")]
+    [SerializeField] private TextMeshPro textMeshPro; // Assign in Inspector
+    [SerializeField] private Transform textTransform; // Optional: auto-detected if not assigned
+
     [Header("Quote Settings")]
     [TextArea(2, 4)]
     public string[] quotes = new string[]
@@ -23,11 +27,6 @@ public class CharacterBark : MonoBehaviour
     public float minBarkDelay = 3f;
     public float maxBarkDelay = 8f;
 
-    [Header("Text Position (2D)")]
-    public Vector2 textOffset = new Vector2(0f, 2f);
-    public float textScale = 1f;
-    public bool flipTextWithCharacter = true;
-
     [Header("Animation")]
     public bool animateBark = true;
     public float animationScale = 1.2f;
@@ -37,51 +36,47 @@ public class CharacterBark : MonoBehaviour
     public bool bounceEffect = true;
     public float bounceAmount = 0.3f;
 
-    [Header("Appearance")]
-    public Color textColor = Color.white;
-    public float fontSize = 4f;
-    public TextAlignmentOptions textAlignment = TextAlignmentOptions.Center;
-    public FontStyles fontStyle = FontStyles.Normal;
-
     [Header("Background")]
     public bool showBackground = true;
     public Color backgroundColor = new Color(0f, 0f, 0f, 0.7f);
     public Vector2 backgroundPadding = new Vector2(0.5f, 0.3f);
-    public float backgroundCornerRadius = 0.2f;
 
-    private TextMeshPro textMeshPro;
-    private Transform textTransform;
     private SpriteRenderer backgroundRenderer;
     private Coroutine barkCoroutine;
     private Coroutine autoBarkCoroutine;
-    private Vector2 originalPosition;
+    private Vector3 originalPosition;
+    private Vector3 originalScale;
     private Sprite backgroundSprite;
 
     private void Awake()
     {
-        // Create a new GameObject for the text
-        GameObject textObject = new GameObject("BarkText");
-        textObject.transform.SetParent(transform);
-        textObject.transform.localPosition = (Vector3)textOffset;
-        textObject.transform.localRotation = Quaternion.identity;
-        textObject.transform.localScale = Vector3.one * textScale;
+        // Validate TextMeshPro assignment
+        if (textMeshPro == null)
+        {
+            Debug.LogError("TextMeshPro component not assigned in Inspector!", this);
+            return;
+        }
 
-        // Set the sorting layer for 2D rendering
-        textObject.layer = gameObject.layer;
+        // Get transform reference
+        if (textTransform == null)
+        {
+            textTransform = textMeshPro.transform;
+        }
 
-        // Add and configure TextMeshPro component
-        textMeshPro = textObject.AddComponent<TextMeshPro>();
-        textTransform = textObject.transform;
+        // Store original position and scale
+        originalPosition = textTransform.localPosition;
+        originalScale = textTransform.localScale;
 
-        // Configure text properties
+        // Configure text properties if needed
         textMeshPro.text = "";
-        textMeshPro.color = textColor;
-        textMeshPro.fontSize = fontSize;
-        textMeshPro.alignment = textAlignment;
-        textMeshPro.fontStyle = fontStyle;
         textMeshPro.autoSizeTextContainer = true;
         textMeshPro.textWrappingMode = TextWrappingModes.Normal;
-        textMeshPro.sortingOrder = 10; // Higher than character for visibility
+
+        // Set sorting order if using 2D
+        if (textMeshPro.sortingOrder < 10)
+        {
+            textMeshPro.sortingOrder = 10; // Higher than character for visibility
+        }
 
         // Create background if enabled
         if (showBackground)
@@ -90,34 +85,42 @@ public class CharacterBark : MonoBehaviour
         }
 
         // Start with text hidden
-        textObject.SetActive(false);
-
-        originalPosition = textTransform.localPosition;
+        textMeshPro.gameObject.SetActive(false);
     }
 
     private void CreateBackground()
     {
-        // Create background GameObject
-        GameObject bgObject = new GameObject("BarkBackground");
-        bgObject.transform.SetParent(textTransform);
-        bgObject.transform.localPosition = Vector3.zero;
-        bgObject.transform.localScale = Vector3.one;
+        // Check if background already exists as child
+        Transform bgTransform = textTransform.Find("BarkBackground");
+        GameObject bgObject;
 
-        // Add sprite renderer
-        backgroundRenderer = bgObject.AddComponent<SpriteRenderer>();
-        
+        if (bgTransform != null)
+        {
+            bgObject = bgTransform.gameObject;
+            backgroundRenderer = bgObject.GetComponent<SpriteRenderer>();
+        }
+        else
+        {
+            // Create background GameObject
+            bgObject = new GameObject("BarkBackground");
+            bgObject.transform.SetParent(textTransform);
+            bgObject.transform.localPosition = Vector3.zero;
+            bgObject.transform.localScale = Vector3.one;
+
+            // Add sprite renderer
+            backgroundRenderer = bgObject.AddComponent<SpriteRenderer>();
+        }
+
         // Create a white square texture for the background
         Texture2D texture = new Texture2D(1, 1);
         texture.SetPixel(0, 0, Color.white);
         texture.Apply();
-        
+
         backgroundSprite = Sprite.Create(texture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 100f);
         backgroundRenderer.sprite = backgroundSprite;
         backgroundRenderer.color = backgroundColor;
-        backgroundRenderer.sortingOrder = 9; // Behind text but above character
-        
-        // Make it a circle/rounded square by using a 9-slice or custom shader
-        // For now we'll use a simple square
+        backgroundRenderer.sortingOrder = textMeshPro.sortingOrder - 1; // Behind text
+
         UpdateBackgroundSize();
     }
 
@@ -128,30 +131,13 @@ public class CharacterBark : MonoBehaviour
 
         // Get text bounds
         Vector2 textSize = textMeshPro.GetRenderedValues(false);
-        
+
         // Add padding
         Vector2 bgSize = textSize + backgroundPadding * 2;
         bgSize.x = Mathf.Max(bgSize.x, 0.5f);
         bgSize.y = Mathf.Max(bgSize.y, 0.3f);
-        
-        backgroundRenderer.transform.localScale = new Vector3(bgSize.x, bgSize.y, 1f);
-    }
 
-    private void LateUpdate()
-    {
-        // Handle character flipping for 2D
-        if (flipTextWithCharacter)
-        {
-            SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null && spriteRenderer.flipX)
-            {
-                textTransform.localScale = new Vector3(-textScale, textScale, 1f);
-            }
-            else
-            {
-                textTransform.localScale = new Vector3(textScale, textScale, 1f);
-            }
-        }
+        backgroundRenderer.transform.localScale = new Vector3(bgSize.x, bgSize.y, 1f);
     }
 
     /// <summary>
@@ -216,8 +202,9 @@ public class CharacterBark : MonoBehaviour
 
     private IEnumerator ShowBark()
     {
-        // Reset position
-        textTransform.localPosition = (Vector3)originalPosition;
+        // Reset position and scale
+        textTransform.localPosition = originalPosition;
+        textTransform.localScale = originalScale;
 
         // Update background size
         if (showBackground)
@@ -229,8 +216,8 @@ public class CharacterBark : MonoBehaviour
         textMeshPro.gameObject.SetActive(true);
 
         // Store original scale
-        Vector3 originalScale = textTransform.localScale;
-        Vector3 targetScale = originalScale * animationScale;
+        Vector3 currentScale = originalScale;
+        Vector3 targetScale = currentScale * animationScale;
 
         // Animate the bark if enabled
         if (animateBark)
@@ -241,27 +228,27 @@ public class CharacterBark : MonoBehaviour
             {
                 elapsed += Time.deltaTime;
                 float t = elapsed / animationDuration;
-                
+
                 // Ease out cubic for a nice pop effect
                 float easedT = 1f - Mathf.Pow(1f - t, 3f);
-                
+
                 // Scale animation
-                textTransform.localScale = Vector3.Lerp(originalScale, targetScale, easedT);
+                textTransform.localScale = Vector3.Lerp(currentScale, targetScale, easedT);
 
                 // Float upwards during animation
                 if (floatUpwards)
                 {
                     float floatT = easedT * floatHeight;
-                    Vector2 pos = originalPosition + Vector2.up * floatT;
-                    
+                    Vector3 pos = originalPosition + Vector3.up * floatT;
+
                     // Add bounce effect
                     if (bounceEffect && t < 0.5f)
                     {
                         float bounceT = Mathf.Sin(t * Mathf.PI * 4f) * bounceAmount * (1f - t);
-                        pos += Vector2.up * bounceT;
+                        pos += Vector3.up * bounceT;
                     }
-                    
-                    textTransform.localPosition = (Vector3)pos;
+
+                    textTransform.localPosition = pos;
                 }
 
                 yield return null;
@@ -278,20 +265,20 @@ public class CharacterBark : MonoBehaviour
                 float t = elapsed / (animationDuration * 0.7f);
                 // Ease in cubic
                 float easedT = t * t * t;
-                textTransform.localScale = Vector3.Lerp(targetScale, originalScale, easedT);
+                textTransform.localScale = Vector3.Lerp(targetScale, currentScale, easedT);
 
                 // Continue floating upwards slightly
                 if (floatUpwards)
                 {
                     float floatT = floatHeight * (1f + easedT * 0.2f);
-                    textTransform.localPosition = (Vector3)(originalPosition + Vector2.up * floatT);
+                    textTransform.localPosition = originalPosition + Vector3.up * floatT;
                 }
 
                 yield return null;
             }
 
             // Ensure we end at original scale
-            textTransform.localScale = originalScale;
+            textTransform.localScale = currentScale;
         }
 
         // Wait for the bark duration
@@ -386,13 +373,12 @@ public class CharacterBark : MonoBehaviour
     /// <summary>
     /// Set a new position offset for the text
     /// </summary>
-    public void SetTextOffset(Vector2 newOffset)
+    public void SetTextOffset(Vector3 newOffset)
     {
-        textOffset = newOffset;
         if (textTransform != null)
         {
-            originalPosition = textOffset;
-            textTransform.localPosition = (Vector3)textOffset;
+            originalPosition = newOffset;
+            textTransform.localPosition = newOffset;
         }
     }
 
@@ -406,10 +392,24 @@ public class CharacterBark : MonoBehaviour
             StopCoroutine(barkCoroutine);
             barkCoroutine = null;
         }
-        
+
         if (textMeshPro != null && textMeshPro.gameObject.activeSelf)
         {
             textMeshPro.gameObject.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Set the TextMeshPro component at runtime
+    /// </summary>
+    public void SetTextMeshPro(TextMeshPro newTextMesh)
+    {
+        textMeshPro = newTextMesh;
+        if (textMeshPro != null)
+        {
+            textTransform = textMeshPro.transform;
+            originalPosition = textTransform.localPosition;
+            originalScale = textTransform.localScale;
         }
     }
 }
