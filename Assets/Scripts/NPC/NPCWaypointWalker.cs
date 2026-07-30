@@ -1,8 +1,16 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 // Makes an NPC wander between designer-placed waypoints to give the village a sense of life.
 // Walks waypoint to waypoint, and can optionally putter around each waypoint in short
 // random bursts (never straying past ShortBurstRadius) before moving on.
+//
+// Moves through an optional Rigidbody2D (MovePosition, in FixedUpdate) when the NPC has
+// one, exactly like PlayerController — writing straight to transform.position on a body
+// the physics engine is also tracking is what made the player shove/jitter against
+// crates (see the Sokoban notes in CLAUDE.md), and the same mismatch here is what made
+// this walker "lock on" to one direction against a collider instead of cleanly turning
+// at its waypoints. NPCs with no Rigidbody2D still work — they just move via transform.
 public class NPCWaypointWalker : MonoBehaviour
 {
     enum State { MovingToWaypoint, Waiting, Bursting, BurstPause }
@@ -36,41 +44,53 @@ public class NPCWaypointWalker : MonoBehaviour
     public Animator animator;
     public string   walkBoolParam = "IsWalking";
 
+    Rigidbody2D    rb;
     SpriteRenderer spriteRenderer;
+    List<Transform> points; // waypoints with any unassigned (null) slots dropped
     State          state;
-    public int            currentIndex;
-    public int            pingPongDir = 1;
+    int            currentIndex;
+    int            pingPongDir = 1;
     Vector2        anchor;
     Vector2        burstTarget;
-    public int            burstsRemaining;
-    public float          stateTimer;
-    public float          effectiveWalkSpeed;
+    int            burstsRemaining;
+    float          stateTimer;
+    float          effectiveWalkSpeed;
 
-    private void Awake()
+    void Awake()
     {
+        rb             = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
-    private void Start()
+    void Start()
     {
-        if (waypoints == null || waypoints.Length == 0)
+        points = new List<Transform>();
+        if (waypoints != null)
         {
-            Debug.LogWarning($"{name}: NPCWaypointWalker has no waypoints assigned, disabling.", this);
+            foreach (var wp in waypoints)
+            {
+                if (wp != null) points.Add(wp);
+            }
+        }
+
+        if (points.Count == 0)
+        {
+            Debug.LogWarning($"{name}: NPCWaypointWalker has no valid waypoints assigned, disabling.", this);
             enabled = false;
             return;
         }
 
         effectiveWalkSpeed = walkSpeed * Random.Range(1f - walkSpeedVariance, 1f + walkSpeedVariance);
-        currentIndex       = startAtRandomWaypoint ? Random.Range(0, waypoints.Length) : 0;
+        currentIndex       = startAtRandomWaypoint ? Random.Range(0, points.Count) : 0;
         state              = State.MovingToWaypoint;
     }
 
-    private void Update()
+    void FixedUpdate()
     {
         switch (state)
         {
             case State.MovingToWaypoint:
-                if (MoveToward(waypoints[currentIndex].position))
+                if (MoveToward(points[currentIndex].position))
                     OnArrivedAtWaypoint();
                 break;
 
@@ -94,16 +114,16 @@ public class NPCWaypointWalker : MonoBehaviour
         SetWalkAnim(state == State.MovingToWaypoint || state == State.Bursting);
     }
 
-    private void TickTimer(System.Action onElapsed)
+    void TickTimer(System.Action onElapsed)
     {
-        stateTimer -= Time.deltaTime;
+        stateTimer -= Time.fixedDeltaTime;
         if (stateTimer <= 0f)
             onElapsed();
     }
 
-    private void OnArrivedAtWaypoint()
+    void OnArrivedAtWaypoint()
     {
-        anchor = waypoints[currentIndex].position;
+        anchor = points[currentIndex].position;
 
         if (useShortBursts)
         {
@@ -116,7 +136,7 @@ public class NPCWaypointWalker : MonoBehaviour
         }
     }
 
-    private void StartNextBurstOrAdvance()
+    void StartNextBurstOrAdvance()
     {
         if (burstsRemaining <= 0)
         {
@@ -129,7 +149,7 @@ public class NPCWaypointWalker : MonoBehaviour
         state       = State.Bursting;
     }
 
-    private void EnterWaiting()
+    void EnterWaiting()
     {
         state      = State.Waiting;
         stateTimer = Random.Range(waitAtWaypointMin, waitAtWaypointMax);
@@ -138,16 +158,16 @@ public class NPCWaypointWalker : MonoBehaviour
             spriteRenderer.flipX = !spriteRenderer.flipX;
     }
 
-    private void AdvanceToNextWaypoint()
+    void AdvanceToNextWaypoint()
     {
-        if (waypoints.Length > 1)
+        if (points.Count > 1)
         {
             if (pingPong)
             {
                 currentIndex += pingPongDir;
-                if (currentIndex >= waypoints.Length)
+                if (currentIndex >= points.Count)
                 {
-                    currentIndex = waypoints.Length - 2;
+                    currentIndex = points.Count - 2;
                     pingPongDir  = -1;
                 }
                 else if (currentIndex < 0)
@@ -158,33 +178,39 @@ public class NPCWaypointWalker : MonoBehaviour
             }
             else
             {
-                currentIndex = (currentIndex + 1) % waypoints.Length;
+                currentIndex = (currentIndex + 1) % points.Count;
             }
         }
 
         state = State.MovingToWaypoint;
     }
 
-    // Returns true once the target has been reached.
+    // Returns true once the target has been reached. Moves through the Rigidbody2D
+    // when present so it stops cleanly on contact instead of fighting physics.
     bool MoveToward(Vector2 target)
     {
-        Vector2 pos = transform.position;
+        Vector2 pos = rb != null ? rb.position : (Vector2)transform.position;
         Vector2 dir = target - pos;
 
         if (flipSpriteToFaceMovement && spriteRenderer != null && Mathf.Abs(dir.x) > 0.01f)
             spriteRenderer.flipX = dir.x < 0f;
 
-        transform.position = Vector2.MoveTowards(pos, target, effectiveWalkSpeed * Time.deltaTime);
-        return Vector2.Distance(transform.position, target) <= arriveThreshold;
+        Vector2 next = Vector2.MoveTowards(pos, target, effectiveWalkSpeed * Time.fixedDeltaTime);
+        if (rb != null)
+            rb.MovePosition(next);
+        else
+            transform.position = next;
+
+        return Vector2.Distance(next, target) <= arriveThreshold;
     }
 
-    private void SetWalkAnim(bool isWalking)
+    void SetWalkAnim(bool isWalking)
     {
         if (animator != null && !string.IsNullOrEmpty(walkBoolParam))
             animator.SetBool(walkBoolParam, isWalking);
     }
 
-    private void OnDrawGizmosSelected()
+    void OnDrawGizmosSelected()
     {
         if (waypoints == null) return;
 

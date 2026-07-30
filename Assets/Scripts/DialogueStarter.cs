@@ -87,14 +87,42 @@ public class DialogueStarter : MonoBehaviour
                 if (!conditionsCancel && !hasProgress)
                 {
                     if (condition.PlaysOtherDialogue)
-                        DialogueManager.Instance?.StartDialogue(condition.OtherDialogue);
+                        StartAndFreezePlayer(condition.OtherDialogue);
 
                     return;
                 }
             }
         }
 
-        DialogueManager.Instance?.StartDialogue(dialogue);
+        StartAndFreezePlayer(dialogue);
+    }
+
+    // Single choke point every dialogue start funnels through, so the player is
+    // stopped the instant a dialogue actually begins (not when it's merely
+    // requested — a cancelled condition or a failed StartDialogue call must not
+    // freeze him with nothing left to unfreeze him).
+    private static void StartAndFreezePlayer(string dialogueName)
+    {
+        DialogueManager manager = DialogueManager.Instance;
+        manager?.StartDialogue(dialogueName);
+
+        Yarn.Unity.DialogueRunner runner = manager?.dialogueRunner;
+        if (runner == null || !runner.IsDialogueRunning)
+            return;
+
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        PlayerController player = playerObj != null ? playerObj.GetComponent<PlayerController>() : null;
+        if (player == null)
+            return;
+
+        player.InputEnabled = false;
+
+        void OnComplete()
+        {
+            player.InputEnabled = true;
+            runner.onDialogueComplete.RemoveListener(OnComplete);
+        }
+        runner.onDialogueComplete.AddListener(OnComplete);
     }
 
     // Call this method when dialogue actually starts to mark it as played
