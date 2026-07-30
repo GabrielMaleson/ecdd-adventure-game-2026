@@ -19028,8 +19028,8 @@ GameObject:
   - component: {fileID: 647053417}
   - component: {fileID: 647053416}
   - component: {fileID: 647053414}
-  - component: {fileID: 647053413}
   - component: {fileID: 647053418}
+  - component: {fileID: 647053419}
   m_Layer: 0
   m_Name: NPC Bark Test
   m_TagString: Untagged
@@ -19037,42 +19037,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &647053413
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 647053412}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecc3434effb8cd5499cc007cec71b0ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CharacterBark
-  textMeshPro: {fileID: 1763365833}
-  textTransform: {fileID: 1763365831}
-  quotes:
-  - Hello there!
-  - I'm feeling great today!
-  - What's new?
-  - Time for an adventure!
-  - Did you know I can talk?
-  - The weather is nice!
-  - I love this place!
-  - Let's do something fun!
-  barkDuration: 2.5
-  minBarkDelay: 3
-  maxBarkDelay: 8
-  animateBark: 1
-  animationScale: 1.2
-  animationDuration: 0.3
-  floatUpwards: 1
-  floatHeight: 0.5
-  bounceEffect: 1
-  bounceAmount: 0.3
-  showBackground: 1
-  backgroundColor: {r: 0, g: 0, b: 0, a: 0.7}
-  backgroundPadding: {x: 0.5, y: 0.3}
 --- !u!95 &647053414
 Animator:
   serializedVersion: 7
@@ -19168,7 +19132,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1763365831}
-  - {fileID: 1126246519}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &647053418
@@ -19180,35 +19143,44 @@ MonoBehaviour:
   m_GameObject: {fileID: 647053412}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3640427f10bcbc2409e8e295da5c50e3, type: 3}
+  m_Script: {fileID: 11500000, guid: 6803b2e42d4a0084683997b9612b623e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCWaypointWalker
+  m_EditorClassIdentifier: Assembly-CSharp::WaypointWalker
   waypoints:
   - {fileID: 1584199685}
   - {fileID: 163762303}
-  pingPong: 1
-  startAtRandomWaypoint: 1
+  loopMode: 0
+  startAtRandomWaypoint: 0
+  moveSpeed: 1.5
   arriveThreshold: 0.05
-  walkSpeed: 1.5
   waitAtWaypointMin: 1
   waitAtWaypointMax: 3
-  useShortBursts: 1
-  shortBurstRadius: 1
-  shortBurstsMin: 1
-  shortBurstsMax: 3
-  shortBurstPauseMin: 0.5
-  shortBurstPauseMax: 1.5
-  walkSpeedVariance: 0.2
   flipSpriteToFaceMovement: 1
-  randomIdleFlip: 1
-  randomIdleFlipChance: 0.15
   animator: {fileID: 0}
   walkBoolParam: IsWalking
-  currentIndex: 0
-  pingPongDir: 1
-  burstsRemaining: 0
-  stateTimer: 0
-  effectiveWalkSpeed: 0
+--- !u!114 &647053419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 647053412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dd386ae47d5ae047ba32abccaa9a7a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterDialogue
+  dialogueText: {fileID: 1763365833}
+  randomLines:
+  - Hey hey hey
+  - aaaaa
+  - bb
+  autoPlayRandomDialogue: 1
+  minInterval: 3
+  maxInterval: 8
+  holdDuration: 1.5
+  floatDistance: 0.5
+  floatFadeDuration: 1
 --- !u!4 &649984555 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 674111984878181024, guid: 29a038accfddf7f4ea2b79eae484f1a6, type: 3}
@@ -26217,13 +26189,13 @@ Transform:
   m_GameObject: {fileID: 1126246518}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.1776, y: 3.06906, z: 0}
+  m_LocalPosition: {x: -3.6424003, y: -1.9009397, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1584199685}
   - {fileID: 163762303}
-  m_Father: {fileID: 647053417}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1134821985 stripped
 GameObject:
@@ -59203,6 +59175,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8356422409095752499, guid: d33549f3cc378db49b474ee70d9a3278, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 3829968931863245866, guid: d33549f3cc378db49b474ee70d9a3278, type: 3}
@@ -60775,6 +60751,7 @@ SceneRoots:
   - {fileID: 2142495514}
   - {fileID: 955966829}
   - {fileID: 1917981135}
+  - {fileID: 1126246519}
   - {fileID: 647053417}
   - {fileID: 964546693}
   - {fileID: 1858398610}
