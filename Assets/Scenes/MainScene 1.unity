@@ -31118,7 +31118,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1496309655}
   m_Layer: 0
-  m_Name: Cut1Transforms
+  m_Name: Cut2Transforms
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
