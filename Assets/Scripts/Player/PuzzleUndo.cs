@@ -6,9 +6,14 @@ using UnityEngine.InputSystem;
 // Undo for the crate puzzle (test build). Press Z to step the board back to how it
 // was before the last crate was pushed.
 //
-// This is per-INTERACTION, not per-tile: the player moves freely, not on the grid,
-// so there's nothing to rewind for the player — only the crates snap to discrete
-// cells, so only they are recorded. Undo never moves the player.
+// Undo desfaz SÓ empurrão de caixa — a caixa volta pra célula anterior e o player
+// volta pra onde estava empurrando (a ser tematizado como o Fragmento puxando ele).
+// A ESTÁTUA NÃO ENTRA: girar obstáculo é jogada de tabuleiro, e desfazer isso é usar
+// a estátua de novo, não apertar Z.
+//
+// Consequência disso: a estátua pode ter mexido no tabuleiro DEPOIS de um empurrão
+// gravado. Se a célula de origem da caixa estiver ocupada na hora do Z, o próprio
+// PushableCrate recusa aquele undo em vez de empilhar dois ocupantes na mesma célula.
 //
 // Each push pushes a closure onto a stack that puts that one crate back. Undoing is
 // strict last-in-first-out, which is what keeps the board consistent: a cell a

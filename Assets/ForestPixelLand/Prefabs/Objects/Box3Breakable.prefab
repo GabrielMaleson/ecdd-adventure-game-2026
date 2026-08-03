@@ -227,7 +227,7 @@ MonoBehaviour:
   contactPadding: 0.1
   pushRange: 1.5
   moveDuration: 0.15
-  minLineupOverlap: 0.06
+  minLineupOverlap: 0.18
   logRefusedPushes: 1
 --- !u!50 &7278547629439833341
 Rigidbody2D:

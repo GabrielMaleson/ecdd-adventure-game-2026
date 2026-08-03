@@ -40,6 +40,10 @@ public class CrateTarget : GridObject
     // — it just names the puzzle ids it waits for.
     public static event System.Action<string, bool> PuzzleStateChanged;
 
+    // Disparado sempre que o tabuleiro muda (caixa deslizou, estátua girou), sem
+    // nenhuma condição. É o gancho do PuzzleGate.
+    public static event System.Action BoardChanged;
+
     protected override Color DebugColor => Color.green;
 
     static readonly List<CrateTarget> all = new List<CrateTarget>();
@@ -55,13 +59,25 @@ public class CrateTarget : GridObject
         all.Clear();
         solvedByGroup.Clear();
         PuzzleStateChanged = null;       // gates from the previous Play must not linger
+        BoardChanged = null;
+        cratesCache = new PushableCrate[0];
+        cratesFrame = -1;
     }
 
-    void OnEnable()
+    // Registra SEMPRE. A versão antiga saía fora se o PuzzleGrid não estivesse pronto
+    // neste instante — e um tapete que não entra na lista nunca é checado, sem erro
+    // nenhum: o puzzle simplesmente não fecha, para sempre, em silêncio.
+    void OnEnable() => all.Add(this);
+
+    // Célula lida NA HORA da checagem, não guardada no OnEnable. Se o tapete foi
+    // movido, snapado, reparentado ou avaliado antes do grid existir, o valor antigo
+    // estaria errado e ninguém saberia.
+    Vector2Int LiveCell()
     {
-        if (!HasGrid()) return;
-        Cell = CurrentCell();
-        all.Add(this);
+        var g = PuzzleGrid.Active;
+        if (g == null || !g.IsReady) return Cell;
+        Cell = g.WorldToCell(VisualCenter);      // mantém o gizmo de ocupação honesto
+        return Cell;
     }
 
     void OnDisable() => all.Remove(this);
@@ -74,6 +90,12 @@ public class CrateTarget : GridObject
     // EVERY puzzle group; each one fires, latches, or re-arms on its own.
     public static void EvaluateWin()
     {
+        // ANTES de qualquer condição: "o tabuleiro mudou". Quem quiser reagir a isso
+        // (PuzzleGate) faz a própria conta, e não depende de tapete registrado, de
+        // Puzzle Id nem de latch. Disparado nos dois únicos momentos em que o
+        // tabuleiro muda: fim do deslize de uma caixa e passo da estátua.
+        BoardChanged?.Invoke();
+
         if (all.Count == 0) return;
 
         // Distinct puzzle ids present. Small allocation, but puzzle scale is tiny
@@ -84,6 +106,29 @@ public class CrateTarget : GridObject
         foreach (var id in groups) EvaluateGroup(id);
     }
 
+    // Existe alguma caixa cujo DESENHO cai nesta célula? Independe do dicionário de
+    // ocupação — é a pergunta que os olhos fazem.
+    static bool CrateSittingOn(Vector2Int cell)
+    {
+        var g = PuzzleGrid.Active;
+        if (g == null || !g.IsReady) return false;
+
+        // Varre a cena no máximo uma vez por frame, não uma por tapete.
+        if (cratesFrame != Time.frameCount)
+        {
+            cratesFrame = Time.frameCount;
+            cratesCache = FindObjectsByType<PushableCrate>(FindObjectsSortMode.None);
+        }
+
+        foreach (var crate in cratesCache)
+            if (crate != null && g.WorldToCell(crate.VisualCenter) == cell) return true;
+
+        return false;
+    }
+
+    static PushableCrate[] cratesCache = new PushableCrate[0];
+    static int cratesFrame = -1;
+
     static void EvaluateGroup(string id)
     {
         bool allCovered = true;
@@ -93,8 +138,18 @@ public class CrateTarget : GridObject
 
             // An obstacle sitting on a target must not count as a solve — only a
             // crate does.
-            bool covered = GridOccupant.TryGetOccupant(target.Cell, out var occupant)
+            Vector2Int cell = target.LiveCell();
+
+            bool covered = GridOccupant.TryGetOccupant(cell, out var occupant)
                            && occupant is PushableCrate;
+
+            // Rede de segurança: a caixa pode estar EM CIMA do tapete e mesmo assim o
+            // mapa de ocupação apontar outra coisa (registro velho de quando o grid
+            // ainda não existia, caixa movida na mão no editor, arbusto que reivindicou
+            // a célula e saiu). Antes de dizer que não fechou, pergunta às caixas onde
+            // elas realmente estão — a posição do desenho é a verdade final.
+            if (!covered) covered = CrateSittingOn(cell);
+
             if (!covered) { allCovered = false; break; }
         }
 

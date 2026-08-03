@@ -136,15 +136,9 @@ public class StatueSwitch : MonoBehaviour
         // sits (no refuse buzz: this is a solved state, not a blocked one).
         if (active == 0) return;
 
-        // Record ONE undo step for the whole activation, captured before anything
-        // moves. A single Z then reverts every group AND cycle this statue moved,
-        // atomically — matching the fact that they moved together. (Cleared ones are
-        // excluded — they didn't move, so undo must not touch them.)
-        var restores = new List<System.Action>();
-        foreach (var entry in groups) if (!entry.group.IsCleared) restores.Add(entry.group.CaptureRestore());
-        foreach (var c in cycles) if (!c.IsCleared) restores.Add(c.CaptureRestore());
-        PuzzleUndo.Record(() => { foreach (var r in restores) r(); });
-
+        // A estátua NÃO entra no undo. O Z desfaz só o que o player fez com o próprio
+        // corpo — empurrar caixa. Girar a estátua é uma jogada do tabuleiro, e voltar
+        // atrás nela é usar a estátua de novo, não apertar Z.
         foreach (var entry in groups) if (!entry.group.IsCleared) entry.group.TryRotate(DirectionFor(entry));
         foreach (var c in cycles) if (!c.IsCleared) c.TryStep();
         onActivated?.Invoke();

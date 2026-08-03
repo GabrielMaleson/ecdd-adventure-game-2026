@@ -279,7 +279,20 @@ public class PushableCrate : GridOccupant
 
         PuzzleUndo.Record(() =>
         {
-            if (this != null) RestoreTo(crateFromCell, crateFromPos);
+            if (this == null) return;
+
+            // A estátua não é desfeita pelo Z, então o tabuleiro pode ter mudado DEPOIS
+            // deste empurrão: um arbusto pode estar ocupando a célula de onde a caixa
+            // saiu. Voltar pra cima dele deixaria dois ocupantes na mesma célula e
+            // corromperia o mapa de ocupação. Nesse caso o undo se recusa.
+            if (GridOccupant.TryGetOccupant(crateFromCell, out var blocker) && blocker != null && blocker != this)
+            {
+                if (Logging)
+                    Debug.Log($"{name}: UNDO recusado — a célula {crateFromCell} agora está ocupada por '{blocker.name}' (a estátua mexeu no tabuleiro depois deste empurrão).", this);
+                return;
+            }
+
+            RestoreTo(crateFromCell, crateFromPos);
             if (pusher != null) pusher.TeleportTo(playerFromPos);
         });
 
