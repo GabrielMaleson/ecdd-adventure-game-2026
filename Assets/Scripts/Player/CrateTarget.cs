@@ -34,6 +34,12 @@ public class CrateTarget : GridObject
     public static bool IsSolved(string id)
         => solvedByGroup.TryGetValue(id ?? "", out bool s) && s;
 
+    // Fires ONLY when a puzzle's solved-latch actually flips: (id, true) the moment it
+    // becomes solved, (id, false) if a crate is later pulled off. This is the hook
+    // PuzzleGate listens to, so a gate doesn't need a reference to any particular rug
+    // — it just names the puzzle ids it waits for.
+    public static event System.Action<string, bool> PuzzleStateChanged;
+
     protected override Color DebugColor => Color.green;
 
     static readonly List<CrateTarget> all = new List<CrateTarget>();
@@ -48,6 +54,7 @@ public class CrateTarget : GridObject
     {
         all.Clear();
         solvedByGroup.Clear();
+        PuzzleStateChanged = null;       // gates from the previous Play must not linger
     }
 
     void OnEnable()
@@ -91,18 +98,22 @@ public class CrateTarget : GridObject
             if (!covered) { allCovered = false; break; }
         }
 
+        solvedByGroup.TryGetValue(id, out bool wasSolved);
+
         if (!allCovered)
         {
             solvedByGroup[id] = false;       // re-arm: an uncovered puzzle can fire again
+            if (wasSolved) PuzzleStateChanged?.Invoke(id, false);
             return;
         }
 
-        solvedByGroup.TryGetValue(id, out bool wasSolved);
         if (wasSolved) return;               // don't re-fire while it stays solved
         solvedByGroup[id] = true;
 
         foreach (var target in all)
             if (target.PuzzleId == id)
                 target.onAllTargetsCovered?.Invoke();
+
+        PuzzleStateChanged?.Invoke(id, true);
     }
 }
