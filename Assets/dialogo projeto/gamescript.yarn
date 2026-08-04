@@ -54,77 +54,83 @@ Josh: Hmm... Maybe I should go see my friends before heading home. We haven't ta
 title: home_outside_first
 ---
 Josh: What's this?! (noise?)
-... 
+...
 Haze: Hm... Hello sir.
-Josh: Wha—who—what are you?
-Haze: Hmm... a fine question indeed. One I don't know the answer to.
+Josh: Wha—who... what are you?!
+Haze: Hmm... I'm me I guess, I don't know.
 Josh: Okay..? And what are you doing here?
-Haze: Hmm... a fine question indeed. One i don—
-Josh: Okay just—stop. Come inside or else you'll freak people out.
+Haze: Nothing in particular.
+Josh: Okay just— come inside or else you'll freak people out.
 Haze: Why would I freak them out?
-Josh: Cause you're a talking smoke?
-Haze: I... am?
-Josh: Pretty much, yeah.
-Haze: And you're not freaked out?
+Josh: Have you looked at yourself in the mirror?
+Haze: I... haven't.
+Josh: Yeah, figures.
+Haze: But you're not freaked out?
 Josh: You don't seem hostile.
 Haze: I don't feel hostile.
 Josh: Just come on in man.
 ===
 
-title: home_inside
+title: home_inside_first
 ---
 Haze: Wow your home is so pretty!
 Josh: It really isn't.
 Haze: Then why are you here?
-Josh: A fine question indeed.
-Haze: Ha!
+Josh: Nowhere to go, I guess.
+Haze: That's sad.
 Haze: What's this?
-Josh: That's a TV, basically shows moving images.
-Haze: Well, why do you need that for? Isn't that everything already?
-Josh: Real life's just not engaging enough I guess.
-Haze: What?! You're weird.
-Josh: I'm weird? Says the floating orange talking piece of mist who appeared out of nowhere.
-Haze: Mist...
-Josh: Yeah, mist. What do I even call you anyway?
-Haze: Hmm. I'm not sure.
-Josh: Okay then, you're Haze now.
-Haze: Haze... I guess it fits.
-Josh: So you have no idea how you wound up here? Really?
+Josh: That's a TV.
+Haze: What does it do?
+Josh: Shows moving images.
+Haze: Isn't that basically everything already?
+Josh: "Everything" is not engaging enough, I guess.
+Haze: You're weird.
+Josh: I'm weird? Says the orange floating thing that appeared out of nowhere. Look— who are you anyway, man? Why are you even here?
+Haze: As I said, I don't know!
+Josh: I'm guessing you don't have a name, also.
+Haze: Not that I can remember, no.
+Josh: Okay then. I'll call you Haze for now. Call me Josh.
+Haze: ...ok.
+Josh: So, you really have no idea how you wound up here?
 Haze: Nuh uh. I feel like I just woke up from a really long nap. Like, reeeeally long.
-Josh: Not a nap then.
-Haze: A long nap.
-Josh: ...
-Josh: Ugh, now what?
-Haze: It grows stronger...
+Josh: Like, how long?
+Haze: Feels like it's been forever since I fell asleep, honestly.
+Josh: And you just suddenly fell asleep like that? For like, what, ages?
+Haze: I'm trying to remember, but it's all too messy in my hea—
+Josh: Now what?
+Haze: Ugh!
 Josh: What?
-Haze: Hm?
-Josh: You just said something.
-Haze: Weird, I don't remember it.
-Josh: Whatever. I'm gonna watch som—
+Haze: Felt... something.
+Josh: What?
+Haze: Pain. But it's gone now.
+Josh: ...Ok, good. I'm gonna watch some TV then.
 Haze: I'm gonna go for a walk!
-Josh: No you're not, you'll stand out and freak out ev—hey, WAIT!
+Josh: No you're not, you'll stand out and freak out every—hey, WAIT!
 ===
 
 title: square_haze
 ---
-Josh: HEY, wa— huff... huff... wait. Are you insane? I told you you would freak everyone out, there's already something going on, do you want people more on edge?
+Josh: HEY, wa— huff... huff... wait. Are you insane? Do I have to remind you you're not human?
 Haze: Relax my friend, I found something out! Look.
 Haze: Ta-dah!
 Josh: ...
 Haze: ...
 Josh: You know nothing happened right.
-Haze: Well, for you it didn't, but that's because you're the only one who can see me right now.
-Josh: What? I don't believe you one bit. Come back to my hou—
+Haze: Well, for you it didn't, but that's because you're the only one who can see me right now!
+Josh: What? Stop this nonsense dude. Come back to my house and stay there.
+Haze: ...
+Josh: ...
 Villager: Josh! What are you doing just standing here?
-Josh: Hum... nothing really, I was just... taking a walk. Yes, a walk.
-Villager: Taking a walk? Are you insane? Can't you hear the noise coming from Elder Amos' house?
+Josh: Uhm... nothing really, I was just... taking a walk. Yes, a walk.
+Villager: Taking a walk? Are you insane? Can't you hear the noise coming from elder Amos' house?
 Josh: Oh, yeah. So that's where all the ruckus' coming from.
-Villager: Yeah. Anyway, meet me there then, after you finish your... walk or whatever. Hurry.
-Haze: Turns out you're the insane one!
+Villager: Yeah. Anyway, meet everyone there then, after you finish your... walk or whatever. Hurry.
+Haze: Turns out you're the insane one.
 Josh: Shut up.
 Haze: Trust me now?
-Josh: Yeah, let's go.
-Haze: Let'sss.
+Josh: For this very specific topic, yes.
+Haze: Can I go, then?
+Josh: ...okay.
 ===
 
 title: elders_house_outside
@@ -132,33 +138,124 @@ title: elders_house_outside
 Erika: Hey slowpoke.
 Marcus: Joshy!
 Josh: Hey guys, what happened?
-Erika: Basically, elder Amos disappeared. People are saying they saw him go into the mist, speaking nonsense.
+Erika: Basically, elder Amos disappeared. People are saying they saw him go into the forest, speaking nonsense.
+Josh: Into the forest where, exactly?
+Marcus: No one saw exactly, spot was too misty, apparently.
 Haze: ...
-Marcus: Everyone's scared, people are afraid to enter his house. Saying it's cursed.
+Marcus: They are scared, afraid to enter his house. Some saying it's cursed.
 Josh: What? No one went looking for him?
 Erika: They did, but didn't go very far.
-Marcus: Yeah, people are afraid, Joshy. The mist suddenly getting worse, and now this. I don't know... it's weird.
-Erika: What, you believe them? You think this place is cursed?
-Marcus: I'm saying it's weird, Erika, just that.
-Josh: Ok, I'm going to check his place.
-Erika: We'll go with you.
-Haze: Tell them you'll go alone.
-Josh: ...
-Josh: Guys, I'd rather go alone, if you don't mind.
-Erika: What? Why?
-Josh: I don't know, intuition, I guess.
-Marcus: That's seems not very effective, Joshy.
-Erika: It seems dumb. But since it's the first time I've seen you being proactive in ages, I'll leave you to it.
-Marcus: Ok then, me too. Go on.
+Haze: Josh, I feel like we should go in.
+Josh: Are you really inside my mind, man?
+Haze: Don't ask me how. Let's go in.
+Josh: Ok, why?
+Haze: Just trust me on this one, I feel like there's something there worth finding.
+Josh: ...ok.
+Josh: Ok, I guess I'm going to check his place, then.
+Erika: What, why?
+Marcus: What could be inside?
+Josh: I don't know, man. You two have a better idea?
+Erika: Why are you so proactive out of nowhere?
+Marcus: Who are you and where is our friend Josh?
+Haze: Haha!
+Josh: Funny. Kay, I'm going in.
+Erika: I'm going in then, also.
+Marcus: Yeah, me too.
+Haze: Would be better if we went by ourselves.
+Josh: Why? It doesn't matter anyway. I won't stop my friends.
+Haze: ..ok.
+Josh: Let's go, then.
 ===
 
-title: elders_house_inside
+title: elders_house_inside_explore
 ---
-Josh: Why did you tell me to come alone?
-Haze: I... don't know. You said you don't want me to reveal myself.
-Josh: How is that relevant here?
+Josh: What are we looking for, exactly?
+Haze: No idea.
+Josh: Great.
+Marcus: Hmm, food's still good, yeah.
+Erika: A Bible... I am out of rolling paper.
+===
+
+title: elders_house_bookshelf
+---
+Haze: Books! Let's see here... "Suddenly, he sits up and tugs my panties off and throws them on the floor. Pulling off his boxer briefs, his erecti—"
+Josh: Ok, ok, that's enough.
+===
+
+title: elders_house_wardrobe
+---
+Haze: Anything there?
+Josh: Nope, it's a mess, I couldn't find anything useful if I really wanted to.
+===
+
+title: elders_house_writing_table
+---
+Haze: What are these? Notes?
+Josh: Let's see...
+Josh: It's been calling to me, calling to me sometime now, calling to me... WHAT SHOULD I DO WHAT SHOULD I DO HELP HELP HELP I NEED TO GO THERE, I NEED TO FIND IT, I NEED TO GET IT IT'S THE ONLY WAY ONLY I CAN DO IT... only I know about it.
+Josh: Holy fuck, he was really losing it. What is he talking about?
+Haze: There's more down there.
+Josh: It's a poem... I can barely read it, must be ages-old.
+Josh: North you must go
+To get what you need
+Through the dark forest path
+A new site you shall see
+Solve the riddles therein
+Before time runs out
+Or else for the land
+Ruin will befall
+Josh: Huh... Riddles? What is this, a game? Why was this geezer fooling around with this?
+Haze: I guess we need to go North and find out, no?
+Josh: I don't know. Do I need to find anything out? As far as I know a senile old man got lost in the forest. The only really weird thing here is still you.
+Josh: Which leads me to think... do you have anything to do with all this?
+Haze: ...I might, but I'm not sure. I really feel like we need to follow this trail.
+Josh: Ok, then, let's check it out. I'll talk to Erika and Mark.
+Haze: Is it wise to tell them? It might blow my cover.
+Josh: Well, they are my best—actually, only, friends. I'd rather be close to them if anything's happening around here. Besides, they would like you, I think.
+Haze: Would they?! Ok then, let's go!
+Josh: Don't get too excited, an old man just disappeared.
+Haze: Oh, yes, of course. That's so sad, I'm sorry.
+Josh: Nahh I'm just messing with you man.
 Haze: ...
-Josh: You have something to do with all of this, don't you?
-Haze: ...I don't know, really. Maybe I do.
+===
+
+title: elders_house_first_floor
+---
+Josh: Kay guys, I found something, look.
+Marcus: Damn, seems like he was really losing it.
+Erika: Holy...
+Erika: Ok, so what, we should head North... isn't that the forest path right behind this house?
+Josh: Yup.
+Marcus: I didn't think there was a path there.
+Josh: Let's see, maybe we find one.
+Marcus: At least it's something to do!
+Erika: Yeah, if it kills our boredom...
 Josh: ...
+===
+
+title: forest_path
+---
+Marcus: Huh, what do you know? There was really a path!
+Erika: Can this even be called a path?
+===
+
+title: graveyard
+---
+Erika: Holy...
+Marcus: How was this hidden here all along?
+Haze: Did you know about this place, Josh?
+Josh: Nope. I know as much as them.
+===
+
+title: puzzle_entrance
+---
+Erika: What the hell is this?
+Josh: Probably one of the riddles the poem mentioned.
+Marcus: Meh, I suck at puzzles.
+Erika: Same. This one's on you, Josh.
+Josh: Huh, it's that same statue from Elder's.
+Haze: I feel it calling to me.
+Erika: What? How did you do that?
+Marcus: Way to go Joshy!
+Haze: Seems they didn't notice me...
 ===
