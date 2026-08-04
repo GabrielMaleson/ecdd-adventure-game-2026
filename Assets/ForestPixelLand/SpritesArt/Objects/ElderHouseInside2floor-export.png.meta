@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 8bca11d7e5d42d146873baea691a2dac
+guid: 1995b5fcea82a81418ad27f189164ad5
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5005025214957225791
-    second: NPCSHouseInside_0
+      213: 1263177104053466299
+    second: ElderHouseInside2floor-export_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: NPCSHouseInside_0
+      name: ElderHouseInside2floor-export_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 160
-        height: 94
+        width: 346
+        height: 180
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f37066d4aeb657540800000000000000
-      internalID: 5005025214957225791
+      spriteID: bb4738f22e4b78110800000000000000
+      internalID: 1263177104053466299
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      NPCSHouseInside_0: 5005025214957225791
+      ElderHouseInside2floor-export_0: 1263177104053466299
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
