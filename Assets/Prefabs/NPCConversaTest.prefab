@@ -174,7 +174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ddccb00f9e47af42ad4bb60cba6a005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  Dialogue: Private Hart
+  Dialogue: 
   ConversantName: 
   IsClickNPC: 0
   OnceTime: 0

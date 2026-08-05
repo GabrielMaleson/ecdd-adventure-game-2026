@@ -203,3 +203,145 @@ STILL OPEN after 2026-07-22 session (what did NOT get done)
 [x] StatueSwitch: per-group Counter Clockwise toggle; global Clockwise checkbox removed;
     GridMarker.cs added; "Cleared When Puzzle Solved" clears a solved sub-puzzle out of
     the statue sweep. (All DONE 2026-07-22.)
+
+
+========================================================================
+NEXT SESSION - BARK SYSTEM REWORK + YARN SCENE AUTHORING
+(planned 2026-08-05, to be DONE next session - nothing below is built yet)
+========================================================================
+
+*** AUTHORIZATION GIVEN BY USER 2026-08-05: Claude MAY create and edit .yarn
+    files directly (Assets/dialogo projeto/). Still NO prefabs/scenes/meta/
+    sprites - those stay described-only, user does them in the Editor. ***
+
+GOAL (user's request, 4 things):
+  1. Optimize the bark asset the programmer made.
+  2. Specific NPCs must say specific lines at specific moments (not just random).
+  3. The bark system must be able to carry a SHORT MC <-> NPC exchange without
+     stopping the game / without the blocking dialogue box.
+  4. Then: implement scenes in Yarn Spinner together with the user.
+
+------------------------------------------------------------------------
+WHERE IT STANDS TODAY
+------------------------------------------------------------------------
+  Assets/Scripts/Dialogue Scripts/CharacterDialogue.cs (147 lines) - the current
+  bark. Was Barker.cs / class CharacterBark (285 lines), renamed in commit
+  0ff605a "finalmente" (filename != classname, so it could not be attached).
+  It does: floating world-space TMP above a character, random line from a
+  List<string> on a min/max timer, hold -> float up -> fade. Public API:
+  ShowDialogue(string), HideDialogue(), StartRandomDialogue(), StopRandomDialogue().
+  NOTHING in code references it - it is wired only via Inspector/prefabs.
+
+  Features LOST in the Barker -> CharacterDialogue rewrite, decide keep/drop:
+  background sprite behind text (legibility over busy tilemaps), pop/bounce
+  animation, forced sortingOrder >= 10, autoSizeTextContainer + wrapping mode,
+  Mode enum (Bark vs Puzzle), Bark(int index), SetTextColor / SetFontSize /
+  SetTextOffset.
+
+------------------------------------------------------------------------
+PART A - OPTIMIZE CharacterDialogue.cs
+------------------------------------------------------------------------
+[ ] Suppress idle chatter while real dialogue runs. Right now nothing checks
+    DialogueRunner.IsDialogueRunning, so an NPC can bark OVER a Yarn conversation.
+    Subscribe once in BarkDirector (Part B) instead of polling per NPC.
+[ ] Idle coroutine runs forever on EVERY NPC, even offscreen / far away
+    (RandomDialogueRoutine is while(true), started in Start). Gate on player
+    distance + renderer visibility; stop the routine when out of range.
+[ ] No-repeat picking: Random.Range can show the same line twice in a row.
+    Use a shuffled bag that reshuffles when exhausted.
+[ ] Priority + queue. ShowDialogue() currently stomps whatever is on screen, so a
+    scripted story bark can be killed by idle chatter. Add:
+      enum BarkPriority { Idle, Reactive, Scripted }
+    Higher priority interrupts lower; equal priority queues (or drops - decide).
+[ ] Stop coroutines in OnDisable, not only OnDestroy (a disabled NPC currently
+    leaves its text hanging on screen).
+[ ] Duration should scale with line length (chars * secondsPerChar, clamped),
+    not one fixed holdDuration for every line.
+[ ] Lines live as a List<string> per prefab instance = not reusable, not
+    translatable. Move to a BarkSet ScriptableObject (Part B) so sets are shared
+    between NPCs and can be swapped per act as the mist thickens.
+[ ] originalColor is captured in Awake - if anything else touches the TMP alpha it
+    drifts. Re-read on show, or store only the RGB.
+[ ] Decide on the background sprite: Barker generated a 1x1 Texture2D + Sprite at
+    runtime PER NPC. If it comes back, use ONE shared static sprite, not one each.
+
+------------------------------------------------------------------------
+PART B - SPECIFIC NPC, SPECIFIC LINE, SPECIFIC MOMENT
+------------------------------------------------------------------------
+Design: barks get authored in .yarn like everything else, so there is ONE place
+where the writing lives. Two new pieces of code:
+
+[ ] BarkDirector (scene singleton). NPCs register themselves by a string id
+    ("marcus", "erika", "elder_amos"). Owns the DialogueRunner suppression flag.
+    Exposes Yarn commands:
+      <<bark marcus "line here">>       one specific line, one specific NPC
+      <<barkset marcus Suspicious>>     swap that NPC's idle BarkSet
+      <<barkstop marcus>>
+    This piggybacks on the existing setup - automaticallyLinkAttributedYarnCommands
+    is ON and there is no asmdef, so [YarnCommand] on BarkDirector auto-registers.
+[ ] BarkSet (ScriptableObject): a named list of lines + optional condition. One
+    asset per NPC per story beat (e.g. Marcus_Act1, Marcus_Mist_Rising). Lets the
+    village get progressively erratic by swapping assets - no code per NPC.
+[ ] Conditions, reusing what already exists rather than inventing a flag system:
+      - SaveManager.HasProgress(string) - already used by DialogueStarter
+      - Yarn variables via the runner's VariableStorage ($YarnTalkedElder etc.)
+    A BarkSet only fires if its condition passes.
+[ ] BarkTrigger component for "at a specific moment" without writing code:
+    on zone enter / on puzzle solved (UnityEvent from CrateTarget) / on pickup /
+    after N seconds in area -> calls BarkDirector.Bark(id, line or set).
+
+------------------------------------------------------------------------
+PART C - SHORT NON-BLOCKING MC <-> NPC EXCHANGE (the interesting one)
+------------------------------------------------------------------------
+VERIFIED API (checked 2026-08-05 against the installed package
+Library/PackageCache/dev.yarnspinner.unity@4c0c8ef55129):
+  - Yarn.Unity.DialoguePresenterBase (Runtime/Views/DialoguePresenterBase.cs)
+      abstract YarnTask RunLineAsync(LocalizedLine, LineCancellationToken)
+      virtual  YarnTask<DialogueOption?> RunOptionsAsync(...)
+      abstract YarnTask OnDialogueStartedAsync() / OnDialogueCompleteAsync()
+      virtual  void OnNodeEnter(string) / OnNodeExit(string)
+  - DialogueRunner.DialoguePresenters (IEnumerable<DialoguePresenterBase?>),
+    settable at runtime. DialogueRunner.IsDialogueRunning exists.
+    (dialogueViews is [Obsolete] - do not use it.)
+
+[ ] Build BarkPresenter : DialoguePresenterBase. RunLineAsync renders the line as
+    a floating bark above whoever the line's CHARACTER NAME maps to
+    (line.CharacterName -> BarkDirector id; "Josh" -> the MC), waits the
+    length-scaled duration, returns. Never touches the dialogue box, never
+    freezes the player.
+    -> This is the key idea: a short overheard exchange is just a normal Yarn node
+       run through a DIFFERENT presenter. No second data format, no bespoke script
+       per conversation, and all writing stays in the .yarn files.
+[ ] Decide how a node is marked as bark-style. Cleanest: a node header in the
+    .yarn (e.g. "style: bark") read in OnNodeEnter.
+    NEEDS CHECKING against the installed version - confirm custom node headers are
+    readable at runtime BEFORE committing to this approach.
+[ ] IMPORTANT: use a SECOND DialogueRunner GameObject for barks, with only
+    BarkPresenter attached, separate from the main blocking runner held by
+    DialogueManager (which lives inside ImageScript.cs:9). Otherwise barks and real
+    dialogue fight over one runner.
+    Open question: share VariableStorage between the two runners (probably yes, so
+    barks can read $YarnTalkedElder).
+[ ] Options in bark mode: RunOptionsAsync must NOT show a chooser. Either auto-pick
+    the first option or forbid options in bark nodes. Decide with user.
+[ ] Bail-out rule: if the player walks away mid-exchange, cancel it
+    (LineCancellationToken is already the mechanism). Decide: abort silently, or
+    let it finish offscreen.
+[ ] Blocking dialogue must always win: if the main runner starts, cancel any running
+    bark conversation. Wire through BarkDirector.
+
+------------------------------------------------------------------------
+PART D - YARN SCENE AUTHORING (with the user, next session)
+------------------------------------------------------------------------
+[ ] Implement the actual scenes in .yarn together with the user (authorized above).
+[ ] Existing content to build on: Assets/dialogo projeto/gamescript.yarn
+    (nodes: gamescript, square_initial, square_marcus_erika) and receptionistintro.yarn.
+[ ] INCONSISTENCY to settle first: HistoriasVN.yarnproject declares baseLanguage
+    "pt-BR" and only a pt-BR localisation, but the .yarn lines are written in
+    ENGLISH. Pick one before writing more.
+[ ] NAMING to settle: the .yarn uses Josh / Elder Amos / Marcus / Erika, while
+    CLAUDE.md still says "Amigo Proximo" / "Forasteira". Update CLAUDE.md.
+[ ] 23 Yarn commands + 3 functions already exist and are usable while writing -
+    sprite, fadein/fadeout, progress/hasprogress, objective, darken/brighten,
+    playsound, playmusic, sceneload, etc. Full generated list is at
+    ProjectSettings/Packages/dev.yarnspinner/Assembly-CSharp-generated.ysls.json
