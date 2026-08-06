@@ -1,347 +1,110 @@
-TODO / known bugs — ECDD adventure game
-========================================
+TODO — ECDD adventure game
+==========================
+Atualizado 2026-08-06.
 
-[ ] Crates nudge slightly LEFT at scene start (low priority — cosmetic-ish)
-    - At Play start, all crates shift a little to the left even though they were
-      snapped to grid in the editor.
-    - NOT the push logic: no crate script moves crates at start (Awake only sets
-      kinematic, OnEnable only labels the cell — neither repositions). So it's
-      PHYSICS, not code.
-    - Leading suspicion: player Rigidbody2D was set to Dynamic (for the old
-      MovePosition movement) but movement code was later reverted to
-      transform.position. Dynamic + transform.position fight, and a player spawning
-      in contact with crates can nudge them on frame 1.
-    - To diagnose when it matters: turn on `Log Push Failures` on PuzzleGrid — if
-      NO "PUSH (-1,0)" lines appear at start, it's physics. Then check Body Type of
-      the player and crate rigidbodies; likely fix is setting the player rigidbody
-      back to Kinematic (or whatever it was before the MovePosition experiment).
-    - Deferred by user 2026-07-17: irrelevant for now.
-
-NOTE (not a task — just documenting a known quirk):
-    Two-crates "only one moves per gesture" arbitration: the losing crate is locked
-    until the player RELEASES the movement input. There is one theoretical way to make
-    the loser move without releasing: keep the movement input held continuously the
-    whole time (never let go) while manoeuvring onto the other crate. In practice
-    players release/re-press constantly, so this is a non-issue. Decided NOT to add a
-    distance-based unlock (moved N units -> unlock) — it needs a magic threshold and
-    risks reopening the "wrong crate moves" bugs. Left as-is on purpose.
+O TODO antigo (dungeon, Y-sort, statue puzzles, bugs de crate, histórico das
+sessões de julho) foi limpo daqui a pedido. Nada foi perdido — está no git:
+    git show 5c2e654:TODO.txt
 
 
 ========================================================================
-SESSION 2026-07-22 — Ghost control + statue puzzles (crypt/graveyard dungeon)
+1. BUG — não dá pra entrar no pit do primeiro puzzle
 ========================================================================
+[ ] O personagem não consegue entrar no pit do primeiro puzzle. Começou a
+    acontecer DEPOIS de eu mexer na PushableCrate.
 
-Code written this session (compile-check in Unity first!):
-  GhostControl.cs (new), CameraFollow2D.cs (new — NOT used, going Cinemachine),
-  TileCycle.cs (new), + edits to CrateTarget, PlayerController, FragmentFollow,
-  StatueSwitch, ObstacleGroup, PossessionDrag.
+    Antes de mexer em código, capturar (não adivinhar — a saga de 22/07 foi
+    perdida exatamente por chutar física antes de ler o motivo da recusa):
+      - Mexi no SCRIPT PushableCrate.cs ou no PREFAB do crate? (se foi o
+        prefab: qual campo — tamanho/forma do Collider2D, Body Type,
+        offset, escala?)
+      - O player para na BORDA do pit, ou entra e é empurrado de volta?
+      - Tem algum crate parado na entrada do pit? Se sim, tira ele do
+        caminho e testa: se passar, é o collider do crate bloqueando.
+      - PuzzleGrid > Show Occupancy LIGADO: alguma célula da entrada está
+        marcada como ocupada?
+      - PuzzleGrid > Log Push Failures LIGADO: aparece alguma linha no
+        console quando encosto na entrada?
 
-------------------------------------------------------------------------
-TO DO — Ghost control (replaces the old possession)
-------------------------------------------------------------------------
-[ ] Add GhostControl component to a scene object. Assign:
-      - MC        = the object with PlayerController
-      - Ghost Follow = the FragmentFollow on the ghost
-      - Ghost     = the ghost's root transform
-      - Toggle Key = Q
-[ ] BUG seen: MC does NOT freeze while piloting the ghost. Almost certainly the
-    MC slot in GhostControl is empty / wrong object. Fill it with the PlayerController
-    object. (Code freezes MC via mc.InputEnabled only if mc is assigned.)
-[ ] Ghost needs Collider2D with IS TRIGGER = true + Rigidbody2D KINEMATIC, so the
-    statue's trigger detects it (ghost passes through everything, blocks nothing).
-[ ] Wire the camera switch: GhostControl -> On Camera Target Changed -> drag the
-    CinemachineCamera -> pick CinemachineCamera.Follow (dynamic Transform). Without
-    this the camera won't follow the ghost while piloting.
-    (Camera already fixed: Tracking Target = MC, Position Control = Position Composer,
-     Damping 0, Game View Guides = Disabled. Bug that was fixed: Tracking Target had
-     been set to MainCamera instead of the MC.)
-[ ] Remove the WeightedDragAndDrop component (old possession, dormant now) from
-    whatever scene object has it. THEN ask Claude to delete PossessionDrag.cs.
-
-------------------------------------------------------------------------
-TO DO — Statue puzzles / crate goals
-------------------------------------------------------------------------
-[ ] VERIFY box==goal per sub-puzzle (2 rugs = 2 crates). Flagged as suspect: the
-    top area and the middle area looked like they had a rug/crate mismatch.
-[ ] Per-puzzle grouping: set Puzzle Id on each rug (same id = one puzzle). Wire
-    onAllTargetsCovered on ONE rug per group -> SetActive(false) on that puzzle's
-    wall. Blank id = default single puzzle (old behaviour).
-[ ] Middle puzzle = Idea A: one statue opens one rug's path while closing the other
-    (coupled). Keep the rugs OUT of the rotation sweep, OR make Z-undo available to
-    the player, or the crate placed on a rug can block the next rotation = softlock.
-[x] "Clear" a solved sub-puzzle (DONE 2026-07-22): a crate parked on a rug used to
-    freeze the whole statue (all-or-nothing refused because the crate blocked a
-    cycle/rotation). Now: a group/ObstacleGroup/TileCycle with "Cleared When Puzzle
-    Solved" = <id> DROPS OUT of the statue's sweep once the rug with that Puzzle Id is
-    covered by a crate — stops moving, stops blocking the rest; re-arms if the crate is
-    pulled off. Opt-in: blank field = old behaviour. Wiring: rug.PuzzleId == group/
-    cycle.clearedWhenPuzzleSolved. Rug counts as solved ONLY with a PushableCrate on it.
-[ ] Final exit wall (opens only when ALL sub-puzzles done): needs a PuzzleGate
-    helper. NOT built yet — ask Claude to write it (listens to N puzzles -> fires
-    when all complete).
-[ ] Undo (Z) should be enabled ONLY inside puzzle zones (framed as the Fragment's
-    power), disabled in the overworld. NOT built yet — ask Claude when ready.
-[x] StatueSwitch per-group direction (DONE 2026-07-22): each group in the StatueSwitch
-    Groups list has its own "Counter Clockwise" checkbox — marking it flips THAT group
-    opposite to the un-marked groups, the rest unaffected. Global `Clockwise` checkbox
-    REMOVED (did nothing useful). Groups list changed type (ObstacleGroup ->
-    RotatingGroup wrapper), so RE-DRAG the groups in the inspector.
-
-------------------------------------------------------------------------
-OPEN BUG — ghost/stale grid registration
-------------------------------------------------------------------------
-[ ] Some crate/box near the BOTTOM of the dungeon registers a WRONG grid cell (long
-    lines up to mid-map in PuzzleGrid > Show Occupancy). The statue is now immune to
-    it (ObstacleGroup ignores ghost claims + computes from live positions), but
-    PushableCrate could still be falsely blocked by the same ghost. Root cause NOT
-    found. To diagnose: Show Occupancy ON, click the object the long line comes from,
-    check its components + whether it's snapped, tell Claude the name + components.
-    Claude can also add the same ghost-guard to PushableCrate if it turns out to bite.
-
-------------------------------------------------------------------------
-NEW MECHANIC I want to build — what Claude understood (TileCycle)
-------------------------------------------------------------------------
-The "cycling bushes / moving gap" puzzle, driven by the statue:
-  - A RING of cells. Bushes CYCLE through them, one step each time the statue is used
-    (E). With FEWER bushes than cells, one cell is always empty — a GAP that
-    circulates around the ring, opening a path where a bush just vacated.
-  - TOP crate: 2 bushes / 3 cells (the 3 cells directly adjacent to the top crate:
-    left, up, right). 1 gap circulates.
-  - BOTTOM crate: 1 bush / 3 cells. 2 gaps.
-  - This is DIFFERENT from the statue's rigid 90-degree rotation (ObstacleGroup):
-    that turns a whole shape; this shifts occupancy around a fixed ring.
-
-  TileCycle.cs is written. Setup per cycle:
-    1. Parent GameObject + TileCycle component.
-    2. Children, in cycle order: the bushes (each with GridObstacle) + a Create-Empty
-       marker on each GAP cell (top: 1 empty; bottom: 2 empties). Snap all.
-    3. Add the TileCycle to the statue's StatueSwitch -> Cycles list (new field,
-       alongside Groups). Statue moves groups + cycles together, all-or-nothing.
-    4. Direction = the Reverse checkbox on TileCycle. Flip it if the gap goes the
-       wrong way. (No coordinates needed — the component reads the children.)
-
-  DESIGN CONFIRMED 2026-07-22 (matches the crypt sketch): TOP cycle = 2 bushes / 3
-  cells (left, up, right of the top crate), counterclockwise, 1 gap. BOTTOM cycle =
-  1 bush / 3 cells (left, down, right of the bottom crate), clockwise, 2 gaps. Code
-  already does all of it — remaining work is pure scene authoring:
-    - Child order must make CONSECUTIVE ring entries ADJACENT cells, or a bush slides
-      diagonally across the gap. CW vs CCW = child order + the Reverse checkbox (the
-      script has no built-in handedness).
-    - Two separate TileCycle parents (top, bottom); add BOTH to the statue's Cycles.
-    - GAP MARKERS must use the new GridMarker component, NOT GridObstacle. GridObstacle
-      inherits GridOccupant (claims a cell even with no collider) AND TileCycle reads
-      "has GridObstacle" as "this is a bush" — so empties-as-GridObstacle made the cycle
-      see 0 gaps. GridMarker is snappable (GridObject) but owns no cell. (GridObject
-      itself is abstract, which is why GridObstacle was used before.) DONE 2026-07-22.
-
-[!] ROOT CAUSE of the "crate won't push" saga (2026-07-22): the push was NOT blocked
-    physically — it FIRED and was REFUSED because the target cell was held by an
-    'EmptyTile' with a GridObstacle component (claims the cell even with no collider).
-    The "not touching gap 0.11" logs were just the player walking up; the smoking gun
-    was "push into (2,69) refused — held by 'EmptyTile' (GridObstacle)". FIX: swap every
-    EmptyTile's GridObstacle -> GridMarker (see above). Also: PlayerController movement
-    was switched to Rigidbody2D.MovePosition in FixedUpdate (kept — user liked the feel;
-    revert available). Chased physics/colliders far too long before reading the refusal.
-
-========================================================================
-STILL OPEN after 2026-07-22 session (what did NOT get done)
-========================================================================
-
---- Y-SORT (analysed, NOT built) ---
-[ ] Bring the Y-sort system over (mainly for TREES + PLAYER; also crates/bushes since
-    they move). Decision: OPT-IN per-object, NOT global — static art (roads, the praça,
-    floor, rugs) stays manual and must NOT get Y-sort.
-[ ] Reliable Scene-view + Play preview needs YSort with [ExecuteAlways] + change-guard
-    (camera transparencySortAxis alone does NOT show in Scene view). Scripts to write:
-    YSort.cs (ExecuteAlways, feet-based, guard), YSortSetup.cs, maybe YSortGroup.cs for
-    the torch. NOT written yet — waiting on 3 decisions:
-      1. Any WALL/tall-tile the player walks BEHIND? (tilemaps can't YSort per-tile the
-         same way — those would need to be sprites or individual-mode).
-      2. Torch+fire: fire is a ParticleSystem (YSort only does SpriteRenderer). Plan =
-         Sorting Group on the torch root + a YSortGroup variant. (Also fixes the fire-
-         behind-crate bug.) OK to build?
-      3. ClickIndicator (fixed order 99) -> Ground or Overlay layer?
-[ ] Sorting Layers to create (Project Settings): Ground (floor/roads/praça/rugs) <
-    Entities (Y-sorted stuff). Protect the praça with a Sorting Group (locks internal
-    layer order). None of this is .cs — user does the scene/project setup.
-
---- FEEDBACK / HOOKS ---
-[ ] Wire visual+SFX feedback for a BLOCKED statue -> StatueSwitch.onRefused (the ONE
-    hook that fires; ObstacleGroup.onBlocked / TileCycle.onBlocked are DEAD in the statue
-    flow — statue pre-checks and refuses before TryRotate/TryStep, so they never fire).
-[ ] PushableCrate has NO event for a blocked/failed push — only logs. If we want a
-    'clunk' on a crate that can't move, add onPushBlocked (+ maybe onPushed). NOT built.
-
---- REWARD / CONTENT ---
-[ ] Reward for the crypt/cycle room: wire CrateTarget.onAllTargetsCovered -> open wall /
-    Pickup(lore) / whatever. Hooks ready, nothing wired yet. (User will do "depois".)
-[ ] Final exit wall (all sub-puzzles done) -> PuzzleGate helper. STILL not built.
-[ ] Undo (Z) enabled ONLY inside puzzle zones. STILL not built. (Extra relevant now —
-    the hard rotation room needs safe experimentation, see below.)
-
---- POLISH / RELIABILITY (the "polish pass" the user leaned toward) ---
-[ ] Reliability bugs still open: occasional stray/diagonal crate movement, occasional
-    push stalls, and the isolated crate-into-bush occupancy ghost. Need a REPRO with
-    Show Occupancy + Log Push Failures ON before touching code (don't guess — see the
-    2026-07-22 saga). Could add the same ghost-guard PushableCrate that ObstacleGroup has.
-[ ] Dead-code cleanup: PossessionDrag.cs + WeightedDragAndDrop (old possession),
-    CameraFollow2D.cs (unused). Also consider removing the dead onBlocked hooks on
-    ObstacleGroup/TileCycle so they don't mislead whoever wires feedback.
-[ ] Verify EmptyTile -> GridMarker swap was applied to ALL gap markers, not just the one.
-
---- DESIGN / PLAYTEST ---
-[ ] Hard rotation room: one part is only solvable via clever rotation, single solution
-    found so far. Not necessarily bad. Before shipping/deciding: (1) confirm rotation was
-    TAUGHT by an easier puzzle earlier, (2) make sure Z-undo works there, (3) PLAYTEST
-    with someone who isn't the designer. User expects noobs to struggle; leaving the room
-    as-is for now, will tune after playtest.
-
---- KEPT THIS SESSION (verify no regressions) ---
-[ ] PlayerController now moves via Rigidbody2D.MovePosition (FixedUpdate). Confirm click-
-    to-move still lands right, undo teleport doesn't drift, no wall jitter. Revert path
-    exists if needed.
-[x] StatueSwitch: per-group Counter Clockwise toggle; global Clockwise checkbox removed;
-    GridMarker.cs added; "Cleared When Puzzle Solved" clears a solved sub-puzzle out of
-    the statue sweep. (All DONE 2026-07-22.)
+    Suspeita principal (a confirmar): o collider sólido do crate ficou maior
+    e um crate perto da entrada agora tapa a passagem. O CLAUDE.md já
+    registra que a distância de parada do player é definida pelo TAMANHO DOS
+    DOIS COLLIDERS (dado de prefab), não por código.
 
 
 ========================================================================
-NEXT SESSION - BARK SYSTEM REWORK + YARN SCENE AUTHORING
-(planned 2026-08-05, to be DONE next session - nothing below is built yet)
+2. SISTEMA DE BARK — setup de cena (código já escrito, falta montar)
 ========================================================================
+Código pronto em Assets/Scripts/Dialogue Scripts/:
+  BarkDirector.cs, BarkPresenter.cs, BarkSet.cs, BarkTrigger.cs (novos)
+  CharacterDialogue.cs (reescrito — nenhum campo de prefab foi perdido)
 
-*** AUTHORIZATION GIVEN BY USER 2026-08-05: Claude MAY create and edit .yarn
-    files directly (Assets/dialogo projeto/). Still NO prefabs/scenes/meta/
-    sprites - those stay described-only, user does them in the Editor. ***
+[ ] ABRIR A UNITY E CHECAR O CONSOLE. Nada disso foi compilado ainda.
 
-GOAL (user's request, 4 things):
-  1. Optimize the bark asset the programmer made.
-  2. Specific NPCs must say specific lines at specific moments (not just random).
-  3. The bark system must be able to carry a SHORT MC <-> NPC exchange without
-     stopping the game / without the blocking dialogue box.
-  4. Then: implement scenes in Yarn Spinner together with the user.
+[ ] Um GameObject com BarkDirector. Atribuir:
+      - Main Runner = o DialogueRunner que está no DialogueManager
+      - Bark Runner = o segundo runner (item abaixo)
 
-------------------------------------------------------------------------
-WHERE IT STANDS TODAY
-------------------------------------------------------------------------
-  Assets/Scripts/Dialogue Scripts/CharacterDialogue.cs (147 lines) - the current
-  bark. Was Barker.cs / class CharacterBark (285 lines), renamed in commit
-  0ff605a "finalmente" (filename != classname, so it could not be attached).
-  It does: floating world-space TMP above a character, random line from a
-  List<string> on a min/max timer, hold -> float up -> fade. Public API:
-  ShowDialogue(string), HideDialogue(), StartRandomDialogue(), StopRandomDialogue().
-  NOTHING in code references it - it is wired only via Inspector/prefabs.
+[ ] Um SEGUNDO GameObject com DialogueRunner próprio:
+      - único Dialogue Presenter = BarkPresenter
+      - mesmo YarnProject do runner principal
+      - Variable Storage apontando pro MESMO objeto de storage do principal
+        (senão os barks não leem $YarnTalkedElder)
 
-  Features LOST in the Barker -> CharacterDialogue rewrite, decide keep/drop:
-  background sprite behind text (legibility over busy tilemaps), pop/bounce
-  animation, forced sortingOrder >= 10, autoSizeTextContainer + wrapping mode,
-  Mode enum (Bark vs Puzzle), Bark(int index), SetTextColor / SetFontSize /
-  SetTextOffset.
+[ ] Preencher "Bark Id" em cada CharacterDialogue que vai falar. Tem que
+    bater com o character name usado no .yarn:
+      josh / marcus / erika / haze / elder amos
 
-------------------------------------------------------------------------
-PART A - OPTIMIZE CharacterDialogue.cs
-------------------------------------------------------------------------
-[ ] Suppress idle chatter while real dialogue runs. Right now nothing checks
-    DialogueRunner.IsDialogueRunning, so an NPC can bark OVER a Yarn conversation.
-    Subscribe once in BarkDirector (Part B) instead of polling per NPC.
-[ ] Idle coroutine runs forever on EVERY NPC, even offscreen / far away
-    (RandomDialogueRoutine is while(true), started in Start). Gate on player
-    distance + renderer visibility; stop the routine when out of range.
-[ ] No-repeat picking: Random.Range can show the same line twice in a row.
-    Use a shuffled bag that reshuffles when exhausted.
-[ ] Priority + queue. ShowDialogue() currently stomps whatever is on screen, so a
-    scripted story bark can be killed by idle chatter. Add:
-      enum BarkPriority { Idle, Reactive, Scripted }
-    Higher priority interrupts lower; equal priority queues (or drops - decide).
-[ ] Stop coroutines in OnDisable, not only OnDestroy (a disabled NPC currently
-    leaves its text hanging on screen).
-[ ] Duration should scale with line length (chars * secondsPerChar, clamped),
-    not one fixed holdDuration for every line.
-[ ] Lines live as a List<string> per prefab instance = not reusable, not
-    translatable. Move to a BarkSet ScriptableObject (Part B) so sets are shared
-    between NPCs and can be swapped per act as the mist thickens.
-[ ] originalColor is captured in Awake - if anything else touches the TMP alpha it
-    drifts. Re-read on show, or store only the RGB.
-[ ] Decide on the background sprite: Barker generated a 1x1 Texture2D + Sprite at
-    runtime PER NPC. If it comes back, use ONE shared static sprite, not one each.
+[ ] O MC precisa de um CharacterDialogue com bark id "josh". Sem isso as
+    falas dele nas conversas de bark não têm onde aparecer.
 
-------------------------------------------------------------------------
-PART B - SPECIFIC NPC, SPECIFIC LINE, SPECIFIC MOMENT
-------------------------------------------------------------------------
-Design: barks get authored in .yarn like everything else, so there is ONE place
-where the writing lives. Two new pieces of code:
+[ ] (Opcional, não urgente) Criar assets BarkSet — Create > ECDD > Bark Set —
+    e adicionar na lista "Bark Sets" do director pro <<barkset>> achar por
+    nome. A List<string> "Random Lines" do prefab continua funcionando como
+    fallback, dá pra migrar aos poucos.
 
-[ ] BarkDirector (scene singleton). NPCs register themselves by a string id
-    ("marcus", "erika", "elder_amos"). Owns the DialogueRunner suppression flag.
-    Exposes Yarn commands:
-      <<bark marcus "line here">>       one specific line, one specific NPC
-      <<barkset marcus Suspicious>>     swap that NPC's idle BarkSet
-      <<barkstop marcus>>
-    This piggybacks on the existing setup - automaticallyLinkAttributedYarnCommands
-    is ON and there is no asmdef, so [YarnCommand] on BarkDirector auto-registers.
-[ ] BarkSet (ScriptableObject): a named list of lines + optional condition. One
-    asset per NPC per story beat (e.g. Marcus_Act1, Marcus_Mist_Rising). Lets the
-    village get progressively erratic by swapping assets - no code per NPC.
-[ ] Conditions, reusing what already exists rather than inventing a flag system:
-      - SaveManager.HasProgress(string) - already used by DialogueStarter
-      - Yarn variables via the runner's VariableStorage ($YarnTalkedElder etc.)
-    A BarkSet only fires if its condition passes.
-[ ] BarkTrigger component for "at a specific moment" without writing code:
-    on zone enter / on puzzle solved (UnityEvent from CrateTarget) / on pickup /
-    after N seconds in area -> calls BarkDirector.Bark(id, line or set).
+Comandos disponíveis no .yarn depois do setup:
+    <<bark marcus "Cara, essa névoa tá pior hoje.">>
+    <<barkset marcus Marcus_MistRising>>      (ou "none" pra voltar ao prefab)
+    <<barkstop marcus>>  /  <<barkresume marcus>>
+    <<barkconvo overheard_marcus_erika>>      (nó inteiro como bark flutuante)
 
-------------------------------------------------------------------------
-PART C - SHORT NON-BLOCKING MC <-> NPC EXCHANGE (the interesting one)
-------------------------------------------------------------------------
-VERIFIED API (checked 2026-08-05 against the installed package
-Library/PackageCache/dev.yarnspinner.unity@4c0c8ef55129):
-  - Yarn.Unity.DialoguePresenterBase (Runtime/Views/DialoguePresenterBase.cs)
-      abstract YarnTask RunLineAsync(LocalizedLine, LineCancellationToken)
-      virtual  YarnTask<DialogueOption?> RunOptionsAsync(...)
-      abstract YarnTask OnDialogueStartedAsync() / OnDialogueCompleteAsync()
-      virtual  void OnNodeEnter(string) / OnNodeExit(string)
-  - DialogueRunner.DialoguePresenters (IEnumerable<DialoguePresenterBase?>),
-    settable at runtime. DialogueRunner.IsDialogueRunning exists.
-    (dialogueViews is [Obsolete] - do not use it.)
 
-[ ] Build BarkPresenter : DialoguePresenterBase. RunLineAsync renders the line as
-    a floating bark above whoever the line's CHARACTER NAME maps to
-    (line.CharacterName -> BarkDirector id; "Josh" -> the MC), waits the
-    length-scaled duration, returns. Never touches the dialogue box, never
-    freezes the player.
-    -> This is the key idea: a short overheard exchange is just a normal Yarn node
-       run through a DIFFERENT presenter. No second data format, no bespoke script
-       per conversation, and all writing stays in the .yarn files.
-[ ] Decide how a node is marked as bark-style. Cleanest: a node header in the
-    .yarn (e.g. "style: bark") read in OnNodeEnter.
-    NEEDS CHECKING against the installed version - confirm custom node headers are
-    readable at runtime BEFORE committing to this approach.
-[ ] IMPORTANT: use a SECOND DialogueRunner GameObject for barks, with only
-    BarkPresenter attached, separate from the main blocking runner held by
-    DialogueManager (which lives inside ImageScript.cs:9). Otherwise barks and real
-    dialogue fight over one runner.
-    Open question: share VariableStorage between the two runners (probably yes, so
-    barks can read $YarnTalkedElder).
-[ ] Options in bark mode: RunOptionsAsync must NOT show a chooser. Either auto-pick
-    the first option or forbid options in bark nodes. Decide with user.
-[ ] Bail-out rule: if the player walks away mid-exchange, cancel it
-    (LineCancellationToken is already the mechanism). Decide: abort silently, or
-    let it finish offscreen.
-[ ] Blocking dialogue must always win: if the main runner starts, cancel any running
-    bark conversation. Wire through BarkDirector.
+========================================================================
+3. DECISÃO PENDENTE — idioma do Yarn
+========================================================================
+[ ] HistoriasVN.yarnproject declara baseLanguage "pt-BR" e só tem localização
+    pt-BR, mas TODAS as falas dos .yarn estão em INGLÊS.
+    Decidir antes de escrever mais conteúdo. Isso trava o item 4.
 
-------------------------------------------------------------------------
-PART D - YARN SCENE AUTHORING (with the user, next session)
-------------------------------------------------------------------------
-[ ] Implement the actual scenes in .yarn together with the user (authorized above).
-[ ] Existing content to build on: Assets/dialogo projeto/gamescript.yarn
-    (nodes: gamescript, square_initial, square_marcus_erika) and receptionistintro.yarn.
-[ ] INCONSISTENCY to settle first: HistoriasVN.yarnproject declares baseLanguage
-    "pt-BR" and only a pt-BR localisation, but the .yarn lines are written in
-    ENGLISH. Pick one before writing more.
-[ ] NAMING to settle: the .yarn uses Josh / Elder Amos / Marcus / Erika, while
-    CLAUDE.md still says "Amigo Proximo" / "Forasteira". Update CLAUDE.md.
-[ ] 23 Yarn commands + 3 functions already exist and are usable while writing -
-    sprite, fadein/fadeout, progress/hasprogress, objective, darken/brighten,
-    playsound, playmusic, sceneload, etc. Full generated list is at
+
+========================================================================
+4. ESCREVER AS CENAS EM YARN
+========================================================================
+[ ] Continuar gamescript.yarn (hoje tem 16 nós, vai até puzzle_entrance).
+[ ] Claude está autorizado a criar/editar .yarn direto (Assets/dialogo projeto/).
+    Prefab, cena, meta e sprite continuam sendo só do usuário.
+[ ] 23 comandos Yarn + 3 funções já existem e valem dentro de bark também.
+    Lista gerada em:
     ProjectSettings/Packages/dev.yarnspinner/Assembly-CSharp-generated.ysls.json
+
+
+========================================================================
+5. PENDÊNCIAS MENORES
+========================================================================
+[ ] InteractText.cs tem a classe InteractDialogue — nome de arquivo diferente
+    do nome da classe. Foi isso que quebrou o Barker.cs/CharacterBark antes.
+    Conferir se o Interact Text.prefab está com o script certo ou missing.
+
+[ ] InteractDialogue e os barks do MC desenham os dois acima do PLAYER e não
+    se enxergam — podem se sobrepor. O Gabriel vetou fundir os dois sistemas,
+    então só foi amenizado: o BarkDirector apaga o bark do MC quando o
+    InteractButton.OnPressed dispara.
+
+[ ] Teleporter.cs usa SetLabel() direto em vez de SetInteraction(). Player no
+    trigger do teleporte e de um NPC ao mesmo tempo: os dois brigam pelo label
+    e um clique pode disparar diálogo E teleporte.
+
+[ ] ProjectSettings/Packages/dev.yarnspinner/Assembly-CSharp-generated.ysls.json
+    é autogerado e muda por locale ("0,37" numa máquina, "0.37" na outra).
+    Conflita todo commit — jogar no .gitignore.

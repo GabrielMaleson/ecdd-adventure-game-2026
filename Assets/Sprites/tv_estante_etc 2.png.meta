@@ -1,28 +1,28 @@
 fileFormatVersion: 2
-guid: 4c76510e1c392194980abc4582607d8f
+guid: 572326289e9d95b48aa5e713dce3af04
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8225290530673830860
-    second: tv_estante_etc_0
+      213: 6530349203307399998
+    second: tv_estante_etc 2_0
   - first:
-      213: -3370729382198276922
-    second: tv_estante_etc_1
+      213: 3039290792944747366
+    second: tv_estante_etc 2_1
   - first:
-      213: -7569009910271643148
-    second: tv_estante_etc_2
+      213: -9055784523848467861
+    second: tv_estante_etc 2_2
   - first:
-      213: -5900177515254615083
-    second: tv_estante_etc_3
+      213: 2672299763992384220
+    second: tv_estante_etc 2_3
   - first:
-      213: 1180795703859796150
-    second: tv_estante_etc_4
+      213: 1377739169895557187
+    second: tv_estante_etc 2_4
   - first:
-      213: -301303379016696007
-    second: tv_estante_etc_5
+      213: 7119160239243418016
+    second: tv_estante_etc 2_5
   - first:
-      213: 4508346811120513451
-    second: tv_estante_etc_6
+      213: -1803785728609099938
+    second: tv_estante_etc 2_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -118,155 +118,155 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: tv_estante_etc_0
+      name: tv_estante_etc 2_0
       rect:
         serializedVersion: 2
-        x: 3
-        y: 88
-        width: 26
-        height: 20
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ccba23f782a162270800000000000000
-      internalID: 8225290530673830860
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: tv_estante_etc_1
-      rect:
-        serializedVersion: 2
-        x: 66
-        y: 73
+        x: 2
+        y: 87
         width: 28
-        height: 38
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6cc891c5c73c831d0800000000000000
-      internalID: -3370729382198276922
+      spriteID: e3b846a400670aa50800000000000000
+      internalID: 6530349203307399998
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tv_estante_etc_2
+      name: tv_estante_etc 2_1
       rect:
         serializedVersion: 2
-        x: 2
-        y: 51
-        width: 40
-        height: 31
+        x: 65
+        y: 72
+        width: 30
+        height: 40
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4f1f8d4c69975f690800000000000000
-      internalID: -7569009910271643148
+      spriteID: 66346929fdabd2a20800000000000000
+      internalID: 3039290792944747366
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tv_estante_etc_3
+      name: tv_estante_etc 2_2
       rect:
         serializedVersion: 2
-        x: 84
-        y: 36
-        width: 24
-        height: 32
+        x: 1
+        y: 50
+        width: 42
+        height: 33
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5d370837fcb5e1ea0800000000000000
-      internalID: -5900177515254615083
+      spriteID: b6a388584f3635280800000000000000
+      internalID: -9055784523848467861
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tv_estante_etc_4
+      name: tv_estante_etc 2_3
       rect:
         serializedVersion: 2
-        x: 2
-        y: 13
-        width: 40
-        height: 31
+        x: 83
+        y: 35
+        width: 26
+        height: 34
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6b8ded0cf67036010800000000000000
-      internalID: 1180795703859796150
+      spriteID: cd250261a7ae51520800000000000000
+      internalID: 2672299763992384220
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tv_estante_etc_5
+      name: tv_estante_etc 2_4
       rect:
         serializedVersion: 2
-        x: 47
-        y: 2
-        width: 34
-        height: 45
+        x: 1
+        y: 12
+        width: 42
+        height: 33
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 93fb5145c2e81dbf0800000000000000
-      internalID: -301303379016696007
+      spriteID: 34824c6b976be1310800000000000000
+      internalID: 1377739169895557187
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tv_estante_etc_6
+      name: tv_estante_etc 2_5
       rect:
         serializedVersion: 2
-        x: 86
-        y: 2
-        width: 22
-        height: 32
+        x: 46
+        y: 1
+        width: 36
+        height: 47
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ba17a19d98dd09e30800000000000000
-      internalID: 4508346811120513451
+      spriteID: 0a95037c4865cc260800000000000000
+      internalID: 7119160239243418016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tv_estante_etc 2_6
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 1
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5fd55bcf6aa7f6e0800000000000000
+      internalID: -1803785728609099938
       vertices: []
       indices: 
       edges: []
@@ -275,7 +275,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 7d2c937c9cd22c749b161fb147e46e56
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -283,17 +283,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      tv_estante_etc_0: 8225290530673830860
-      tv_estante_etc_1: -3370729382198276922
-      tv_estante_etc_2: -7569009910271643148
-      tv_estante_etc_3: -5900177515254615083
-      tv_estante_etc_4: 1180795703859796150
-      tv_estante_etc_5: -301303379016696007
-      tv_estante_etc_6: 4508346811120513451
+      tv_estante_etc 2_0: 6530349203307399998
+      tv_estante_etc 2_1: 3039290792944747366
+      tv_estante_etc 2_2: -9055784523848467861
+      tv_estante_etc 2_3: 2672299763992384220
+      tv_estante_etc 2_4: 1377739169895557187
+      tv_estante_etc 2_5: 7119160239243418016
+      tv_estante_etc 2_6: -1803785728609099938
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
