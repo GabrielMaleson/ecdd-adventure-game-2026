@@ -8,6 +8,7 @@ TagManager:
   - Agarravel
   - InteractButton
   - Inventory
+  - Haze
   layers:
   - Default
   - TransparentFX

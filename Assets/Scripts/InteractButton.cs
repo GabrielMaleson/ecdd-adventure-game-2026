@@ -10,16 +10,10 @@ public class InteractButton : MonoBehaviour
 
     public static InteractButton Instance { get; private set; }
 
-    // Fired on every press, regardless of what (if anything) is currently
-    // wired up via SetInteraction. Other systems (e.g. PushableCrate) can
-    // subscribe to react to presses without going through the dialogue path.
     public event System.Action OnPressed;
 
-    private string dialogue;
-    private bool hasConditions;
-    private bool conditionsCancel;
-    private List<DialogueStarter.DialogueCondition> conditions;
-    private DialogueStarter source; // Which DialogueStarter set this interaction, so it can be marked as played
+    private InteractDialogue currentInteractDialogue;
+    private DialogueStarter currentDialogueStarter;
 
     private void Awake()
     {
@@ -31,16 +25,18 @@ public class InteractButton : MonoBehaviour
         button.onClick.AddListener(OnClicked);
     }
 
-    // Called by DialogueStarter when the player enters a click-NPC's trigger.
     public void SetInteraction(DialogueStarter starter, string dialogueTitle, string conversantName, bool conditionsEnabled, List<DialogueStarter.DialogueCondition> dialogueConditions, bool cancelConditions)
     {
-        source = starter;
-        dialogue = dialogueTitle;
-        hasConditions = conditionsEnabled;
-        conditions = dialogueConditions;
-        conditionsCancel = cancelConditions;
-
+        currentDialogueStarter = starter;
+        currentInteractDialogue = null;
         SetLabel($"Interact ({conversantName})");
+    }
+
+    public void SetInteraction(InteractDialogue interactDialogue, string labelText)
+    {
+        currentInteractDialogue = interactDialogue;
+        currentDialogueStarter = null;
+        SetLabel(labelText);
     }
 
     public void SetLabel(string text)
@@ -49,15 +45,10 @@ public class InteractButton : MonoBehaviour
             label.text = text;
     }
 
-    // Clears the interaction when the player leaves the trigger area.
     public void ClearInteraction()
     {
-        source = null;
-        dialogue = null;
-        hasConditions = false;
-        conditions = null;
-        conditionsCancel = false;
-
+        currentDialogueStarter = null;
+        currentInteractDialogue = null;
         SetLabel(string.Empty);
     }
 
@@ -65,12 +56,23 @@ public class InteractButton : MonoBehaviour
     {
         OnPressed?.Invoke();
 
-        if (string.IsNullOrEmpty(dialogue))
+        if (currentInteractDialogue != null)
+        {
+            currentInteractDialogue.OnInteractPressed();
             return;
+        }
 
-        DialogueStarter.EvaluateConditionsAndStart(dialogue, hasConditions, conditions, conditionsCancel);
+        if (currentDialogueStarter != null)
+        {
+            string dialogue = currentDialogueStarter.Dialogue;
+            bool hasConditions = currentDialogueStarter.HasConditions;
+            var conditions = currentDialogueStarter.Conditions;
+            bool conditionsCancel = currentDialogueStarter.ConditionsCancel;
 
-        if (source != null && source.OnceTime)
-            source.MarkAsPlayed();
+            DialogueStarter.EvaluateConditionsAndStart(dialogue, hasConditions, conditions, conditionsCancel);
+
+            if (currentDialogueStarter.OnceTime)
+                currentDialogueStarter.MarkAsPlayed();
+        }
     }
 }
