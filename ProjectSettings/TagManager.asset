@@ -7,6 +7,7 @@ TagManager:
   - Attack
   - Agarravel
   - InteractButton
+  - Inventory
   layers:
   - Default
   - TransparentFX
@@ -49,6 +50,9 @@ TagManager:
     locked: 0
   - name: NPCs
     uniqueID: 329423151
+    locked: 0
+  - name: Dialogue
+    uniqueID: 3432202319
     locked: 0
   m_RenderingLayers:
   - Default

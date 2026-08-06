@@ -1,11 +1,9 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System.Collections;
 
 // A portal: walking in either teleports immediately (teleportOnTrigger) or arms an
-// InteractButton prompt and waits for E — the same interact pattern SceneLoadTrigger
-// and StatueSwitch use elsewhere in the project.
+// InteractButton prompt and waits for the player to click it.
 [RequireComponent(typeof(Collider2D))]
 public class TeleporterScript : MonoBehaviour
 {
@@ -13,8 +11,8 @@ public class TeleporterScript : MonoBehaviour
     public Transform destination;
     public bool teleportOnTrigger = true;
 
-    [Tooltip("Only used when Teleport On Trigger is off — prompt shown on the interact label while in range.")]
-    public string interactLabel = "Teleport (E)";
+    [Tooltip("Only used when Teleport On Trigger is off — shown on the Interact Button while in range; click it to teleport.")]
+    public string interactLabel = "Teleport";
 
     [Header("Camera Switch")]
     [Tooltip("Enabled after the transition — the camera for the destination area.")]
@@ -41,10 +39,20 @@ public class TeleporterScript : MonoBehaviour
     private float cooldownTimer;
     private bool playerInRange;
     private bool promptShown;
+    private bool subscribedToInteractButton;
     private GameObject player;
 
     private void Update()
     {
+        // InteractButton is a scene singleton set up in its own Awake(); if this object's
+        // Update runs before that Awake happens, Instance can still be null on the very
+        // first frames, so keep retrying until the subscription actually takes.
+        if (!subscribedToInteractButton && InteractButton.Instance != null)
+        {
+            InteractButton.Instance.OnPressed += HandleInteractButtonPressed;
+            subscribedToInteractButton = true;
+        }
+
         if (isOnCooldown)
         {
             cooldownTimer -= Time.deltaTime;
@@ -61,13 +69,16 @@ public class TeleporterScript : MonoBehaviour
             InteractButton.Instance?.SetLabel(canUse ? interactLabel : string.Empty);
             promptShown = canUse;
         }
+    }
 
-        if (!canUse)
+    // OnPressed fires for every interact-button press in the game, so only act on it
+    // while OUR prompt is the one actually showing.
+    private void HandleInteractButtonPressed()
+    {
+        if (teleportOnTrigger || !playerInRange || !promptShown)
             return;
 
-        var kb = Keyboard.current;
-        if (kb != null && kb.eKey.wasPressedThisFrame)
-            Teleport();
+        Teleport();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -93,6 +104,12 @@ public class TeleporterScript : MonoBehaviour
 
     private void OnDisable()
     {
+        if (subscribedToInteractButton && InteractButton.Instance != null)
+        {
+            InteractButton.Instance.OnPressed -= HandleInteractButtonPressed;
+            subscribedToInteractButton = false;
+        }
+
         playerInRange = false;
         HidePrompt();
     }
