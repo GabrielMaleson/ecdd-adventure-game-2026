@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5284493684487219387}
   - component: {fileID: 1503362023260454817}
+  - component: {fileID: 8482143598325361760}
   m_Layer: 0
   m_Name: portal
   m_TagString: Untagged
@@ -47,8 +48,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrateTarget
   visual: {fileID: 3954700721447542933}
-  puzzleId: cicloA
+  puzzleId: 
   onAllTargetsCovered:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &8482143598325361760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3965113191431999246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9892efc052f24c7499f4d7d93f374294, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PortalPulse
+  pulse: {fileID: 5672951912701924518}
+  stopDelay: 0.15
+  resumeDelay: 0
+  hardCut: 0
+  spawnRateProperty: smokeRate
+  debugLog: 0
+  onPulseStopped:
+    m_PersistentCalls:
+      m_Calls: []
+  onPulseResumed:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &6279885963156054187
