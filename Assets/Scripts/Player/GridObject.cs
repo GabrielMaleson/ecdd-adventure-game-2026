@@ -26,10 +26,29 @@ public abstract class GridObject : MonoBehaviour
     // The cell this object currently sits on.
     public Vector2Int Cell { get; protected set; }
 
-    // Middle of the artwork in world space. Falls back to the pivot if no sprite
-    // was assigned — alignment then depends on the pivot, which is why `visual`
-    // exists.
-    public Vector3 VisualCenter => visual != null ? visual.bounds.center : transform.position;
+    // A deliberate LIE about where the artwork is, in world units, and the only
+    // sanctioned way to make a grid object look off-cell on purpose.
+    //
+    // Some art can't be centred honestly. A statue's visual middle is its chest, so a
+    // statue standing dead-centre on a floor portal reads as hovering above it — the
+    // portal wants the statue's BASE, not its middle. Nudging the transform to fix that
+    // would move the object's CELL with it (the cell IS the artwork's centre), and then
+    // coverage, the pulse, ghost checks and the gate would all follow the statue off the
+    // tile it's supposed to be sitting on.
+    //
+    // So the offset is declared instead of hidden: the art moves, VisualCenter subtracts
+    // it back out, and every consumer keeps reading the true cell. Zero for everything
+    // that doesn't opt in, which is almost everything.
+    //
+    // Runtime only — never serialized. What you author in the scene stays honest, and a
+    // cosmetic nudge can't accumulate into the saved layout.
+    public Vector3 CosmeticOffset { get; protected set; }
+
+    // Middle of the artwork in world space, cosmetic nudge removed. Falls back to the
+    // pivot if no sprite was assigned — alignment then depends on the pivot, which is
+    // why `visual` exists.
+    public Vector3 VisualCenter =>
+        (visual != null ? visual.bounds.center : transform.position) - CosmeticOffset;
 
     // Rigid pivot->artwork offset. Children keep their local offsets, so moving
     // the root by this much moves the whole prefab as one piece.

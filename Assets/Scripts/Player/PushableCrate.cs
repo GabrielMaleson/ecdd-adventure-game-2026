@@ -29,6 +29,15 @@ public class PushableCrate : GridOccupant
     [Tooltip("Print to the console why a push was refused, naming whatever holds the target cell. Debug aid — turn off when done.")]
     [SerializeField] bool logRefusedPushes = false;
 
+    [Header("Encaixe no portal (só visual)")]
+    [Tooltip("Quanto o DESENHO fica deslocado do centro da célula quando esta caixa para em cima de um portal (qualquer CrateTarget). Serve pra arte cuja base não é o meio do sprite: a estátua sobe um pouco e a base dela cai dentro da elipse do portal. A CÉLULA não muda — isto é só aparência. Y positivo = sobe. Ajusta no olho com o jogo rodando.")]
+    [SerializeField] Vector2 portalLandingOffset = new Vector2(0f, 0.25f);
+
+    // Sem duração própria e sem exceção por direção: o encaixe acontece DENTRO do
+    // deslize, na mesma curva. Vindo de lado a caixa faz uma diagonal pro portal; vindo
+    // de baixo ou de cima ela só anda um pouco menos (ou mais) no Y. Nenhum dos casos
+    // tem um segundo movimento pra ficar estranho.
+
     protected override Color DebugColor => Color.yellow;
 
     Vector2Int? lastRefusedCell;
@@ -83,6 +92,27 @@ public class PushableCrate : GridOccupant
         if (player != null)
             foreach (var c in player.GetComponentsInChildren<Collider2D>())
                 if (!c.isTrigger) { playerCol = c; break; }   // the player's solid body
+
+        SettleIfAuthoredOnPortal();
+    }
+
+    // A crate placed on a portal in the EDITOR has never been pushed, so nothing ever
+    // gave it its landing offset — it would sit honestly centred (and wrong) until the
+    // first push snapped it into place. Applied dry here, no pull: there was no arrival
+    // to react to.
+    void SettleIfAuthoredOnPortal()
+    {
+        if (portalLandingOffset == Vector2.zero) return;
+        if (grid == null || !grid.IsReady) return;
+
+        // Read live rather than trusting Cell: OnEnable bails out without claiming
+        // anything if the grid wasn't ready yet, and Cell would still be at its default.
+        Vector2Int here = grid.WorldToCell(VisualCenter);
+        if (!CrateTarget.IsTargetCell(here)) return;
+
+        CosmeticOffset      = portalLandingOffset;
+        transform.position += (Vector3)portalLandingOffset;
+        if (rb != null) rb.position = transform.position;
     }
 
     void Update()
@@ -274,6 +304,7 @@ public class PushableCrate : GridOccupant
         // it will be framed in-story as the Fragment pulling him back.
         Vector2Int crateFromCell = Cell;
         Vector3    crateFromPos  = transform.position;
+        Vector3    crateFromCosm = CosmeticOffset;        // parked on a portal? undo has to put that back too
         PlayerController pusher   = player;               // may be null (see Start)
         Vector3    playerFromPos  = pusher != null ? pusher.transform.position : Vector3.zero;
 
@@ -292,7 +323,7 @@ public class PushableCrate : GridOccupant
                 return;
             }
 
-            RestoreTo(crateFromCell, crateFromPos);
+            RestoreTo(crateFromCell, crateFromPos, crateFromCosm);
             if (pusher != null) pusher.TeleportTo(playerFromPos);
         });
 
@@ -310,7 +341,7 @@ public class PushableCrate : GridOccupant
     // Puts the crate back on a cell instantly (undo). Cancels any slide in flight
     // and re-syncs the occupancy map, so the registry never keeps a ghost of where
     // the crate was mid-animation.
-    public void RestoreTo(Vector2Int cell, Vector3 worldPos)
+    public void RestoreTo(Vector2Int cell, Vector3 worldPos, Vector3 cosmetic = default)
     {
         StopAllCoroutines();
         isMoving = false;
@@ -318,6 +349,13 @@ public class PushableCrate : GridOccupant
         ClearCell();
         transform.position = worldPos;
         rb.position        = worldPos;      // keep the physics body in step with the teleport
+
+        // Restored TOGETHER with the position: the two only mean anything as a pair.
+        // StopAllCoroutines can cut a portal pull halfway and leave a partial offset —
+        // without this the crate would sit at the old position while still lying about
+        // where its artwork is, and its cell would read a tile off.
+        CosmeticOffset = cosmetic;
+
         ReassignCell(cell);
 
         CrateTarget.EvaluateWin();
@@ -364,21 +402,52 @@ public class PushableCrate : GridOccupant
         // Claim the target cell up front so nothing pushes into it mid-slide.
         Claim(target);
 
+        // Where the ART wants to end up relative to the cell: nudged if this cell has a
+        // portal, dead-centre otherwise. Decided BEFORE the slide so the suck is part of
+        // the one movement instead of a second tug bolted onto the end.
+        Vector3 offsetFrom = CosmeticOffset;
+        Vector3 offsetTo   = CrateTarget.IsTargetCell(target) ? (Vector3)portalLandingOffset
+                                                             : Vector3.zero;
+
+        // The honest landing spot is read with the offset temporarily cleared, because
+        // RootPositionForCell works backwards from VisualCenter and VisualCenter has the
+        // offset baked into it. Zero it, ask, put it back.
+        CosmeticOffset = Vector3.zero;
+        Vector3 endHonest = RootPositionForCell(target);
+        CosmeticOffset = offsetFrom;
+
         // Aim at the cell's exact center rather than "current position + one tile".
         // A relative step would preserve any authoring error forever; this makes a
         // crate that was left slightly off-grid ease back into alignment on its
         // first push instead of drifting further.
         Vector2 start   = transform.position;
-        Vector2 end     = RootPositionForCell(target);
+        Vector2 end     = (Vector2)(endHonest + offsetTo);
         float   elapsed = 0f;
         while (elapsed < moveDuration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, elapsed / moveDuration);
+
+            // The offset rides along with the position on the same curve. That's what
+            // makes the visible path bow diagonally into the portal while the LOGICAL
+            // path — VisualCenter — stays the same straight line to the cell centre it
+            // has always been. Anything checking cells mid-slide (a statue turning, an
+            // undo) sees exactly what it saw before this feature existed.
+            CosmeticOffset = Vector3.Lerp(offsetFrom, offsetTo, t);
             rb.MovePosition(Vector2.Lerp(start, end, t));
             yield return null;
         }
-        rb.MovePosition(end);
+        CosmeticOffset = offsetTo;
+
+        // Set DIRECTLY, not via MovePosition. MovePosition only takes effect on the next
+        // physics step, so the transform would still be a frame behind while
+        // CosmeticOffset is already at its final value — VisualCenter then subtracts the
+        // full offset from a position that hasn't caught up and reports the wrong cell
+        // for one frame. EvaluateWin runs in exactly that frame, which is how the portal
+        // stopped noticing the statue landing on it. Safe here: the slide is over and
+        // this is the same spot MovePosition was about to apply anyway.
+        transform.position = end;
+        rb.position        = end;
         isMoving = false;
 
         CrateTarget.EvaluateWin();

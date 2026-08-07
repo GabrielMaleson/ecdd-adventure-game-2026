@@ -21,9 +21,58 @@ public class ObstacleGroup : GridObject
     [Tooltip("Optional. When the puzzle with THIS Puzzle Id is solved (its rug covered by a crate), the statue STOPS turning this group — a 'cleared' sub-puzzle drops out of the rotation so it can't block the rest. Re-arms if the crate is pulled off. Blank = always turns.")]
     [SerializeField] string clearedWhenPuzzleSolved = "";
 
-    // True while this group's gate-puzzle is solved: the statue skips it entirely.
-    public bool IsCleared =>
+    // True while this group is out of the sweep: the statue skips it entirely.
+    // Same two-path answer as TileCycle.IsCleared — see the long note there. Short
+    // version: the typed Puzzle Id silently answers "false" forever when it names a
+    // rug that isn't in the scene, so the BOARD is asked too and can't be mistyped.
+    public bool IsCleared => ClearedById || ClearedByBoard;
+
+    bool ClearedById =>
         !string.IsNullOrEmpty(clearedWhenPuzzleSolved) && CrateTarget.IsSolved(clearedWhenPuzzleSolved);
+
+    // A crate parked on a rug anywhere in this group's ORBIT — the cells its members
+    // hold now, plus the two cells each could turn into. Those are exactly the cells a
+    // member could ever collide on, so a solved rug among them means this group has
+    // nothing left to do and must stop blocking the rest of the statue.
+    // Gated on the id being FILLED IN — a blank Cleared When Puzzle Solved means
+    // "always turns" and must stay literally true. See the note in TileCycle.
+    bool ClearedByBoard
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(clearedWhenPuzzleSolved)) return false;
+            if (grid == null || !grid.IsReady) return false;   // quiet: HasGrid() logs
+
+            var members = GetComponentsInChildren<GridObstacle>();
+            if (members.Length == 0) return false;
+
+            Vector2Int pivot = CurrentCell();
+            foreach (var m in members)
+            {
+                if (m == null) continue;
+                Vector2Int cell = grid.WorldToCell(m.VisualCenter);
+                Vector2Int off  = cell - pivot;
+
+                if (CrateTarget.CrateParkedOnTarget(cell)) return true;
+                if (CrateTarget.CrateParkedOnTarget(pivot + new Vector2Int(off.y, -off.x))) return true;
+                if (CrateTarget.CrateParkedOnTarget(pivot + new Vector2Int(-off.y, off.x))) return true;
+            }
+            return false;
+        }
+    }
+
+    // Same startup check as TileCycle: an id naming a rug that isn't in the scene is
+    // invisible from the outside and its only symptom is a statue that won't turn.
+    void Start()
+    {
+        if (string.IsNullOrEmpty(clearedWhenPuzzleSolved)) return;
+        if (CrateTarget.PuzzleExists(clearedWhenPuzzleSolved)) return;
+
+        Debug.LogError(
+            $"{name}: 'Cleared When Puzzle Solved' is \"{clearedWhenPuzzleSolved}\", but NO CrateTarget in this " +
+            $"scene carries that Puzzle Id — so this group can never clear by id. Either fix the id, or put a " +
+            $"CrateTarget (rug) with it in the scene.", this);
+    }
 
     [Tooltip("Fires when a turn is refused because something is standing where an obstacle would land. Good place for a 'clunk' sound.")]
     public UnityEvent onBlocked;
@@ -178,7 +227,10 @@ public class ObstacleGroup : GridObject
             if (occ == null || grid.WorldToCell(occ.VisualCenter) != t)
                 continue;
 
-            reason = $"a bush would land on cell {t}, already held by '{occ.name}'";
+            reason = $"a bush would land on cell {t}, already held by '{occ.name}'"
+                   + (occ is PushableCrate
+                        ? " — push it off that cell, or put a CrateTarget (rug) there so a crate parked on it clears this group"
+                        : "");
             return false;
         }
         return true;

@@ -6,7 +6,11 @@ This file is the living design reference for all collaborators (human and AI). U
 
 ## REGRA ABSOLUTA PARA CLAUDE
 
-**Claude só lê e modifica arquivos `.cs`.** Nada mais. Prefab, scene, anim, controller, meta, sprite — Claude NÃO lê e NÃO edita. Para qualquer coisa fora de `.cs`, Claude pergunta ao usuário.
+**LER: tudo. EDITAR: só `.cs` e `.yarn`.**
+
+- **Leitura livre.** Claude pode abrir qualquer arquivo do projeto para OBSERVAR — prefab, scene, anim, controller, meta, sprite, vfx, YAML. Serve para entender o setup, nunca para mexer.
+- **Escrita.** Claude escreve direto em `.cs` e `.yarn` (`Assets/dialogo projeto/`). Nada mais.
+- **Qualquer alteração fora disso** (prefab, cena, meta, sprite, animator, vfx, import settings) Claude NÃO faz sozinho: descreve exatamente o que mudar e **pede permissão explícita**. Permissão dada para um arquivo não vale para o próximo.
 
 ---
 
@@ -169,3 +173,31 @@ Grid-based crate puzzle. Logic is grid-based; the player moves freely.
 - Occasional stalls — a push sometimes doesn't register / the crate briefly locks up.
 - FIXED (verify in Play): "crate shoved the player" — pushing up jammed the player's collider centre past the crate centre, so a tap back read as a valid opposite push and the kinematic crate slid into the player. `PlayerBehind` now uses the player's feet (transform pivot) + a margin, and `TryPush` refuses to slide onto the player's cell.
 - Approach gap: how close the player stops to a crate is set by the two colliders' sizes (prefab data), not by code. Realistic look needs the crate's solid collider to be a thin strip at its base, not a full box. Alternative (not done): stop the player by cell logic in code instead of physics.
+
+---
+
+## Cosmetic Seating ("Encaixe") — statue settling into a portal
+
+**Status: provisional.** Added because the current statue art has its base at the bottom of the sprite, so a statue centred honestly on a portal reads as hovering above it. If the art changes, this whole thing can go. Written to be removable — see *How to rip it out* below.
+
+**The problem it solves:** the grid defines an object's cell as the centre of its ARTWORK (`GridObject.VisualCenter`). That's what makes "looks aligned" and "is aligned" agree everywhere else — but it also means you can't just nudge a sprite to look better, because the nudge moves the object's CELL with it, and then coverage, the pulse, ghost checks and the gate all follow the statue off the tile it's supposed to be on.
+
+**The idea:** declare the lie instead of hiding it. The art moves; `VisualCenter` subtracts the nudge back out; every consumer keeps reading the true cell.
+
+**Where it lives (two files, three members):**
+- `GridObject.CosmeticOffset` — `Vector3`, runtime only, never serialized, defaults to zero. `VisualCenter` subtracts it. **Anything that doesn't set it is completely unaffected** — that's the whole safety argument.
+- `PushableCrate.portalLandingOffset` — the only knob. Inspector: *Encaixe no portal (só visual)*. `Y` positive = art sits higher than the tile centre.
+- `PushableCrate.StepTo` — blends the offset INTO the slide (see below).
+- `PushableCrate.SettleIfAuthoredOnPortal` — applies it dry at `Start` for a statue placed on a portal in the editor, which was never pushed and so would otherwise sit wrong until first touched.
+
+**Behaviour:** the landing offset is chosen before the slide (nudged if the destination cell has any `CrateTarget`, zero otherwise), and `CosmeticOffset` lerps on the SAME curve as the position. So the visible path bows diagonally into the portal while the logical path — `VisualCenter` — stays the same straight line to the cell centre it always was. One movement, no second tug. Leaving a portal un-bows on the way out for the same reason. All approach directions end in the same place, so a statue never sits differently depending on how it got there.
+
+**Tuning:** enter Play, push a statue onto a portal, edit `Portal Landing Offset` on the `PushableStatue` prefab and watch. Copy the value out of Play mode when it looks right.
+
+**Two things that will bite whoever touches this next:**
+- `RootPositionForCell` works backwards from `VisualCenter`, which has the offset baked in. Any NEW caller of it on a crate that might be parked on a portal must zero the offset, ask, then restore it — `StepTo` does exactly that.
+- The offset moves the **collider** with the art. A seated statue's solid body sits `portalLandingOffset` away from the tile it logically occupies. Fine at ~0.25; if a much bigger offset is ever wanted, the collider needs decoupling from the art instead.
+
+**Related but SEPARATE:** `PortalPulse` (portal's VFX goes out ~0.5s after a crate settles on its cell) is its own component and does not depend on Cosmetic Seating. Killing one does not kill the other.
+
+**How to rip it out:** delete `portalLandingOffset`, the offset lines in `StepTo`, and `SettleIfAuthoredOnPortal` from `PushableCrate`; delete `CosmeticOffset` from `GridObject` and restore `VisualCenter` to `visual.bounds.center`. Undo's `RestoreTo(cell, pos, cosmetic)` third parameter is optional and can stay or go. Nothing else in the project reads `CosmeticOffset`.

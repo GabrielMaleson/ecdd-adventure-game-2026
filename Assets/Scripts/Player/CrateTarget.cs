@@ -34,6 +34,42 @@ public class CrateTarget : GridObject
     public static bool IsSolved(string id)
         => solvedByGroup.TryGetValue(id ?? "", out bool s) && s;
 
+    // --- Board truth, no ids involved -------------------------------------------
+    //
+    // IsSolved() only answers for a puzzle id someone TYPED into a group/cycle and
+    // that matches a rug actually present in this scene. When it doesn't match
+    // anything the answer is a silent `false` forever, the group never clears, and a
+    // crate parked on a rug freezes the whole statue with no error. The three helpers
+    // below let a group ask about the BOARD instead, which can't be mistyped.
+
+    // Is there a rug on this cell?
+    public static bool IsTargetCell(Vector2Int cell)
+    {
+        foreach (var t in all)
+            if (t != null && t.LiveCell() == cell) return true;
+        return false;
+    }
+
+    // Is a crate parked on a rug on this cell? Same two-step answer EvaluateGroup
+    // trusts: the occupancy map first, then where the artwork really is.
+    public static bool CrateParkedOnTarget(Vector2Int cell)
+    {
+        if (!IsTargetCell(cell)) return false;
+        if (GridOccupant.TryGetOccupant(cell, out var occ) && occ is PushableCrate) return true;
+        return CrateSittingOn(cell);
+    }
+
+    // Does any rug in this scene actually carry this id? Lets a group shout at
+    // startup when its Cleared When Puzzle Solved names a puzzle that isn't here —
+    // the misconfiguration that otherwise costs a debugging session.
+    public static bool PuzzleExists(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return false;
+        foreach (var t in all)
+            if (t != null && t.PuzzleId == id) return true;
+        return false;
+    }
+
     // Fires ONLY when a puzzle's solved-latch actually flips: (id, true) the moment it
     // becomes solved, (id, false) if a crate is later pulled off. This is the hook
     // PuzzleGate listens to, so a gate doesn't need a reference to any particular rug

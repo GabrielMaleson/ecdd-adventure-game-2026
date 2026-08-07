@@ -25,9 +25,41 @@ public class TileCycle : GridObject
     [Tooltip("Optional. When the puzzle with THIS Puzzle Id is solved (its rug covered by a crate), the statue STOPS stepping this cycle — a 'cleared' sub-puzzle drops out of the sweep so it can't block the rest. Re-arms if the crate is pulled off. Blank = always steps.")]
     [SerializeField] string clearedWhenPuzzleSolved = "";
 
-    // True while this cycle's gate-puzzle is solved: the statue skips it entirely.
-    public bool IsCleared =>
+    // True while this cycle is out of the sweep: the statue skips it entirely.
+    //
+    // TWO ways to be cleared, and the second one is why this isn't just the id check
+    // any more. The id path only works if someone typed a Puzzle Id that matches a rug
+    // ACTUALLY IN THIS SCENE — a typo, or a rug that lives on a prefab never placed,
+    // makes IsSolved() return a silent false forever. The cycle then never clears, a
+    // crate parked on its ring vetoes CanStep, and StatueSwitch refuses the whole
+    // statue with nothing to show for it but "can't step".
+    //
+    // So the board is asked directly as well: a crate sitting on a rug that lies on
+    // this cycle's own ring clears it, no id, nothing to mistype. That is exactly the
+    // "statue parked on the portal" case, and it now cannot silently freeze anything.
+    public bool IsCleared => ClearedById || ClearedByBoard;
+
+    bool ClearedById =>
         !string.IsNullOrEmpty(clearedWhenPuzzleSolved) && CrateTarget.IsSolved(clearedWhenPuzzleSolved);
+
+    // Any ring cell holding a crate that's parked on a rug.
+    //
+    // Gated on the id being FILLED IN. A blank Cleared When Puzzle Solved means
+    // "always steps" and that has to stay literally true — otherwise a crate parked on
+    // some unrelated rug that happens to sit on this ring would quietly stop a cycle
+    // the author never wanted stoppable. So this is not "clearing became automatic";
+    // it's "opting in no longer depends on the id being spelled right".
+    bool ClearedByBoard
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(clearedWhenPuzzleSolved)) return false;
+            if (ringCells == null) return false;      // Start hasn't built the ring yet
+            foreach (var cell in ringCells)
+                if (CrateTarget.CrateParkedOnTarget(cell)) return true;
+            return false;
+        }
+    }
 
     [Tooltip("How long one step-slide takes.")]
     [SerializeField] float stepDuration = 0.2f;
@@ -46,7 +78,27 @@ public class TileCycle : GridObject
     GridObstacle[] bushes;         // the movers
     int[]          bushIndex;      // each bush's current slot in ringCells
 
-    void Start() => BuildRing();
+    void Start()
+    {
+        BuildRing();
+        WarnIfPuzzleIdIsDead();
+    }
+
+    // A Puzzle Id pointing at a rug that isn't in this scene is unfalsifiable from the
+    // outside: everything looks wired, and the only symptom is a statue that quietly
+    // refuses to turn. Say it out loud at startup instead. Rugs register in OnEnable,
+    // which is guaranteed to have run for every one of them before any Start.
+    void WarnIfPuzzleIdIsDead()
+    {
+        if (string.IsNullOrEmpty(clearedWhenPuzzleSolved)) return;
+        if (CrateTarget.PuzzleExists(clearedWhenPuzzleSolved)) return;
+
+        Debug.LogError(
+            $"{name}: 'Cleared When Puzzle Solved' is \"{clearedWhenPuzzleSolved}\", but NO CrateTarget in this " +
+            $"scene carries that Puzzle Id — so this cycle can never clear by id. Either fix the id, or put a " +
+            $"CrateTarget (rug) with it in the scene. Until then the cycle only clears if a crate is parked on a " +
+            $"rug that sits on its own ring.", this);
+    }
 
     // The ring and starting occupancy come straight from the children — no cell is
     // ever typed by hand. Bushes claim their own cells (GridOccupant.OnEnable); we
@@ -114,7 +166,12 @@ public class TileCycle : GridObject
             // must not veto the step.
             if (occ == null || grid.WorldToCell(occ.VisualCenter) != target) continue;
 
-            reason = $"a bush would land on cell {target}, already held by '{occ.name}'";
+            // Naming the blocker isn't enough when it's a PUSHABLE one — that's the
+            // case with a way out, and the message should say which way.
+            reason = $"a bush would land on cell {target}, already held by '{occ.name}'"
+                   + (occ is PushableCrate
+                        ? " — push it off that cell, or put a CrateTarget (rug) there so a crate parked on it clears this cycle"
+                        : "");
             return false;
         }
         return true;
