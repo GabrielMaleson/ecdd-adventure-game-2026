@@ -9,6 +9,7 @@ TagManager:
   - InteractButton
   - Inventory
   - Haze
+  - FakeHaze
   layers:
   - Default
   - TransparentFX
