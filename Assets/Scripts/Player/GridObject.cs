@@ -44,11 +44,18 @@ public abstract class GridObject : MonoBehaviour
     // cosmetic nudge can't accumulate into the saved layout.
     public Vector3 CosmeticOffset { get; protected set; }
 
-    // Middle of the artwork in world space, cosmetic nudge removed. Falls back to the
-    // pivot if no sprite was assigned — alignment then depends on the pivot, which is
-    // why `visual` exists.
+    // Middle of the artwork in world space. Falls back to the pivot if no sprite was
+    // assigned — alignment then depends on the pivot, which is why `visual` exists.
+    //
+    // ===== COSMETIC SEATING — DESLIGADO (4/4) ================================
+    // Com o encaixe LIGADO esta linha é:
+    //     (visual != null ? visual.bounds.center : transform.position) - CosmeticOffset;
+    // A subtração é o que faz a arte poder sair do centro da célula sem levar a LÓGICA
+    // junto. Sem ela, CosmeticOffset vira um valor que ninguém lê — é isso que desliga
+    // o sistema inteiro. Ver CLAUDE.md > "Cosmetic Seating".
+    // =========================================================================
     public Vector3 VisualCenter =>
-        (visual != null ? visual.bounds.center : transform.position) - CosmeticOffset;
+        visual != null ? visual.bounds.center : transform.position;
 
     // Rigid pivot->artwork offset. Children keep their local offsets, so moving
     // the root by this much moves the whole prefab as one piece.

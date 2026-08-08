@@ -93,7 +93,7 @@ public class PushableCrate : GridOccupant
             foreach (var c in player.GetComponentsInChildren<Collider2D>())
                 if (!c.isTrigger) { playerCol = c; break; }   // the player's solid body
 
-        SettleIfAuthoredOnPortal();
+        // SettleIfAuthoredOnPortal();   // ===== COSMETIC SEATING — DESLIGADO (3/4) =====
     }
 
     // A crate placed on a portal in the EDITOR has never been pushed, so nothing ever
@@ -402,42 +402,36 @@ public class PushableCrate : GridOccupant
         // Claim the target cell up front so nothing pushes into it mid-slide.
         Claim(target);
 
-        // Where the ART wants to end up relative to the cell: nudged if this cell has a
-        // portal, dead-centre otherwise. Decided BEFORE the slide so the suck is part of
-        // the one movement instead of a second tug bolted onto the end.
-        Vector3 offsetFrom = CosmeticOffset;
-        Vector3 offsetTo   = CrateTarget.IsTargetCell(target) ? (Vector3)portalLandingOffset
-                                                             : Vector3.zero;
-
-        // The honest landing spot is read with the offset temporarily cleared, because
-        // RootPositionForCell works backwards from VisualCenter and VisualCenter has the
-        // offset baked into it. Zero it, ask, put it back.
-        CosmeticOffset = Vector3.zero;
-        Vector3 endHonest = RootPositionForCell(target);
-        CosmeticOffset = offsetFrom;
+        // ===== COSMETIC SEATING — DESLIGADO (1/4) ================================
+        // Descomenta este bloco e apaga as 2 linhas "SEM ENCAIXE" logo abaixo pra ligar
+        // de volta. Ver CLAUDE.md > "Cosmetic Seating".
+        //
+        // Vector3 offsetFrom = CosmeticOffset;
+        // Vector3 offsetTo   = CrateTarget.IsTargetCell(target) ? (Vector3)portalLandingOffset
+        //                                                      : Vector3.zero;
+        //
+        // CosmeticOffset = Vector3.zero;
+        // Vector3 endHonest = RootPositionForCell(target);
+        // CosmeticOffset = offsetFrom;
+        // =========================================================================
 
         // Aim at the cell's exact center rather than "current position + one tile".
         // A relative step would preserve any authoring error forever; this makes a
         // crate that was left slightly off-grid ease back into alignment on its
         // first push instead of drifting further.
         Vector2 start   = transform.position;
-        Vector2 end     = (Vector2)(endHonest + offsetTo);
+        Vector2 end     = RootPositionForCell(target);       // SEM ENCAIXE
         float   elapsed = 0f;
         while (elapsed < moveDuration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, elapsed / moveDuration);
 
-            // The offset rides along with the position on the same curve. That's what
-            // makes the visible path bow diagonally into the portal while the LOGICAL
-            // path — VisualCenter — stays the same straight line to the cell centre it
-            // has always been. Anything checking cells mid-slide (a statue turning, an
-            // undo) sees exactly what it saw before this feature existed.
-            CosmeticOffset = Vector3.Lerp(offsetFrom, offsetTo, t);
+            // CosmeticOffset = Vector3.Lerp(offsetFrom, offsetTo, t);   // ENCAIXE (2/4)
             rb.MovePosition(Vector2.Lerp(start, end, t));
             yield return null;
         }
-        CosmeticOffset = offsetTo;
+        // CosmeticOffset = offsetTo;                                    // ENCAIXE
 
         // Set DIRECTLY, not via MovePosition. MovePosition only takes effect on the next
         // physics step, so the transform would still be a frame behind while
