@@ -14700,6 +14700,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1302787188288128549, guid: f19b4bec1aaf6f44c8823156e9c2cf08, type: 3}
   m_PrefabInstance: {fileID: 340632035}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &345382200 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1944638305173122339, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+  m_PrefabInstance: {fileID: 57347247}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &345888274
 GameObject:
   m_ObjectHideFlags: 0
@@ -15710,7 +15715,7 @@ GameObject:
   - component: {fileID: 462346639}
   m_Layer: 0
   m_Name: JoshHouseExit
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17704,7 +17709,7 @@ GameObject:
   - component: {fileID: 610557259}
   m_Layer: 0
   m_Name: ToJoshHouse
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -18616,6 +18621,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1115238041}
   - {fileID: 1276399262}
   - {fileID: 390145711}
   - {fileID: 1618897162}
@@ -19872,6 +19878,7 @@ MonoBehaviour:
   teleportFakeHazeDestination: {fileID: 2055979481}
   insideHouseCutsceneObject: {fileID: 674666518}
   insideHouseStartNode: home_inside_first
+  hazeToggle: {fileID: 0}
   floatDuration: 2
   floatHeight: 0.5
   walkSpeed: 2
@@ -23051,7 +23058,7 @@ Transform:
   m_GameObject: {fileID: 991140408}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -7.55, y: 1.74, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -24660,6 +24667,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 352397933761937823, guid: f557a8c6704471a46b183c26863ef65d, type: 3}
   m_PrefabInstance: {fileID: 1096078165}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1115238041 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4228216706130249140, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+  m_PrefabInstance: {fileID: 1177494753}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1120380931
 GameObject:
   m_ObjectHideFlags: 0
@@ -25469,6 +25481,105 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 771415380827780065, guid: ccdc7bb3e550a89479b159fd3f373092, type: 3}
   m_PrefabInstance: {fileID: 1168746301}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1177494753
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 674666519}
+    m_Modifications:
+    - target: {fileID: 1944638305173122339, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_Name
+      value: CutsceneHaze (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1944638305173122339, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_TagString
+      value: FakeHaze
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228216706130249140, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -8.25729
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228216706130249140, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.9792004
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228216706130249140, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228216706130249140, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228216706130249140, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228216706130249140, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228216706130249140, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228216706130249140, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228216706130249140, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228216706130249140, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928501858225212103, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928501858225212103, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928501858225212103, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.037
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928501858225212103, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 7418135721591180165, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_Name
+      value: HazeVisual
+      objectReference: {fileID: 0}
+    - target: {fileID: 7733985110624149964, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: mc
+      value: 
+      objectReference: {fileID: 3495693095239985914}
+    - target: {fileID: 7733985110624149964, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: onCameraTargetChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 330530882}
+    - target: {fileID: 8152032474710857191, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 3495693095239985913}
+    - target: {fileID: 8152032474710857191, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7733985110624149964, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+    - {fileID: 8152032474710857191, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
 --- !u!4 &1182879604 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7179536232408962127, guid: f26e89e1401edd0448f803ec6d5bf092, type: 3}
@@ -26405,7 +26516,7 @@ GameObject:
   - component: {fileID: 1283137158}
   m_Layer: 0
   m_Name: EnterJoshHouse
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -31446,7 +31557,7 @@ GameObject:
   - component: {fileID: 1671835794}
   m_Layer: 0
   m_Name: JoshHouse
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -55413,7 +55524,7 @@ GameObject:
   - component: {fileID: 1970321608}
   m_Layer: 0
   m_Name: Teleporter
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -57023,6 +57134,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2060337932}
+  - component: {fileID: 2060337933}
   m_Layer: 0
   m_Name: Cutscenes
   m_TagString: Untagged
@@ -57048,6 +57160,20 @@ Transform:
   - {fileID: 674666519}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2060337933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2060337931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 623cf1ede32a36643b16feba296e0877, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CutsceneObjectToggle
+  objects:
+  - {fileID: 345382200}
 --- !u!4 &2065260897 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 798711044479469657, guid: cd7a4a233eb603b44860a72ec69446a6, type: 3}
@@ -57965,7 +58091,7 @@ GameObject:
   - component: {fileID: 2136621376}
   m_Layer: 0
   m_Name: ExitFromJoshHouse
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
