@@ -20,6 +20,10 @@ public class HomeOutsideCutscene : MonoBehaviour
     [Header("Inside House Cutscene")]
     [SerializeField] private GameObject insideHouseCutsceneObject; // The inside house cutscene GameObject
     [SerializeField] private string insideHouseStartNode = "home_inside_first";
+
+    [Header("Actor Toggle")]
+    [Tooltip("Assign this cutscene's own fake Haze here (and nothing from another cutscene). Used to show/hide it instead of reaching into fakeHaze directly.")]
+    [SerializeField] private CutsceneObjectToggle hazeToggle;
     
     [Header("Animation Settings")]
     [SerializeField] private float floatDuration = 2f;
@@ -193,56 +197,52 @@ public class HomeOutsideCutscene : MonoBehaviour
         
         isCutscenePlaying = true;
         currentState = CutsceneState.PlayerApproaching;
-        
+
+        CutsceneTeleportGuard.DisableTeleporters();
+
         // Disable real Haze
         if (realHaze != null)
         {
             realHaze.SetActive(false);
         }
-        
-        // Enable fake Haze
-        if (fakeHaze != null)
+
+        // Position fake Haze behind the house, but keep it HIDDEN for now — it only
+        // becomes visible in HazeFloatOut(), which is the actual "comes out from
+        // behind the house" reveal. Turning it on here made it visible for the whole
+        // PlayerApproach beat first, which defeated the reveal (Haze's sorting order
+        // is above the house's, so as soon as it's active it draws on top either way).
+        if (fakeHaze != null && hazeStartPosition != null)
         {
-            fakeHaze.SetActive(true);
-            // Make sure fake Haze starts at the correct position
-            if (hazeStartPosition != null)
+            hazeStartPos = hazeStartPosition.position;
+            fakeHaze.transform.position = hazeStartPos;
+
+            // Face away initially (behind house).
+            SpriteRenderer hazeSprite = fakeHaze.GetComponent<SpriteRenderer>();
+            if (hazeSprite != null && player != null)
             {
-                fakeHaze.transform.position = hazeStartPosition.position;
+                Vector2 directionAway = (hazeStartPos - (Vector2)player.transform.position).normalized;
+                hazeSprite.flipX = directionAway.x < 0;
             }
         }
-        
+
         // Disable player controls using InputEnabled property
         if (playerController != null)
         {
             playerController.InputEnabled = false;
         }
-        
+
         // Store positions
         if (player != null)
         {
             playerStartPos = player.transform.position;
             playerApproachPos = playerApproachPosition != null ? (Vector2)playerApproachPosition.position : playerStartPos;
         }
-        
-        if (fakeHaze != null)
-        {
-            hazeStartPos = hazeStartPosition != null ? (Vector2)hazeStartPosition.position : (Vector2)fakeHaze.transform.position;
-            fakeHaze.transform.position = hazeStartPos;
-            
-            // Make Haze face away initially (behind house) - flip sprite
-            SpriteRenderer hazeSprite = fakeHaze.GetComponent<SpriteRenderer>();
-            if (hazeSprite != null && player != null)
-            {
-                Vector2 directionAway = (fakeHaze.transform.position - player.transform.position).normalized;
-                hazeSprite.flipX = directionAway.x < 0;
-            }
-        }
-        
+
         if (walkToHousePosition != null)
         {
             walkTargetPos = walkToHousePosition.position;
         }
-        
+
         StartCoroutine(CutsceneSequence());
     }
     
@@ -289,80 +289,89 @@ public class HomeOutsideCutscene : MonoBehaviour
         {
             playerController.InputEnabled = true;
         }
-        
+
         // Disable fake Haze
-        if (fakeHaze != null)
-        {
+        if (hazeToggle != null)
+            hazeToggle.Deactivate();
+        else if (fakeHaze != null)
             fakeHaze.SetActive(false);
-        }
-        
+
         // Enable real Haze (it will be positioned by the inside cutscene)
         if (realHaze != null)
         {
             realHaze.SetActive(true);
         }
-        
+
+        CutsceneTeleportGuard.RestoreTeleporters();
+
         // Destroy this cutscene object or disable it
         gameObject.SetActive(false);
     }
-    
+
     private IEnumerator PlayerApproach()
     {
         if (player == null || playerApproachPosition == null) yield break;
-        
+
         Vector2 startPos = player.transform.position;
         Vector2 targetPos = playerApproachPosition.position;
+        Vector2 moveDir = (targetPos - startPos).normalized;
         float journey = 0f;
         float distance = Vector2.Distance(startPos, targetPos);
-        
+
         // Disable physics while we manually control position
         Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
         if (rb != null)
         {
             rb.isKinematic = true;
         }
-        
-        // Get sprite renderer for flipping
-        SpriteRenderer playerSprite = player.GetComponentInChildren<SpriteRenderer>();
-        
+
         while (journey < 1f)
         {
             journey += Time.deltaTime * playerApproachSpeed / Mathf.Max(distance, 0.01f);
             journey = Mathf.Min(journey, 1f);
-            
+
             // Move player
             Vector2 newPos = Vector2.Lerp(startPos, targetPos, journey);
             player.transform.position = newPos;
-            
+
             // Keep Rigidbody2D in sync if it exists
             if (rb != null)
             {
                 rb.position = newPos;
             }
-            
-            // Flip sprite to face Haze
-            if (fakeHaze != null && playerSprite != null)
-            {
-                Vector2 lookDir = (fakeHaze.transform.position - player.transform.position).normalized;
-                playerSprite.flipX = lookDir.x < 0;
-            }
-            
+
+            // Drives the walk animation + facing the same way normal movement does.
+            if (playerController != null)
+                playerController.SetCutsceneMoveDirection(moveDir);
+
             yield return null;
         }
-        
+
         // Re-enable physics
         if (rb != null)
         {
             rb.isKinematic = false;
         }
+
+        if (playerController != null)
+            playerController.SetCutsceneMoveDirection(Vector2.zero);
     }
-    
+
     private IEnumerator HazeFloatOut()
     {
         if (fakeHaze == null || hazeFloatTarget == null) yield break;
-        
+
         currentState = CutsceneState.HazeFloating;
-        
+
+        // The reveal: Haze becomes visible right as it starts moving, not any earlier.
+        // (Its sorting order draws above the house regardless of position, so turning
+        // it on any sooner — e.g. back in StartCutscene — showed it sitting in front of
+        // the house the whole time the player was still approaching.)
+        if (hazeToggle != null)
+            hazeToggle.Activate();
+        else
+            fakeHaze.SetActive(true);
+
         Vector2 startPos = fakeHaze.transform.position;
         Vector2 targetPos = hazeFloatTarget.position;
         float journey = 0f;
@@ -429,54 +438,55 @@ public class HomeOutsideCutscene : MonoBehaviour
         
         if (playerRb != null) playerRb.isKinematic = true;
         if (hazeRb != null) hazeRb.isKinematic = true;
-        
-        // Get sprite renderers for flipping
-        SpriteRenderer playerSprite = player.GetComponentInChildren<SpriteRenderer>();
+
+        // Haze has no PlayerController, so it still just flips its own sprite.
         SpriteRenderer hazeSprite = fakeHaze.GetComponent<SpriteRenderer>();
-        
+
         while (journey < 1f)
         {
             journey += Time.deltaTime * walkSpeed / Mathf.Max(walkDistance, 0.01f);
             journey = Mathf.Min(journey, 1f);
-            
+
             // Move both characters
             Vector2 newPlayerPos = Vector2.Lerp(playerStartPos, playerTargetPos, journey);
             Vector2 newHazePos = Vector2.Lerp(hazeStartPos, hazeTargetPos, journey);
-            
+
             player.transform.position = newPlayerPos;
             fakeHaze.transform.position = newHazePos;
-            
+
             // Keep Rigidbody2Ds in sync
             if (playerRb != null) playerRb.position = newPlayerPos;
             if (hazeRb != null) hazeRb.position = newHazePos;
-            
-            // Make them face forward
-            if (playerSprite != null)
-            {
-                playerSprite.flipX = walkDirection.x < 0;
-            }
+
+            // Drives the player's walk animation + facing.
+            if (playerController != null)
+                playerController.SetCutsceneMoveDirection(walkDirection);
+
             if (hazeSprite != null)
             {
                 hazeSprite.flipX = walkDirection.x < 0;
             }
-            
+
             yield return null;
         }
-        
+
         // Snap to final positions
         player.transform.position = playerTargetPos;
         fakeHaze.transform.position = hazeTargetPos;
-        
-        if (playerRb != null) 
+
+        if (playerRb != null)
         {
             playerRb.position = playerTargetPos;
             playerRb.isKinematic = false;
         }
-        if (hazeRb != null) 
+        if (hazeRb != null)
         {
             hazeRb.position = hazeTargetPos;
             hazeRb.isKinematic = false;
         }
+
+        if (playerController != null)
+            playerController.SetCutsceneMoveDirection(Vector2.zero);
     }
     
     private IEnumerator FadeOut()
@@ -621,9 +631,14 @@ public class HomeOutsideCutscene : MonoBehaviour
         }
         
         // Disable fake Haze, enable real Haze
-        if (fakeHaze != null) fakeHaze.SetActive(false);
+        if (hazeToggle != null)
+            hazeToggle.Deactivate();
+        else if (fakeHaze != null)
+            fakeHaze.SetActive(false);
         if (realHaze != null) realHaze.SetActive(true);
-        
+
+        CutsceneTeleportGuard.RestoreTeleporters();
+
         // Start inside cutscene immediately
         if (insideHouseCutsceneObject != null)
         {
@@ -633,7 +648,7 @@ public class HomeOutsideCutscene : MonoBehaviour
                 insideCutscene.StartCutscene(insideHouseStartNode);
             }
         }
-        
+
         gameObject.SetActive(false);
     }
 }

@@ -120,11 +120,13 @@ Haze: Well, for you it didn't, but that's because you're the only one who can se
 Josh: What? Stop this nonsense dude. Come back to my house and stay there.
 Haze: ...
 Josh: ...
+<<villagerenter>>
 Villager: Josh! What are you doing just standing here?
 Josh: Uhm... nothing really, I was just... taking a walk. Yes, a walk.
 Villager: Taking a walk? Are you insane? Can't you hear the noise coming from elder Amos' house?
 Josh: Oh, yeah. So that's where all the ruckus' coming from.
 Villager: Yeah. Anyway, meet everyone there then, after you finish your... walk or whatever. Hurry.
+<<villagerexit>>
 Haze: Turns out you're the insane one.
 Josh: Shut up.
 Haze: Trust me now?

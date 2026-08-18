@@ -54,9 +54,6 @@ public class HomeInsideCutscene : MonoBehaviour
         {
             dialogueRunner.onDialogueComplete.AddListener(OnDialogueComplete);
         }
-        
-        // Initially disable this cutscene
-        gameObject.SetActive(false);
     }
     
     private void FindReferencesByTag()
@@ -103,9 +100,19 @@ public class HomeInsideCutscene : MonoBehaviour
     public void StartCutscene(string nodeName = null)
     {
         if (isCutscenePlaying) return;
-        
+
+        // Defensive: guarantees StartCoroutine below has an active host to run on,
+        // regardless of whatever state this object happens to be in when called
+        // (e.g. left inactive in the Editor). A coroutine started on an inactive
+        // GameObject fails silently, which previously left player input disabled
+        // forever once the dialogue ended, since the coroutine that re-enables it
+        // never ran.
+        gameObject.SetActive(true);
+
         isCutscenePlaying = true;
-        
+
+        CutsceneTeleportGuard.DisableTeleporters();
+
         // Disable player controls
         if (playerController != null)
         {
@@ -170,12 +177,14 @@ public class HomeInsideCutscene : MonoBehaviour
         // Cutscene complete
         isComplete = true;
         isCutscenePlaying = false;
-        
+
         // Re-enable player controls
         if (playerController != null)
         {
             playerController.InputEnabled = true;
         }
+
+        CutsceneTeleportGuard.RestoreTeleporters();
     }
     
     private IEnumerator HazeWalksToTV()

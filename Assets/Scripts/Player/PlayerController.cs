@@ -8,9 +8,33 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Transform visualTransform;
     [SerializeField] float     stopThreshold = 0.05f;
 
-    // Set false by GhostControl while the player is piloting the ghost: the MC
-    // ignores all input and stands idle until control returns to him.
-    public bool InputEnabled = true;
+    // Set false by GhostControl while the player is piloting the ghost, or by a
+    // cutscene: the MC ignores all input and stands idle until control returns to him.
+    //
+    // A property (not a plain field) so the "stand idle" reset below fires exactly
+    // ONCE, right when input turns off — not every frame while it's off. Update()
+    // used to re-run that reset every frame regardless, which was harmless for input
+    // (nothing was driving MoveDirection anyway) but meant a cutscene calling
+    // SetCutsceneMoveDirection() every frame to animate a scripted walk got stomped
+    // back to idle by Update() on the very next frame.
+    [SerializeField] bool inputEnabled = true;
+    public bool InputEnabled
+    {
+        get => inputEnabled;
+        set
+        {
+            if (inputEnabled == value) return;
+            inputEnabled = value;
+
+            if (!inputEnabled)
+            {
+                isMoving      = false;
+                keyboardDir   = Vector2.zero;
+                MoveDirection = Vector2.zero;
+                SetDir(DIR_IDLE);
+            }
+        }
+    }
 
     // Direction the player is currently trying to move in (zero if idle). Read by
     // things like PushableCrate to know whether the player is walking into them.
@@ -67,19 +91,11 @@ public class PlayerController : MonoBehaviour
     // right next to a crate silently failed even though it looked like he was touching.)
     void Update()
     {
-        // Frozen while the player is piloting the ghost (see GhostControl): no
-        // walking, no click-to-move — just stand idle.
+        // Frozen while the player is piloting the ghost (see GhostControl) or a
+        // cutscene has taken over (see SetCutsceneMoveDirection): no walking, no
+        // click-to-move. The InputEnabled setter already put him at idle once.
         if (!InputEnabled)
-        {
-            if (isMoving || MoveDirection != Vector2.zero || keyboardDir != Vector2.zero)
-            {
-                isMoving      = false;
-                keyboardDir   = Vector2.zero;
-                MoveDirection = Vector2.zero;
-                SetDir(DIR_IDLE);
-            }
             return;
-        }
 
         Vector2 keyboardInput = ReadKeyboardInput();
         if (keyboardInput != Vector2.zero)
@@ -180,6 +196,24 @@ public class PlayerController : MonoBehaviour
         transform.position = new Vector3(pos.x, pos.y, transform.position.z);
         if (rb != null) rb.position = pos;   // keep the physics body in step with the teleport
         SetDir(DIR_IDLE);
+    }
+
+    // Cutscenes drive the player's POSITION themselves (their own Rigidbody2D/transform
+    // control while InputEnabled is false) but should call this every frame with their
+    // current walk direction so the SAME facing + walk-animation logic normal movement
+    // uses runs too — instead of every cutscene reinventing sprite flipping by hand.
+    // Pass Vector2.zero to go idle.
+    public void SetCutsceneMoveDirection(Vector2 direction)
+    {
+        if (direction == Vector2.zero)
+        {
+            MoveDirection = Vector2.zero;
+            SetDir(DIR_IDLE);
+            return;
+        }
+
+        MoveDirection = direction;
+        FaceDirection(direction);
     }
 
     void FaceDirection(Vector2 dir)
