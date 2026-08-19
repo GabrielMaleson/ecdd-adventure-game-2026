@@ -18600,7 +18600,6 @@ GameObject:
   m_Component:
   - component: {fileID: 674666519}
   - component: {fileID: 674666521}
-  - component: {fileID: 674666520}
   m_Layer: 0
   m_Name: InsideHouseHaze
   m_TagString: Untagged
@@ -18628,27 +18627,6 @@ Transform:
   - {fileID: 805996929}
   m_Father: {fileID: 2060337932}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &674666520
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 674666518}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d5f679fb15e95a41b781f1e7c35329d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HomeInsideCutscene
-  playerTag: Player
-  realHazeTag: Haze
-  fakeHazeTag: FakeHaze
-  playerStartPosition: {fileID: 1276399262}
-  hazeStartPosition: {fileID: 390145711}
-  tvPosition: {fileID: 1618897162}
-  walkSpeed: 2
-  lookAtTargetSpeed: 3
-  startNode: home_inside_first
 --- !u!61 &674666521
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -19415,6 +19393,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 713382968}
   m_CullTransparentMesh: 1
+--- !u!1 &716172422
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 716172423}
+  m_Layer: 0
+  m_Name: WalkHome (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &716172423
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 716172422}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.55, y: -0.18, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 741391686}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &720275695
 GameObject:
   m_ObjectHideFlags: 0
@@ -19850,6 +19859,7 @@ Transform:
   - {fileID: 1461566055}
   - {fileID: 1274506535}
   - {fileID: 637120419}
+  - {fileID: 716172423}
   - {fileID: 991140409}
   - {fileID: 1189566454}
   - {fileID: 2055979481}
@@ -19869,22 +19879,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HomeOutsideFirstCutscene
   playerTag: Player
   realHazeTag: Haze
-  fakeHazeTag: FakeHaze
+  cutsceneHaze: {fileID: 345382200}
   hazeStartPosition: {fileID: 1274506535}
   hazeFloatTarget: {fileID: 637120419}
   playerApproachPosition: {fileID: 1461566055}
-  walkToHousePosition: {fileID: 991140409}
-  teleportPlayerDestination: {fileID: 1189566454}
-  teleportFakeHazeDestination: {fileID: 2055979481}
-  insideHouseCutsceneObject: {fileID: 674666518}
-  insideHouseStartNode: home_inside_first
-  hazeToggle: {fileID: 0}
+  houseApproachPosition: {fileID: 716172423}
+  houseEntrancePosition: {fileID: 991140409}
+  insidePlayerPosition: {fileID: 1276399262}
+  insideHazePosition: {fileID: 1276399262}
+  tvPosition: {fileID: 1618897162}
   floatDuration: 2
   floatHeight: 0.5
   walkSpeed: 2
   playerApproachSpeed: 3
   fadeDuration: 0.5
-  startNode: home_outside_first
+  outsideStartNode: home_outside_first
+  insideStartNode: home_inside_first
 --- !u!61 &741391688
 BoxCollider2D:
   m_ObjectHideFlags: 0

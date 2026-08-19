@@ -23,10 +23,6 @@ public class SquareHazeCutscene : MonoBehaviour
     [SerializeField] private Transform villagerEntryTarget; // Walked to on <<villagerenter>>
     [SerializeField] private Transform villagerExitTarget;  // Walked to on <<villagerexit>>
 
-    [Header("Actor Toggle")]
-    [Tooltip("Assign THIS cutscene's own Haze actor and the Villager NPC here. Used only to hard-reset both on SkipCutscene — normal playthroughs leave Haze active afterward (he's meant to keep wandering the world).")]
-    [SerializeField] private CutsceneObjectToggle objectToggle;
-
     [Header("Animation Settings")]
     [SerializeField] private float walkSpeed = 2f;
     [SerializeField] private float villagerWalkSpeed = 2f;
@@ -251,8 +247,9 @@ public class SquareHazeCutscene : MonoBehaviour
         villagerNpc.SetActive(false);
     }
 
-    // Public method to skip cutscene (for testing) — hard-resets both actors via the
-    // shared toggle, mirroring HomeOutsideCutscene's SkipCutscene.
+    // Public method to skip cutscene (for testing) — resets the Villager back to
+    // hidden. Haze is left alone (he's meant to keep wandering the world afterward,
+    // skip or not).
     public void SkipCutscene()
     {
         StopAllCoroutines();
@@ -264,7 +261,7 @@ public class SquareHazeCutscene : MonoBehaviour
 
         CutsceneTeleportGuard.RestoreTeleporters();
 
-        if (objectToggle != null)
-            objectToggle.Deactivate();
+        if (villagerNpc != null)
+            villagerNpc.SetActive(false);
     }
 }
