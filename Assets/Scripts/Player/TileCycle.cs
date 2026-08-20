@@ -139,9 +139,14 @@ public class TileCycle : GridObject
 
     // Asks whether a step would succeed WITHOUT doing it — so the statue can verify
     // every driven thing first and only then commit them all together.
-    public bool CanStep(out string reason)
+    public bool CanStep(out string reason) => CanStep(out reason, out _);
+
+    // Same, plus the OBJECT in the way, so the refusal can be shown to the player
+    // (flash the crate) instead of only logged. Null when there's no single culprit.
+    public bool CanStep(out string reason, out GameObject blocker)
     {
-        reason = null;
+        reason  = null;
+        blocker = null;
         if (IsStepping)                                 { reason = "it's still mid-step"; return false; }
         if (!HasGrid())                                 { reason = "no usable PuzzleGrid in the scene"; return false; }
         if (bushes == null || bushes.Length == 0)       { reason = "it has no GridObstacle children — parent the bushes that cycle under this object"; return false; }
@@ -151,13 +156,14 @@ public class TileCycle : GridObject
         var ownCells = new HashSet<Vector2Int>();
         foreach (var idx in bushIndex) ownCells.Add(ringCells[idx]);
 
-        Vector2Int playerCell = PlayerCell();
+        Vector2Int playerCell = PlayerCell(out GameObject playerObject);
 
         for (int b = 0; b < bushes.Length; b++)
         {
             Vector2Int target = ringCells[NextIndex(bushIndex[b])];
 
-            if (target == playerCell) { reason = $"a bush would land on the player (cell {target}) — step aside"; return false; }
+            // The player lights up like any other blocker — see the note in ObstacleGroup.
+            if (target == playerCell) { blocker = playerObject; reason = $"a bush would land on the player (cell {target}) — step aside"; return false; }
             if (ownCells.Contains(target)) continue;
             if (GridOccupant.IsFree(target)) continue;
 
@@ -168,6 +174,7 @@ public class TileCycle : GridObject
 
             // Naming the blocker isn't enough when it's a PUSHABLE one — that's the
             // case with a way out, and the message should say which way.
+            blocker = occ.gameObject;
             reason = $"a bush would land on cell {target}, already held by '{occ.name}'"
                    + (occ is PushableCrate
                         ? " — push it off that cell, or put a CrateTarget (rug) there so a crate parked on it clears this cycle"
@@ -259,10 +266,17 @@ public class TileCycle : GridObject
 
     static readonly Vector2Int NoCell = new Vector2Int(int.MinValue, int.MinValue);
 
-    Vector2Int PlayerCell()
+    Vector2Int PlayerCell() => PlayerCell(out _);
+
+    // Hands the player object back as well, so a refusal caused by him can point at him.
+    Vector2Int PlayerCell(out GameObject playerObject)
     {
+        playerObject = null;
+
         var player = FindObjectOfType<PlayerController>();
         if (player == null) return NoCell;
+
+        playerObject = player.gameObject;
         foreach (var c in player.GetComponentsInChildren<Collider2D>())
             if (!c.isTrigger) return grid.WorldToCell(c.bounds.center);
         return grid.WorldToCell(player.transform.position);

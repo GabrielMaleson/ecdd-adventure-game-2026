@@ -286,3 +286,13 @@ Erika: What? How did you do that?
 Marcus: Way to go Joshy!
 Haze: Seems they didn't notice me...
 ===
+
+// PLACEHOLDER — troca o texto do Haze pela fala que voce quiser.
+// Disparado por StatueSwitch > On Refused First Time (so na PRIMEIRA vez
+// que a estatua e recusada). As recusas seguintes so piscam o bloqueador.
+title: statue_blocked_first
+---
+Haze: It won't budge. Something's in its way.
+Josh: ...the crate?
+Haze: Move it and try again.
+===
