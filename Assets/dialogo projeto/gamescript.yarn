@@ -118,7 +118,7 @@ Haze: Feels like it's been forever since I fell asleep, honestly.
 Josh: And you just suddenly fell asleep like that? For like, what, ages?
 <<movement HazeTV>>
 Haze: I'm trying to remember, but it's all too messy in my hea—
-<<movement HazeWander2 flip freeze>>
+<<movement HazeWander2 freeze>>
 Josh: Now what?
 Haze: Ugh!
 Josh: What?
@@ -135,17 +135,22 @@ Josh: No you're not, you'll stand out and freak out every—hey, WAIT!
 
 title: square_haze
 ---
+<<enable HazeThree>>
 Josh: HEY, wa— huff... huff... wait. Are you insane? Do I have to remind you you're not human?
 Haze: Relax my friend, I found something out! Look.
+<<movement HazeStand flip freeze>>
 Haze: Ta-dah!
 Josh: ...
 Haze: ...
 Josh: You know nothing happened right.
 Haze: Well, for you it didn't, but that's because you're the only one who can see me right now!
 Josh: What? Stop this nonsense dude. Come back to my house and stay there.
+<<movement JoshWalk freeze>>
+<<face JoshTwo right>>
 Haze: ...
 Josh: ...
-<<movement VillagerEnter>>
+<<enable Villager>>
+<<movement VillagerEnter freeze>>
 Villager: Josh! What are you doing just standing here?
 Josh: Uhm... nothing really, I was just... taking a walk. Yes, a walk.
 Villager: Taking a walk? Are you insane? Can't you hear the noise coming from elder Amos' house?
@@ -157,6 +162,9 @@ Josh: Shut up.
 Haze: Trust me now?
 Josh: For this very specific topic, yes.
 Haze: Can I go, then?
+<<disable Villager>>
+<<disable HazeThree>>
+<<enable TrueHaze>>
 Josh: ...okay.
 ===
 

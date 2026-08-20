@@ -31,21 +31,28 @@ public class Cutscener : MonoBehaviour
     [Tooltip("Objects that can be shown/hidden by name from <<enable Name>> / <<disable Name>>.")]
     [SerializeField] private List<NamedObject> objects = new List<NamedObject>();
 
-    public static Cutscener Instance { get; private set; }
+    // Every Cutscener in the scene registers here — different cutscenes are expected
+    // to each get their own Cutscener with their own movements/objects, so a name is
+    // looked up across ALL of them (see FindOwner) rather than through a single
+    // singleton. A single "last one wins" Instance used to mean only whichever
+    // Cutscener initialized last ever actually fired anything, silently.
+    private static readonly List<Cutscener> allInstances = new List<Cutscener>();
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-            Debug.LogWarning($"Cutscener: '{name}' is a second Cutscener in the scene — only one can be the active Instance at a time. Whichever one initializes last silently wins for every <<movement>>/<<enable>>/<<face>> in the game, which will look like the wrong data is firing. Consolidate everything into one Cutscener.", this);
-
-        Instance = this;
-
+        allInstances.Add(this);
         CheckForDuplicateNames();
     }
 
-    // A duplicate name in Movements or Objects silently loses — List.Find always
-    // returns the FIRST match, so an edited/added SECOND entry with the same name has
-    // no effect at all, which looks exactly like "I fixed this but nothing changed."
+    private void OnDestroy()
+    {
+        allInstances.Remove(this);
+    }
+
+    // A duplicate name within THIS Cutscener's own Movements or Objects silently
+    // loses — List.Find always returns the FIRST match, so an edited/added SECOND
+    // entry with the same name has no effect at all, which looks exactly like "I
+    // fixed this but nothing changed."
     private void CheckForDuplicateNames()
     {
         var seenMovements = new HashSet<string>();
@@ -65,9 +72,29 @@ public class Cutscener : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    // Finds whichever registered Cutscener owns an entry matching hasEntry. Warns if
+    // more than one does (an ambiguous cross-Cutscener name clash) or if none do.
+    private static Cutscener FindOwner(System.Func<Cutscener, bool> hasEntry, string kind, string entryName)
     {
-        if (Instance == this) Instance = null;
+        Cutscener owner = null;
+        int matches = 0;
+
+        foreach (var c in allInstances)
+        {
+            if (hasEntry(c))
+            {
+                matches++;
+                if (owner == null) owner = c;
+            }
+        }
+
+        if (matches > 1)
+            Debug.LogWarning($"Cutscener: {kind} '{entryName}' is defined in {matches} different Cutscener components — only '{owner.name}' will be used.");
+
+        if (owner == null)
+            Debug.LogWarning($"Cutscener: no {kind} named '{entryName}' is assigned in any Cutscener in the scene.");
+
+        return owner;
     }
 
     // The external hook — call this directly, or trigger it from Yarn via
@@ -106,28 +133,22 @@ public class Cutscener : MonoBehaviour
     }
 
     // Static so a Yarn command (which must be a static method) can trigger a movement
-    // without needing its own reference to a specific Cutscener.
+    // without needing its own reference to a specific Cutscener — searches every
+    // Cutscener in the scene for whichever one owns this movement name.
     public static void Trigger(string movementName, bool flip = false)
     {
-        if (Instance == null)
-        {
-            Debug.LogWarning($"Cutscener: no Cutscener in the scene to run movement '{movementName}'.");
-            return;
-        }
-
-        Instance.Move(movementName, flip);
+        Cutscener owner = FindOwner(c => c.HasMovement(movementName), "movement", movementName);
+        owner?.Move(movementName, flip);
     }
 
     public static Coroutine TriggerAndWait(string movementName, bool flip = false)
     {
-        if (Instance == null)
-        {
-            Debug.LogWarning($"Cutscener: no Cutscener in the scene to run movement '{movementName}'.");
-            return null;
-        }
-
-        return Instance.MoveAndWait(movementName, flip);
+        Cutscener owner = FindOwner(c => c.HasMovement(movementName), "movement", movementName);
+        return owner?.MoveAndWait(movementName, flip);
     }
+
+    private bool HasMovement(string movementName) => movements.Exists(m => m.name == movementName);
+    private bool HasObject(string objectName) => objects.Exists(o => o.name == objectName);
 
     // The external hook for <<enable Name>> / <<disable Name>> — toggles the named
     // entry's GameObject active state.
@@ -150,16 +171,12 @@ public class Cutscener : MonoBehaviour
     }
 
     // Static so a Yarn command can reach it without needing its own reference to a
-    // specific Cutscener.
+    // specific Cutscener — searches every Cutscener in the scene for whichever one
+    // owns this object name.
     public static void TriggerSetActive(string objectName, bool active)
     {
-        if (Instance == null)
-        {
-            Debug.LogWarning($"Cutscener: no Cutscener in the scene to {(active ? "enable" : "disable")} object '{objectName}'.");
-            return;
-        }
-
-        Instance.SetObjectActive(objectName, active);
+        Cutscener owner = FindOwner(c => c.HasObject(objectName), "object", objectName);
+        owner?.SetObjectActive(objectName, active);
     }
 
     // The external hook for <<face Name Direction>> — sets a named object's facing
@@ -201,13 +218,8 @@ public class Cutscener : MonoBehaviour
 
     public static void TriggerFace(string objectName, string direction)
     {
-        if (Instance == null)
-        {
-            Debug.LogWarning($"Cutscener: no Cutscener in the scene to face object '{objectName}'.");
-            return;
-        }
-
-        Instance.Face(objectName, direction);
+        Cutscener owner = FindOwner(c => c.HasObject(objectName), "object", objectName);
+        owner?.Face(objectName, direction);
     }
 
     private static Vector2 DirectionFromString(string direction)
