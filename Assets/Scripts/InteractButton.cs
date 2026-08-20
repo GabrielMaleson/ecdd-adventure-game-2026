@@ -39,6 +39,13 @@ public class InteractButton : MonoBehaviour
         SetLabel(labelText);
     }
 
+    // What the label currently READS. Six unrelated scripts write to this one label with
+    // no coordination (DialogueStarter, InteractText, Pickup, StatueSwitch, Teleporter,
+    // SceneLoadTrigger), so a caller that only writes when its own state changes can be
+    // silently overwritten and never notice. Exposing the text lets such a caller check
+    // whether it still owns the label and re-assert if not.
+    public string CurrentLabel => label != null ? label.text : string.Empty;
+
     public void SetLabel(string text)
     {
         if (label != null)

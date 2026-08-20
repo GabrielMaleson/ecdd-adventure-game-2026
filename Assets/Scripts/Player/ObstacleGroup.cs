@@ -124,11 +124,17 @@ public class ObstacleGroup : GridObject
     // driving several groups can verify all of them first and then commit — one
     // blocked group must not leave the others turned, or the puzzle desyncs into a
     // state the player can't reason about.
-    public bool CanRotate(bool clockwise) => Plan(clockwise, out _, out _, out _);
+    public bool CanRotate(bool clockwise) => Plan(clockwise, out _, out _, out _, out _);
 
     // Same, but hands back WHY it can't turn — used by the statue so a refusal names
     // the offending group and reason instead of just silently doing nothing.
-    public bool CanRotate(bool clockwise, out string reason) => Plan(clockwise, out _, out _, out reason);
+    public bool CanRotate(bool clockwise, out string reason) => Plan(clockwise, out _, out _, out reason, out _);
+
+    // Same again, plus the OBJECT doing the blocking, so a refusal can be shown to the
+    // player (flash the crate that's in the way) instead of only written to the console.
+    // Null when the refusal has no single culprit — mid-spin, no grid, no children.
+    public bool CanRotate(bool clockwise, out string reason, out GameObject blocker) =>
+        Plan(clockwise, out _, out _, out reason, out blocker);
 
     // Turns the shape 90 degrees. Returns false (and changes nothing) if refused —
     // all-or-nothing, never partial.
@@ -136,7 +142,7 @@ public class ObstacleGroup : GridObject
     {
         if (IsRotating) return false;    // silent: spam-clicking isn't "blocked"
 
-        if (!Plan(clockwise, out var members, out var targets, out _))
+        if (!Plan(clockwise, out var members, out var targets, out _, out _))
         {
             onBlocked?.Invoke();
             return false;
@@ -153,11 +159,12 @@ public class ObstacleGroup : GridObject
 
     // Works out where every member would land and whether that's allowed. Pure —
     // touches nothing. `reason` is null on success, else a human sentence.
-    bool Plan(bool clockwise, out GridObstacle[] members, out Vector2Int[] targets, out string reason)
+    bool Plan(bool clockwise, out GridObstacle[] members, out Vector2Int[] targets, out string reason, out GameObject blocker)
     {
         members = null;
         targets = null;
         reason  = null;
+        blocker = null;
 
         if (IsRotating) { reason = "it's still mid-spin"; return false; }
         if (!HasGrid()) { reason = "no usable PuzzleGrid in the scene"; return false; }
@@ -195,22 +202,28 @@ public class ObstacleGroup : GridObject
             targets[i] = pivot + turned;
         }
 
-        return PathIsClear(targets, ownCells, out reason);
+        return PathIsClear(targets, ownCells, out reason, out blocker);
     }
 
     // A turn is refused if any destination holds something that isn't part of this
     // group (a crate, a wall, another group), or if the player is standing there.
     // Refusing keeps the puzzle honest: nothing gets crushed, shoved, or trapped
     // inside a rock, and the player just steps aside and tries again.
-    bool PathIsClear(Vector2Int[] targets, HashSet<Vector2Int> ownCells, out string reason)
+    bool PathIsClear(Vector2Int[] targets, HashSet<Vector2Int> ownCells, out string reason, out GameObject blocker)
     {
-        reason = null;
-        Vector2Int playerCell = PlayerCell();
+        reason  = null;
+        blocker = null;
+        Vector2Int playerCell = PlayerCell(out GameObject playerObject);
 
         foreach (var t in targets)
         {
             if (t == playerCell)
             {
+                // The player counts as a blocker like anything else, so he lights up the
+                // same way a crate does. Without this the statue refused with no visible
+                // cause whenever HE was the thing in the way — the one case where the
+                // player is least likely to suspect himself.
+                blocker = playerObject;
                 reason = $"a bush would land on the player (cell {t}) — step aside";
                 return false;
             }
@@ -227,6 +240,7 @@ public class ObstacleGroup : GridObject
             if (occ == null || grid.WorldToCell(occ.VisualCenter) != t)
                 continue;
 
+            blocker = occ.gameObject;
             reason = $"a bush would land on cell {t}, already held by '{occ.name}'"
                    + (occ is PushableCrate
                         ? " — push it off that cell, or put a CrateTarget (rug) there so a crate parked on it clears this group"
@@ -240,10 +254,17 @@ public class ObstacleGroup : GridObject
     // an unreachable sentinel rather than a default value.
     static readonly Vector2Int NoCell = new Vector2Int(int.MinValue, int.MinValue);
 
-    Vector2Int PlayerCell()
+    Vector2Int PlayerCell() => PlayerCell(out _);
+
+    // Hands the player object back as well, so a refusal caused by him can point at him.
+    Vector2Int PlayerCell(out GameObject playerObject)
     {
+        playerObject = null;
+
         var player = FindObjectOfType<PlayerController>();
         if (player == null) return NoCell;
+
+        playerObject = player.gameObject;
 
         // Measured from the collider, not the transform: the player's pivot is at
         // the feet, which can sit in a different cell than the body occupies.

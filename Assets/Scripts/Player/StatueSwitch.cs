@@ -37,11 +37,18 @@ public class StatueSwitch : MonoBehaviour
     [Tooltip("Fires when the statue is used successfully — rumble, dust, stone-grinding SFX.")]
     public UnityEvent onActivated;
 
-    [Tooltip("Fires when the statue is used but nothing can turn (something's in the way).")]
+    [Tooltip("Fires when the statue is used but nothing can turn (something's in the way). Fires EVERY time — hook the grind/clunk sound and a shake here.")]
     public UnityEvent onRefused;
+
+    [Tooltip("Fires only the FIRST time this statue is refused. Hook Haze's explanatory line here: the first refusal teaches the rule, and repeating the line on every later bump would just be noise.")]
+    public UnityEvent onRefusedFirstTime;
+
+    [Tooltip("Flash whatever is in the way when a turn is refused. Needs nothing on the crates — see BlockedFlash.")]
+    [SerializeField] bool flashBlocker = true;
 
     bool ghostInRange;
     bool promptShown;
+    bool refusedBefore;
 
     // Identify the ghost by its FragmentFollow component (on the root), so no tag
     // string has to be kept in sync. The collider may sit on a child.
@@ -76,6 +83,16 @@ public class StatueSwitch : MonoBehaviour
             InteractButton.Instance?.SetLabel(canUse ? interactLabel : "");
             promptShown = canUse;
         }
+        else if (canUse && InteractButton.Instance != null && InteractButton.Instance.CurrentLabel != interactLabel)
+        {
+            // Re-assert. Writing only on the EDGE of canUse was enough to lose the prompt
+            // entirely: any of the other five scripts that share this single label (a
+            // Teleporter trigger overlapping the statue, a DialogueStarter's
+            // ClearInteraction() blanking it) would stomp the text, and this component
+            // would never rewrite it because as far as it knew nothing had changed. The
+            // statue prompt then stayed invisible for the rest of the scene.
+            InteractButton.Instance.SetLabel(interactLabel);
+        }
 
         if (!canUse) return;
 
@@ -102,14 +119,14 @@ public class StatueSwitch : MonoBehaviour
             if (entry == null || entry.group == null)
             {
                 Debug.LogWarning($"{name}: an empty slot is in the Groups list — fill or remove it.", this);
-                onRefused?.Invoke();
+                Refuse(null);
                 return;
             }
             if (entry.group.IsCleared) continue;
-            if (!entry.group.CanRotate(DirectionFor(entry), out string reason))
+            if (!entry.group.CanRotate(DirectionFor(entry), out string reason, out GameObject blocker))
             {
                 Debug.Log($"{name}: won't turn because group '{entry.group.name}' can't rotate — {reason}.", entry.group);
-                onRefused?.Invoke();
+                Refuse(blocker);
                 return;
             }
             active++;
@@ -119,14 +136,14 @@ public class StatueSwitch : MonoBehaviour
             if (c == null)
             {
                 Debug.LogWarning($"{name}: an empty slot is in the Cycles list — fill or remove it.", this);
-                onRefused?.Invoke();
+                Refuse(null);
                 return;
             }
             if (c.IsCleared) continue;
-            if (!c.CanStep(out string reason))
+            if (!c.CanStep(out string reason, out GameObject blocker))
             {
                 Debug.Log($"{name}: won't turn because cycle '{c.name}' can't step — {reason}.", c);
-                onRefused?.Invoke();
+                Refuse(blocker);
                 return;
             }
             active++;
@@ -142,6 +159,26 @@ public class StatueSwitch : MonoBehaviour
         foreach (var entry in groups) if (!entry.group.IsCleared) entry.group.TryRotate(DirectionFor(entry));
         foreach (var c in cycles) if (!c.IsCleared) c.TryStep();
         onActivated?.Invoke();
+    }
+
+    // One refusal, three audiences: the world (sound/shake on every refusal), the player's
+    // eye (the thing in the way lights up), and Haze (who explains the rule once and then
+    // shuts up about it).
+    //
+    // The blocker may be null — an empty Inspector slot or a mid-spin refusal has no
+    // single culprit to point at — and only the flash cares, so the rest still fires.
+    void Refuse(GameObject blocker)
+    {
+        onRefused?.Invoke();
+
+        if (flashBlocker && blocker != null)
+            BlockedFlash.Play(blocker);
+
+        if (!refusedBefore)
+        {
+            refusedBefore = true;
+            onRefusedFirstTime?.Invoke();
+        }
     }
 
     // Groups turn the default direction unless a group opts into the other way with
