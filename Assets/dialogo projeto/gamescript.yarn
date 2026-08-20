@@ -128,14 +128,15 @@ Josh: What?
 Haze: Pain. But it's gone now.
 Josh: ...Ok, good. I'm gonna watch some TV then.
 Haze: I'm gonna go for a walk!
-<<movement HazeExit>>
+<<movement HazeExit freeze>>
+<<disable HazeTwo>>
 Josh: No you're not, you'll stand out and freak out every—hey, WAIT!
 <<progress HazeRanOff>>
+<<enable HazeThree>>
 ===
 
 title: square_haze
 ---
-<<enable HazeThree>>
 Josh: HEY, wa— huff... huff... wait. Are you insane? Do I have to remind you you're not human?
 Haze: Relax my friend, I found something out! Look.
 <<movement HazeStand flip freeze>>

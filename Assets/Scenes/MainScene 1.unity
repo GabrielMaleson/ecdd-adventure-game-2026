@@ -4612,6 +4612,8 @@ MonoBehaviour:
   objects:
   - name: HazeTwo
     target: {fileID: 410783713}
+  - name: HazeThree
+    target: {fileID: 836770124}
 --- !u!114 &271023738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19129,7 +19131,7 @@ MonoBehaviour:
     speed: 5
     arriveThreshold: 0.05
   - name: JoshWalk
-    target: {fileID: 456739836}
+    target: {fileID: 3495693095239985913}
     destination: {fileID: 311452890}
     speed: 3.5
     arriveThreshold: 0.05
