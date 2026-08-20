@@ -491,5 +491,58 @@ public class DialogueManager : MonoBehaviour
             instance.graphicRaycaster.enabled = false;
     }
 
+    // Triggers a named scripted move from a Cutscener in the scene — e.g. <<movement
+    // JoshHome>> walks whatever object/destination pair was named "JoshHome" in that
+    // Cutscener's Inspector list. Two optional modifier words, in either order:
+    //   freeze — the dialogue waits until the move actually finishes before showing
+    //            the next line. Without it, the line advances immediately and the
+    //            move plays out in the background.
+    //   flip   — the target's sprite flips X once before setting off, instead of
+    //            following its direction of travel like it normally does (e.g. the
+    //            Villager turning around before walking off).
+    // e.g. <<movement JoshHome freeze>>, <<movement VillagerExit flip freeze>>.
+    [YarnCommand("movement")]
+    public static IEnumerator Movement(string movementName, string modifier1 = null, string modifier2 = null)
+    {
+        bool freeze = modifier1 == "freeze" || modifier2 == "freeze";
+        bool flip = modifier1 == "flip" || modifier2 == "flip";
+
+        if (freeze)
+        {
+            Coroutine handle = Cutscener.TriggerAndWait(movementName, flip);
+            if (handle != null)
+                yield return handle;
+        }
+        else
+        {
+            Cutscener.Trigger(movementName, flip);
+        }
+    }
+
+    // Shows/hides a named object from a Cutscener in the scene — e.g. <<enable
+    // ElderAmos>> / <<disable ElderAmos>>, matching whatever name was given to that
+    // entry in the Cutscener's Objects list.
+    [YarnCommand("enable")]
+    public static void Enable(string objectName)
+    {
+        Cutscener.TriggerSetActive(objectName, true);
+    }
+
+    [YarnCommand("disable")]
+    public static void Disable(string objectName)
+    {
+        Cutscener.TriggerSetActive(objectName, false);
+    }
+
+    // Forces a named object's facing outright — e.g. <<face Josh left>> — instead of
+    // whatever direction a <<movement>> happened to travel in. Directions: left,
+    // right, up, down. The object must be registered in the same Cutscener Objects
+    // list <<enable>>/<<disable>> use.
+    [YarnCommand("face")]
+    public static void Face(string objectName, string direction)
+    {
+        Cutscener.TriggerFace(objectName, direction);
+    }
+
     // <<wait seconds>> é um comando nativo do Yarn Spinner — não precisa de registro manual.
 }

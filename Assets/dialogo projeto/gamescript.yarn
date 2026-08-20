@@ -53,8 +53,12 @@ Josh: Hmm... Maybe I should go see my friends before heading home. We haven't ta
 ===
 title: home_outside_first
 ---
+<<movement JoshApproach>>
 Josh: What's this?! (noise?)
+<<face Josh left>>
+<<enable HazeOne>>
 ...
+<<movement HazeEnter freeze>>
 Haze: Hm... Hello sir.
 Josh: Wha—who... what are you?!
 Haze: Hmm... I'm me I guess, I don't know.
@@ -63,48 +67,68 @@ Haze: Nothing in particular.
 Josh: Okay just— come inside or else you'll freak people out.
 Haze: Why would I freak them out?
 Josh: Have you looked at yourself in the mirror?
+<<movement HazeApproach freeze>>
 Haze: I... haven't.
 Josh: Yeah, figures.
 Haze: But you're not freaked out?
 Josh: You don't seem hostile.
 Haze: I don't feel hostile.
 Josh: Just come on in man.
+<<movement HazeRun flip freeze>>
+<<movement HazeLeave flip freeze>>
+<<disable HazeOne>>
+Josh: (This is gonna be a long day...)
+<<progress MetHaze>>
 ===
 
 title: home_inside_first
 ---
+<<enable HazeTwo>>
+<<movement JoshHouse freeze>>
+<<movement HazeHouse freeze>>
 Haze: Wow your home is so pretty!
 Josh: It really isn't.
+<<movement HazeWander1>>
 Haze: Then why are you here?
 Josh: Nowhere to go, I guess.
+<<movement HazeWander2 flip>>
 Haze: That's sad.
+<<movement HazeWander3 flip>>
 Haze: What's this?
 Josh: That's a TV.
+<<movement HazeTV flip>>
 Haze: What does it do?
 Josh: Shows moving images.
 Haze: Isn't that basically everything already?
 Josh: "Everything" is not engaging enough, I guess.
+<<movement HazeWander1>>
 Haze: You're weird.
 Josh: I'm weird? Says the orange floating thing that appeared out of nowhere. Look— who are you anyway, man? Why are you even here?
 Haze: As I said, I don't know!
 Josh: I'm guessing you don't have a name, also.
+<<movement HazeWander2 flip>>
 Haze: Not that I can remember, no.
 Josh: Okay then. I'll call you Haze for now. Call me Josh.
+<<movement HazeWander1 flip>>
 Haze: ...ok.
 Josh: So, you really have no idea how you wound up here?
 Haze: Nuh uh. I feel like I just woke up from a really long nap. Like, reeeeally long.
 Josh: Like, how long?
 Haze: Feels like it's been forever since I fell asleep, honestly.
 Josh: And you just suddenly fell asleep like that? For like, what, ages?
+<<movement HazeTV>>
 Haze: I'm trying to remember, but it's all too messy in my hea—
+<<movement HazeWander2 flip freeze>>
 Josh: Now what?
 Haze: Ugh!
 Josh: What?
+<<movement HazeWander1 flip>>
 Haze: Felt... something.
 Josh: What?
 Haze: Pain. But it's gone now.
 Josh: ...Ok, good. I'm gonna watch some TV then.
 Haze: I'm gonna go for a walk!
+<<movement HazeExit>>
 Josh: No you're not, you'll stand out and freak out every—hey, WAIT!
 <<progress HazeRanOff>>
 ===
@@ -121,13 +145,13 @@ Haze: Well, for you it didn't, but that's because you're the only one who can se
 Josh: What? Stop this nonsense dude. Come back to my house and stay there.
 Haze: ...
 Josh: ...
-<<villagerenter>>
+<<movement VillagerEnter>>
 Villager: Josh! What are you doing just standing here?
 Josh: Uhm... nothing really, I was just... taking a walk. Yes, a walk.
 Villager: Taking a walk? Are you insane? Can't you hear the noise coming from elder Amos' house?
 Josh: Oh, yeah. So that's where all the ruckus' coming from.
 Villager: Yeah. Anyway, meet everyone there then, after you finish your... walk or whatever. Hurry.
-<<villagerexit>>
+<<movement VillagerExit>>
 Haze: Turns out you're the insane one.
 Josh: Shut up.
 Haze: Trust me now?
