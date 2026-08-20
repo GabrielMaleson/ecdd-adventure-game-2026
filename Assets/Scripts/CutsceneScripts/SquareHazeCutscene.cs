@@ -30,6 +30,9 @@ public class SquareHazeCutscene : MonoBehaviour
     [Header("Dialogue")]
     [SerializeField] private string startNode = "square_haze";
 
+    [Tooltip("Progress flag that must be set before this cutscene can trigger — set by <<progress HazeRanOff>> at the end of home_inside_first, so the player can't stumble into the square confrontation before Haze has actually run off.")]
+    [SerializeField] private string requiredProgress = "HazeRanOff";
+
     private GameObject player;
     private GameObject haze;
     private PlayerController playerController;
@@ -97,11 +100,21 @@ public class SquareHazeCutscene : MonoBehaviour
             StartCutscene();
     }
 
+    private bool HasRequiredProgress()
+    {
+        if (string.IsNullOrEmpty(requiredProgress))
+            return true;
+
+        return SaveManager.Instance != null && SaveManager.Instance.HasProgress(requiredProgress);
+    }
+
     public void StartCutscene()
     {
-        if (isCutscenePlaying) return;
+        if (isCutscenePlaying || !HasRequiredProgress()) return;
 
-        gameObject.SetActive(true); // see HomeInsideCutscene for why this matters
+        // Defensive: guarantees the StartCoroutine below has an active host to run on,
+        // regardless of whatever state this object is in when called.
+        gameObject.SetActive(true);
         isCutscenePlaying = true;
 
         CutsceneTeleportGuard.DisableTeleporters();

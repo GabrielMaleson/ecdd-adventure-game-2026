@@ -106,6 +106,7 @@ Haze: Pain. But it's gone now.
 Josh: ...Ok, good. I'm gonna watch some TV then.
 Haze: I'm gonna go for a walk!
 Josh: No you're not, you'll stand out and freak out every—hey, WAIT!
+<<progress HazeRanOff>>
 ===
 
 title: square_haze

@@ -32,6 +32,8 @@ public class HomeOutsideCutscene : MonoBehaviour
     [Header("Inside — Position References")]
     [SerializeField] private Transform insidePlayerPosition;
     [SerializeField] private Transform insideHazePosition;
+    [Tooltip("Optional — Haze visits these, in order, before finally heading to the TV. Leave empty to skip straight to the TV.")]
+    [SerializeField] private Transform[] houseWanderPoints;
     [SerializeField] private Transform tvPosition; // Where Haze goes to look at TV
 
     [Header("Animation Settings")]
@@ -40,6 +42,7 @@ public class HomeOutsideCutscene : MonoBehaviour
     [SerializeField] private float walkSpeed = 2f;
     [SerializeField] private float playerApproachSpeed = 3f;
     [SerializeField] private float fadeDuration = 0.5f;
+    [SerializeField] private float wanderPauseDuration = 1f;
 
     [Header("Dialogue")]
     [SerializeField] private string outsideStartNode = "home_outside_first";
@@ -186,7 +189,7 @@ public class HomeOutsideCutscene : MonoBehaviour
 
         yield return StartCoroutine(RunDialogue(insideStartNode));
 
-        yield return StartCoroutine(HazeWalksToTV());
+        yield return StartCoroutine(InsideHazeMovement());
 
         // Cleanup
         isCutscenePlaying = false;
@@ -194,8 +197,7 @@ public class HomeOutsideCutscene : MonoBehaviour
         if (playerController != null)
             playerController.InputEnabled = true;
 
-        if (cutsceneHaze != null)
-            cutsceneHaze.SetActive(false);
+        SwapToRealHaze();
 
         CutsceneTeleportGuard.RestoreTeleporters();
 
@@ -402,9 +404,11 @@ public class HomeOutsideCutscene : MonoBehaviour
         fadeSprite.color = new Color(0, 0, 0, 0);
     }
 
-    // Swaps from the outside cutscene's Haze clone to the real Haze and places both
-    // characters inside — the ONE "now you're inside" step (replacing what used to be
-    // two separate teleports from two separate components).
+    // Places both characters inside — the ONE "now you're inside" step (replacing what
+    // used to be two separate teleports from two separate components). Cutscene Haze
+    // stays the active actor here; it does NOT hand off to the real Haze yet (see
+    // SwapToRealHaze) — swapping the instant the player stepped through the door made
+    // Haze look like it vanished right after entering.
     private void EnterHouse()
     {
         if (insidePlayerPosition != null && player != null)
@@ -418,38 +422,74 @@ public class HomeOutsideCutscene : MonoBehaviour
             }
         }
 
-        if (cutsceneHaze != null)
-            cutsceneHaze.SetActive(false);
-
-        if (realHaze != null)
+        if (cutsceneHaze != null && insideHazePosition != null)
         {
-            if (insideHazePosition != null)
+            cutsceneHaze.transform.position = insideHazePosition.position;
+            Rigidbody2D hazeRb = cutsceneHaze.GetComponent<Rigidbody2D>();
+            if (hazeRb != null)
             {
-                realHaze.transform.position = insideHazePosition.position;
-                Rigidbody2D hazeRb = realHaze.GetComponent<Rigidbody2D>();
-                if (hazeRb != null)
-                {
-                    hazeRb.position = insideHazePosition.position;
-                    hazeRb.linearVelocity = Vector2.zero;
-                }
+                hazeRb.position = insideHazePosition.position;
+                hazeRb.linearVelocity = Vector2.zero;
             }
-            realHaze.SetActive(true);
         }
     }
 
-    private IEnumerator HazeWalksToTV()
+    // Hands off from this cutscene's Haze clone to the persistent real Haze, at
+    // wherever the clone ended up — the ONE moment Cutscene Haze actually disables,
+    // once the whole cutscene is over and normal gameplay needs the real object again.
+    private void SwapToRealHaze()
     {
-        if (realHaze == null || tvPosition == null) yield break;
+        if (realHaze != null && cutsceneHaze != null)
+        {
+            Vector2 handoffPos = cutsceneHaze.transform.position;
+            realHaze.transform.position = handoffPos;
+            Rigidbody2D hazeRb = realHaze.GetComponent<Rigidbody2D>();
+            if (hazeRb != null)
+            {
+                hazeRb.position = handoffPos;
+                hazeRb.linearVelocity = Vector2.zero;
+            }
+        }
 
-        Vector2 startPos = realHaze.transform.position;
-        Vector2 targetPos = tvPosition.position;
+        if (realHaze != null)
+            realHaze.SetActive(true);
+
+        if (cutsceneHaze != null)
+            cutsceneHaze.SetActive(false);
+    }
+
+    // Haze wanders a few points around the house before finally settling at the TV —
+    // makes the inside beat feel lived-in instead of a single beeline. Wander Points
+    // is optional; leave it empty to go straight to the TV like before.
+    private IEnumerator InsideHazeMovement()
+    {
+        if (houseWanderPoints != null)
+        {
+            foreach (var point in houseWanderPoints)
+            {
+                if (point == null) continue;
+
+                yield return StartCoroutine(WalkHazeTo(point.position));
+                yield return new WaitForSeconds(wanderPauseDuration);
+            }
+        }
+
+        if (tvPosition != null)
+            yield return StartCoroutine(WalkHazeTo(tvPosition.position));
+    }
+
+    private IEnumerator WalkHazeTo(Vector2 targetPos)
+    {
+        if (cutsceneHaze == null) yield break;
+
+        Vector2 startPos = cutsceneHaze.transform.position;
         float journey = 0f;
         float distance = Vector2.Distance(startPos, targetPos);
 
-        Rigidbody2D rb = realHaze.GetComponent<Rigidbody2D>();
+        Rigidbody2D rb = cutsceneHaze.GetComponent<Rigidbody2D>();
         if (rb != null) rb.isKinematic = true;
 
-        SpriteRenderer hazeSprite = realHaze.GetComponent<SpriteRenderer>();
+        SpriteRenderer hazeSprite = cutsceneHaze.GetComponent<SpriteRenderer>();
         Vector2 walkDirection = (targetPos - startPos).normalized;
 
         while (journey < 1f)
@@ -458,7 +498,7 @@ public class HomeOutsideCutscene : MonoBehaviour
             journey = Mathf.Min(journey, 1f);
 
             Vector2 newPos = Vector2.Lerp(startPos, targetPos, journey);
-            realHaze.transform.position = newPos;
+            cutsceneHaze.transform.position = newPos;
             if (rb != null) rb.position = newPos;
 
             if (hazeSprite != null)
@@ -467,7 +507,7 @@ public class HomeOutsideCutscene : MonoBehaviour
             yield return null;
         }
 
-        realHaze.transform.position = targetPos;
+        cutsceneHaze.transform.position = targetPos;
         if (rb != null)
         {
             rb.position = targetPos;
@@ -490,6 +530,7 @@ public class HomeOutsideCutscene : MonoBehaviour
             fadeSprite.color = new Color(0, 0, 0, 0);
 
         EnterHouse();
+        SwapToRealHaze();
 
         CutsceneTeleportGuard.RestoreTeleporters();
 
