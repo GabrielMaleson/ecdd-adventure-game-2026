@@ -898,6 +898,18 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8223566499020737225, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223566499020737225, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_GravityScale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223566499020737225, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
+      propertyPath: m_AngularDamping
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7733985110624149964, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
     - {fileID: 8152032474710857191, guid: f68dc81d901ccb54d917f04a5b52dd69, type: 3}
@@ -18631,8 +18643,9 @@ GameObject:
   m_Component:
   - component: {fileID: 674666519}
   - component: {fileID: 674666522}
+  - component: {fileID: 674666523}
   m_Layer: 0
-  m_Name: InsideHouseHaze
+  m_Name: SquareHaze
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18681,6 +18694,52 @@ MonoBehaviour:
   villagerWalkSpeed: 2
   startNode: square_haze
   requiredProgress: HazeRanOff
+--- !u!61 &674666523
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674666518}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -3.6035576, y: 3.0029655}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 12.878395, y: 7.005931}
+  m_EdgeRadius: 0
 --- !u!1 &684000533
 GameObject:
   m_ObjectHideFlags: 0
@@ -19426,7 +19485,7 @@ Transform:
   m_GameObject: {fileID: 716172422}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.55, y: -0.18, z: 0}
+  m_LocalPosition: {x: -5.29, y: -0.18, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19845,7 +19904,7 @@ GameObject:
   - component: {fileID: 741391688}
   - component: {fileID: 741391687}
   m_Layer: 0
-  m_Name: OutsideHouseHazeFirst
+  m_Name: OutsideHouseHaze
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19873,6 +19932,9 @@ Transform:
   - {fileID: 2055979481}
   - {fileID: 390145711}
   - {fileID: 1618897162}
+  - {fileID: 879185830}
+  - {fileID: 1776659037}
+  - {fileID: 1965085028}
   - {fileID: 805996929}
   m_Father: {fileID: 2060337932}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -19898,7 +19960,10 @@ MonoBehaviour:
   houseEntrancePosition: {fileID: 991140409}
   insidePlayerPosition: {fileID: 1189566454}
   insideHazePosition: {fileID: 2055979481}
-  houseWanderPoints: []
+  houseWanderPoints:
+  - {fileID: 879185830}
+  - {fileID: 1776659037}
+  - {fileID: 1965085028}
   tvPosition: {fileID: 1618897162}
   floatDuration: 2
   floatHeight: 0.5
@@ -21608,6 +21673,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c25e84c0d014e14f94787c6a1dc4255, type: 3}
+--- !u!1 &879185829
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 879185830}
+  m_Layer: 0
+  m_Name: TVPlace (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &879185830
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 879185829}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -18.3, y: 53.74, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 741391686}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &890074564
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32608,7 +32704,7 @@ Transform:
   m_GameObject: {fileID: 1746793343}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.6727104, y: 2.9091997, z: 0}
+  m_LocalPosition: {x: 1.6727104, y: 11.29, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -33066,6 +33162,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7876587138048735873, guid: 82d217c1b5129aa42832eb774317a9c8, type: 3}
   m_PrefabInstance: {fileID: 846733484}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1776659036
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1776659037}
+  m_Layer: 0
+  m_Name: TVPlace (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1776659037
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1776659036}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -15.92, y: 53.93, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 741391686}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1781293420
 GameObject:
   m_ObjectHideFlags: 0
@@ -55404,7 +55531,7 @@ Transform:
   m_GameObject: {fileID: 1961092563}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.45, y: 9.38, z: 0}
+  m_LocalPosition: {x: 1.07, y: 4.21, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -55514,6 +55641,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1965085027
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1965085028}
+  m_Layer: 0
+  m_Name: TVPlace (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1965085028
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965085027}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -15.18, y: 54.09, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 741391686}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1965381570
 PrefabInstance:
@@ -58185,7 +58343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TeleporterScript
   destination: {fileID: 462346638}
-  teleportOnTrigger: 0
+  teleportOnTrigger: 1
   interactLabel: Enter Josh's House
   Camera: {fileID: 0}
   OldCamera: {fileID: 0}
