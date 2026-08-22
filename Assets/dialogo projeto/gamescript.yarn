@@ -54,11 +54,12 @@ Josh: Hmm... Maybe I should go see my friends before heading home. We haven't ta
 title: home_outside_first
 ---
 <<movement JoshApproach>>
-Josh: What's this?! (noise?)
+Josh: What's this?! 
 <<face Josh left>>
 <<enable HazeOne>>
+<<movement HazeFloatDown flip freeze>>
 ...
-<<movement HazeEnter freeze>>
+<<movement HazeEnter flip freeze>>
 Haze: Hm... Hello sir.
 Josh: Wha—who... what are you?!
 Haze: Hmm... I'm me I guess, I don't know.

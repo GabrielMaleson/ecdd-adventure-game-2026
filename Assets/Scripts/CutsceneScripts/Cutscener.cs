@@ -114,6 +114,24 @@ public class Cutscener : MonoBehaviour
         return StartMove(movementName, flip);
     }
 
+    // Tracks whichever object is currently mid-move, per target Transform — so a
+    // SECOND <<movement>> firing for the same object before the first one arrives
+    // (e.g. the player spamming through dialogue faster than a walk can finish)
+    // SUPERSEDES it cleanly instead of both coroutines fighting over the same
+    // Transform.position every frame. Also holds the object's true pre-move
+    // Rigidbody2D/PlayerController state, captured once at the start of a chain of
+    // moves and restored only once the chain's last move actually finishes — so an
+    // intermediate superseded move can never mistake "currently Kinematic because
+    // another move already grabbed it" for the real original state.
+    private class MoveState
+    {
+        public int token;
+        public RigidbodyType2D originalBodyType;
+        public bool originalInputEnabled;
+    }
+
+    private readonly Dictionary<Transform, MoveState> moveStates = new Dictionary<Transform, MoveState>();
+
     private Coroutine StartMove(string movementName, bool flip)
     {
         Movement movement = movements.Find(m => m.name == movementName);
@@ -129,7 +147,27 @@ public class Cutscener : MonoBehaviour
             return null;
         }
 
-        return StartCoroutine(MoveRoutine(movement, flip));
+        Transform obj = movement.target;
+        if (!moveStates.TryGetValue(obj, out MoveState state))
+        {
+            // Deliberately GetComponent + != null here rather than an `is Type variable`
+            // pattern — Unity's fake-null wrapper for "no component found" is a non-null
+            // managed reference, so `is` matches it and then touching .bodyType throws
+            // MissingComponentException instead of just being null.
+            Rigidbody2D rb = obj.GetComponent<Rigidbody2D>();
+            PlayerController pc = obj.GetComponent<PlayerController>();
+
+            state = new MoveState
+            {
+                originalBodyType = rb != null ? rb.bodyType : RigidbodyType2D.Dynamic,
+                originalInputEnabled = pc == null || pc.InputEnabled
+            };
+            moveStates[obj] = state;
+        }
+
+        int token = ++state.token;
+
+        return StartCoroutine(MoveRoutine(movement, flip, state, token));
     }
 
     // Static so a Yarn command (which must be a static method) can trigger a movement
@@ -211,7 +249,7 @@ public class Cutscener : MonoBehaviour
             return;
         }
 
-        SpriteRenderer sprite = entry.target.GetComponent<SpriteRenderer>();
+        SpriteRenderer sprite = entry.target.GetComponentInChildren<SpriteRenderer>();
         if (sprite != null)
             sprite.flipX = dir.x < 0f;
     }
@@ -234,32 +272,29 @@ public class Cutscener : MonoBehaviour
         }
     }
 
-    private IEnumerator MoveRoutine(Movement movement, bool flip)
+    private IEnumerator MoveRoutine(Movement movement, bool flip, MoveState state, int token)
     {
         Transform obj = movement.target;
         Vector2 destination = movement.destination.position;
 
+        // Rigidbody2D/PlayerController are expected on the assigned target itself (the
+        // object that actually moves), but the sprite is often on a separate visual
+        // child instead (e.g. Haze's Rigidbody2D is on the "Haze" root while its
+        // SpriteRenderer is on a "HazeVisual" child) — GetComponentInChildren finds it
+        // either way without requiring target to be reassigned to the visual object,
+        // which would lose the Rigidbody2D that has to move instead.
         Rigidbody2D rb = obj.GetComponent<Rigidbody2D>();
-        SpriteRenderer sprite = obj.GetComponent<SpriteRenderer>();
+        SpriteRenderer sprite = obj.GetComponentInChildren<SpriteRenderer>();
         PlayerController controller = obj.GetComponent<PlayerController>();
 
-        RigidbodyType2D originalBodyType = RigidbodyType2D.Dynamic;
-        if (rb != null)
-        {
-            originalBodyType = rb.bodyType;
-            rb.bodyType = RigidbodyType2D.Kinematic;
-        }
+        if (rb != null) rb.bodyType = RigidbodyType2D.Kinematic;
 
         // If this is the player, take input away for the duration so a click-to-move
-        // or WASD press can't fight this scripted walk, and restore whatever it was
-        // set to afterward (it's usually already off, e.g. during a running Yarn
-        // dialogue — this is just a safety net for triggering movement outside one).
-        bool restoreInput = false;
+        // or WASD press can't fight this scripted walk (it's usually already off,
+        // e.g. during a running Yarn dialogue — this is just a safety net for
+        // triggering movement outside one).
         if (controller != null)
-        {
-            restoreInput = controller.InputEnabled;
             controller.InputEnabled = false;
-        }
 
         // Flip is a one-time "turn around" before setting off (e.g. a villager
         // wheeling around to walk away) — only for plain sprites, since the player's
@@ -271,6 +306,12 @@ public class Cutscener : MonoBehaviour
 
         while (Vector2.Distance(obj.position, destination) > movement.arriveThreshold)
         {
+            // A newer move for this same object has taken over — stop driving it and
+            // hand off cleanly instead of fighting the newer move for control every
+            // frame. That newer move owns restoring original state once IT finishes.
+            if (state.token != token)
+                yield break;
+
             Vector2 pos = obj.position;
             Vector2 dir = (destination - pos).normalized;
             Vector2 next = Vector2.MoveTowards(pos, destination, movement.speed * Time.deltaTime);
@@ -287,17 +328,26 @@ public class Cutscener : MonoBehaviour
         }
 
         obj.position = destination;
-        if (rb != null)
-        {
-            rb.position = destination;
-            rb.bodyType = originalBodyType;
-            rb.linearVelocity = Vector2.zero;
-        }
+        if (rb != null) rb.position = destination;
 
         if (controller != null)
-        {
             controller.SetCutsceneMoveDirection(Vector2.zero);
-            controller.InputEnabled = restoreInput;
+
+        // Only actually restore the object's original state if nothing has
+        // superseded this move since it started — i.e. this really is the last move
+        // in the chain for this object, not an earlier one that happened to arrive
+        // after a later one already grabbed control.
+        if (state.token == token)
+        {
+            if (rb != null)
+            {
+                rb.bodyType = state.originalBodyType;
+                rb.linearVelocity = Vector2.zero;
+            }
+            if (controller != null)
+                controller.InputEnabled = state.originalInputEnabled;
+
+            moveStates.Remove(obj);
         }
     }
 }

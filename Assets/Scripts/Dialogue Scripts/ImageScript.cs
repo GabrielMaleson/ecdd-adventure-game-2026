@@ -117,6 +117,7 @@ public class DialogueManager : MonoBehaviour
         if (linePresenterGroup != null)
             linePresenterGroup.alpha = 0;
         EnablePlayerControl();
+        RestoreTeleporters();
     }
 
     private void OnValidate()
@@ -167,6 +168,44 @@ public class DialogueManager : MonoBehaviour
             Rigidbody2D playerRigidbody = playerObject.GetComponent<Rigidbody2D>();
             playerRigidbody.WakeUp();
         }
+    }
+
+    // While any dialogue is running, Teleport-tagged objects are switched off — a live
+    // Teleporter firing mid-dialogue (e.g. the player standing on one while talking to
+    // someone) would otherwise yank the scene out from under the conversation. Needs
+    // the "Teleport" tag defined in Project Settings > Tags and Layers; until it exists
+    // this just no-ops instead of throwing.
+    private static List<GameObject> disabledTeleporters;
+
+    private void DisableTeleporters()
+    {
+        if (disabledTeleporters != null) return; // already held by an overlapping dialogue
+
+        GameObject[] found;
+        try
+        {
+            found = GameObject.FindGameObjectsWithTag("Teleport");
+        }
+        catch (UnityException)
+        {
+            return;
+        }
+
+        disabledTeleporters = new List<GameObject>(found);
+        foreach (var obj in disabledTeleporters)
+            obj.SetActive(false);
+    }
+
+    private void RestoreTeleporters()
+    {
+        if (disabledTeleporters == null) return;
+
+        foreach (var obj in disabledTeleporters)
+        {
+            if (obj != null)
+                obj.SetActive(true);
+        }
+        disabledTeleporters = null;
     }
 
     // Skip dialogue function - calls next line 30 times rapidly
@@ -413,6 +452,7 @@ public class DialogueManager : MonoBehaviour
         }
 
         DisablePlayerControl();
+        DisableTeleporters();
 
         try
         {
@@ -423,6 +463,7 @@ public class DialogueManager : MonoBehaviour
         {
             Debug.LogError($"Falha ao iniciar diálogo '{dialogue}': {e.Message}");
             EnablePlayerControl();
+            RestoreTeleporters();
         }
     }
 
