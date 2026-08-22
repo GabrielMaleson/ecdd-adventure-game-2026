@@ -164,7 +164,7 @@ public class PlayerController : MonoBehaviour
         visualTransform.localScale = desiredScale;
     }
 
-    // Prevents clicking a UI element (e.g. the InteractButton) from also
+    // Prevents clicking a UI element (e.g. a dialogue box or menu) from also
     // sending the player walking toward that screen position.
     bool IsPointerOverUI() => EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
 

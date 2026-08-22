@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
 
 // A collectible item: key, lore fragment, whatever.
 //
@@ -26,7 +25,7 @@ public class Pickup : MonoBehaviour
     [SerializeField] GrabMode grabMode = GrabMode.OnTouch;
 
     [Tooltip("PressE only — prompt shown on the interact label while in range.")]
-    [SerializeField] string interactLabel = "Pick up (E)";
+    [SerializeField] string interactLabel = "E";
 
     [Header("On pickup — swap GameObjects")]
     [Tooltip("Objects switched OFF when collected (e.g. the grid crypt, the blocking bush).")]
@@ -55,23 +54,23 @@ public class Pickup : MonoBehaviour
             return;
         }
 
-        // PressE: arm the prompt, wait for the key in Update.
+        // PressE: register the prompt, InteractButton handles the keypress.
         playerInRange = true;
-        InteractButton.Instance?.SetLabel(interactLabel);
+        InteractButton.Instance?.SetInteraction(this, interactLabel, Collect);
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Player")) playerInRange = false;
+        if (!other.CompareTag("Player")) return;
+
+        playerInRange = false;
+        InteractButton.Instance?.ClearInteraction(this);
     }
 
-    void Update()
+    void OnDisable()
     {
-        if (grabMode != GrabMode.PressE || !playerInRange) return;
-
-        var kb = Keyboard.current;
-        if (kb != null && kb.eKey.wasPressedThisFrame)
-            Collect();
+        playerInRange = false;
+        InteractButton.Instance?.ClearInteraction(this);
     }
 
     void Collect()

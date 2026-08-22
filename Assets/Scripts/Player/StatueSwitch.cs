@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
 
 // The statue: an interactable that turns one or more ObstacleGroups by 90 degrees
 // every time it's used, reshaping the board mid-puzzle.
@@ -32,7 +31,7 @@ public class StatueSwitch : MonoBehaviour
     [SerializeField] List<TileCycle> cycles = new List<TileCycle>();
 
     [Tooltip("Prompt shown on the interact label while the parked ghost can use this.")]
-    [SerializeField] string interactLabel = "Statue (E)";
+    [SerializeField] string interactLabel = "E";
 
     [Tooltip("Fires when the statue is used successfully — rumble, dust, stone-grinding SFX.")]
     public UnityEvent onActivated;
@@ -47,7 +46,6 @@ public class StatueSwitch : MonoBehaviour
     [SerializeField] bool flashBlocker = true;
 
     bool ghostInRange;
-    bool promptShown;
     bool refusedBefore;
 
     // Identify the ghost by its FragmentFollow component (on the root), so no tag
@@ -56,12 +54,18 @@ public class StatueSwitch : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (IsGhost(other)) ghostInRange = true;
+        if (!IsGhost(other)) return;
+
+        ghostInRange = true;
+        RefreshPrompt();
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (IsGhost(other)) ghostInRange = false;
+        if (!IsGhost(other)) return;
+
+        ghostInRange = false;
+        RefreshPrompt();
     }
 
     // The ghost sitting inside the trigger while the statue is disabled or the
@@ -69,36 +73,26 @@ public class StatueSwitch : MonoBehaviour
     void OnDisable()
     {
         ghostInRange = false;
-        if (promptShown) { InteractButton.Instance?.SetLabel(""); promptShown = false; }
+        InteractButton.Instance?.ClearInteraction(this);
     }
 
-    void Update()
+    // E works whenever the ghost is in range — piloted or parked, no parked-only
+    // restriction. Only the ghost's presence in the trigger gates it.
+    void RefreshPrompt()
     {
-        // E works whenever the ghost is in range — piloted or parked, no parked-only
-        // restriction. Only the ghost's presence in the trigger gates it.
-        bool canUse = ghostInRange;
+        if (ghostInRange)
+            InteractButton.Instance?.SetInteraction(this, interactLabel, OnInteractPressed);
+        else
+            InteractButton.Instance?.ClearInteraction(this);
+    }
 
-        if (canUse != promptShown)
-        {
-            InteractButton.Instance?.SetLabel(canUse ? interactLabel : "");
-            promptShown = canUse;
-        }
-        else if (canUse && InteractButton.Instance != null && InteractButton.Instance.CurrentLabel != interactLabel)
-        {
-            // Re-assert. Writing only on the EDGE of canUse was enough to lose the prompt
-            // entirely: any of the other five scripts that share this single label (a
-            // Teleporter trigger overlapping the statue, a DialogueStarter's
-            // ClearInteraction() blanking it) would stomp the text, and this component
-            // would never rewrite it because as far as it knew nothing had changed. The
-            // statue prompt then stayed invisible for the rest of the scene.
-            InteractButton.Instance.SetLabel(interactLabel);
-        }
-
-        if (!canUse) return;
-
-        var kb = Keyboard.current;
-        if (kb != null && kb.eKey.wasPressedThisFrame)
-            Activate();
+    // InteractButton blanks the prompt the instant E is pressed (so it can't be
+    // spammed mid-activation); the statue's own use is instantaneous, so re-arm right
+    // away if the ghost is still standing here.
+    void OnInteractPressed()
+    {
+        Activate();
+        RefreshPrompt();
     }
 
     void Activate()

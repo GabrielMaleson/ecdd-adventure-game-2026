@@ -23,11 +23,14 @@ public class DialogueStarter : MonoBehaviour
     public List<DialogueCondition> Conditions;
 
     private bool hasPlayed = false;
+    private bool playerInRange = false;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!collision.CompareTag("Player"))
             return;
+
+        playerInRange = true;
 
         if (OnceTime && hasPlayed)
             return;
@@ -51,6 +54,8 @@ public class DialogueStarter : MonoBehaviour
         if (!collision.CompareTag("Player"))
             return;
 
+        playerInRange = false;
+
         if (Notification != null)
             Notification.SetActive(false);
 
@@ -60,12 +65,38 @@ public class DialogueStarter : MonoBehaviour
 
     private void SendToInteractButton()
     {
-        InteractButton.Instance?.SetInteraction(this, Dialogue, ConversantName, HasConditions, Conditions, ConditionsCancel);
+        InteractButton.Instance?.SetInteraction(this, "E", OnInteractPressed);
     }
 
     private void ClearInteractButton()
     {
-        InteractButton.Instance?.ClearInteraction();
+        InteractButton.Instance?.ClearInteraction(this);
+    }
+
+    private void OnInteractPressed()
+    {
+        StartDialogue();
+
+        if (OnceTime)
+        {
+            MarkAsPlayed(); // never needs the prompt again
+            return;
+        }
+
+        // Repeatable dialogue: InteractButton already blanked the prompt so E can't be
+        // spammed mid-conversation — re-arm it once the dialogue actually ends, if the
+        // player is still standing here.
+        Yarn.Unity.DialogueRunner runner = DialogueManager.Instance?.dialogueRunner;
+        if (runner == null)
+            return;
+
+        void OnComplete()
+        {
+            runner.onDialogueComplete.RemoveListener(OnComplete);
+            if (playerInRange)
+                SendToInteractButton();
+        }
+        runner.onDialogueComplete.AddListener(OnComplete);
     }
 
     private void StartDialogue()

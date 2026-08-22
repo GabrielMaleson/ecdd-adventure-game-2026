@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 // Loads another scene — the area transition (graveyard → crypt interior, etc.).
@@ -8,7 +7,7 @@ using UnityEngine.SceneManagement;
 // Two entry modes (pick per instance in the Inspector):
 //   OnTouch — player walks into the trigger and the scene loads. Good for a
 //             doorway/stairs you just step onto.
-//   PressE  — player walks into range, then presses E. Good for "Enter (E)".
+//   PressE  — player walks into range, then presses E.
 //
 // Gating it to "only after the puzzle is solved": there is NO logic for that
 // here on purpose. Just leave this object INACTIVE until the crypt opens, then
@@ -42,7 +41,7 @@ public class SceneLoadTrigger : MonoBehaviour
     [SerializeField] EnterMode enterMode = EnterMode.OnTouch;
 
     [Tooltip("PressE only — prompt shown on the interact label while in range.")]
-    [SerializeField] string interactLabel = "Enter (E)";
+    [SerializeField] string interactLabel = "E";
 
     [Tooltip("Extra hook fired the instant before the scene loads — a sound, a fade, a save flag. Optional.")]
     public UnityEvent onBeforeLoad;
@@ -60,23 +59,23 @@ public class SceneLoadTrigger : MonoBehaviour
             return;
         }
 
-        // PressE: arm the prompt, wait for the key in Update.
+        // PressE: register the prompt, InteractButton handles the keypress.
         playerInRange = true;
-        InteractButton.Instance?.SetLabel(interactLabel);
+        InteractButton.Instance?.SetInteraction(this, interactLabel, Load);
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Player")) playerInRange = false;
+        if (!other.CompareTag("Player")) return;
+
+        playerInRange = false;
+        InteractButton.Instance?.ClearInteraction(this);
     }
 
-    void Update()
+    void OnDisable()
     {
-        if (enterMode != EnterMode.PressE || !playerInRange) return;
-
-        var kb = Keyboard.current;
-        if (kb != null && kb.eKey.wasPressedThisFrame)
-            Load();
+        playerInRange = false;
+        InteractButton.Instance?.ClearInteraction(this);
     }
 
     // Public so a UnityEvent (onAllTargetsCovered, a Pickup's onCollected, a

@@ -70,12 +70,12 @@ public class InteractDialogue : MonoBehaviour
 
     private void SendToInteractButton()
     {
-        InteractButton.Instance?.SetInteraction(this, "Interact");
+        InteractButton.Instance?.SetInteraction(this, "E", OnInteractPressed);
     }
 
     private void ClearInteractButton()
     {
-        InteractButton.Instance?.ClearInteraction();
+        InteractButton.Instance?.ClearInteraction(this);
     }
 
     public void OnInteractPressed()

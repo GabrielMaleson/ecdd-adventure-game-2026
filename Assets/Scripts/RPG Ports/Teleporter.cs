@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 
 // A portal: walking in either teleports immediately (teleportOnTrigger) or arms an
-// InteractButton prompt and waits for the player to click it.
+// InteractButton prompt and waits for the player to press E.
 [RequireComponent(typeof(Collider2D))]
 public class TeleporterScript : MonoBehaviour
 {
@@ -11,8 +11,8 @@ public class TeleporterScript : MonoBehaviour
     public Transform destination;
     public bool teleportOnTrigger = true;
 
-    [Tooltip("Only used when Teleport On Trigger is off — shown on the Interact Button while in range; click it to teleport.")]
-    public string interactLabel = "Teleport";
+    [Tooltip("Only used when Teleport On Trigger is off — shown on the Interact Button while in range; press E to teleport.")]
+    public string interactLabel = "E";
 
     [Header("Camera Switch")]
     [Tooltip("Enabled after the transition — the camera for the destination area.")]
@@ -38,47 +38,19 @@ public class TeleporterScript : MonoBehaviour
     private bool isOnCooldown;
     private float cooldownTimer;
     private bool playerInRange;
-    private bool promptShown;
-    private bool subscribedToInteractButton;
     private GameObject player;
 
     private void Update()
     {
-        // InteractButton is a scene singleton set up in its own Awake(); if this object's
-        // Update runs before that Awake happens, Instance can still be null on the very
-        // first frames, so keep retrying until the subscription actually takes.
-        if (!subscribedToInteractButton && InteractButton.Instance != null)
-        {
-            InteractButton.Instance.OnPressed += HandleInteractButtonPressed;
-            subscribedToInteractButton = true;
-        }
-
-        if (isOnCooldown)
-        {
-            cooldownTimer -= Time.deltaTime;
-            if (cooldownTimer <= 0f)
-                isOnCooldown = false;
-        }
-
-        if (teleportOnTrigger || !playerInRange)
+        if (!isOnCooldown)
             return;
 
-        bool canUse = !isOnCooldown;
-        if (canUse != promptShown)
+        cooldownTimer -= Time.deltaTime;
+        if (cooldownTimer <= 0f)
         {
-            InteractButton.Instance?.SetLabel(canUse ? interactLabel : string.Empty);
-            promptShown = canUse;
+            isOnCooldown = false;
+            RefreshPrompt(); // cooldown just ended — re-arm if the player is still here
         }
-    }
-
-    // OnPressed fires for every interact-button press in the game, so only act on it
-    // while OUR prompt is the one actually showing.
-    private void HandleInteractButtonPressed()
-    {
-        if (teleportOnTrigger || !playerInRange || !promptShown)
-            return;
-
-        Teleport();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -91,6 +63,8 @@ public class TeleporterScript : MonoBehaviour
 
         if (teleportOnTrigger && !isOnCooldown)
             Teleport();
+        else
+            RefreshPrompt();
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -99,28 +73,24 @@ public class TeleporterScript : MonoBehaviour
             return;
 
         playerInRange = false;
-        HidePrompt();
+        RefreshPrompt();
     }
 
     private void OnDisable()
     {
-        if (subscribedToInteractButton && InteractButton.Instance != null)
-        {
-            InteractButton.Instance.OnPressed -= HandleInteractButtonPressed;
-            subscribedToInteractButton = false;
-        }
-
         playerInRange = false;
-        HidePrompt();
+        InteractButton.Instance?.ClearInteraction(this);
     }
 
-    private void HidePrompt()
+    private void RefreshPrompt()
     {
-        if (!promptShown)
+        if (teleportOnTrigger)
             return;
 
-        InteractButton.Instance?.SetLabel(string.Empty);
-        promptShown = false;
+        if (playerInRange && !isOnCooldown)
+            InteractButton.Instance?.SetInteraction(this, interactLabel, Teleport);
+        else
+            InteractButton.Instance?.ClearInteraction(this);
     }
 
     // Public so a UnityEvent (a puzzle solve, a dialogue) can trigger a teleport directly.
@@ -191,7 +161,7 @@ public class TeleporterScript : MonoBehaviour
             Destroy(Instantiate(teleportEffect, destination.position, Quaternion.identity), effectDuration);
 
         playerInRange = false;
-        HidePrompt();
+        InteractButton.Instance?.ClearInteraction(this);
     }
 
     private void OnDrawGizmosSelected()
