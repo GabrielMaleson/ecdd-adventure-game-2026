@@ -534,29 +534,40 @@ public class DialogueManager : MonoBehaviour
 
     // Triggers a named scripted move from a Cutscener in the scene — e.g. <<movement
     // JoshHome>> walks whatever object/destination pair was named "JoshHome" in that
-    // Cutscener's Inspector list. Two optional modifier words, in either order:
+    // Cutscener's Inspector list. Optional modifier words, in any order:
     //   freeze — the dialogue waits until the move actually finishes before showing
     //            the next line. Without it, the line advances immediately and the
     //            move plays out in the background.
-    //   flip   — the target's sprite flips X once before setting off, instead of
-    //            following its direction of travel like it normally does (e.g. the
-    //            Villager turning around before walking off).
-    // e.g. <<movement JoshHome freeze>>, <<movement VillagerExit flip freeze>>.
+    //   hold   — the sprite KEEPS the facing it already had for the whole move,
+    //            instead of turning to follow the direction of travel. Use it with a
+    //            <<face>> right before, when a character has to walk while still
+    //            looking at someone: floating backwards, backing away, being pulled.
+    //   flip   — invert the sprite once before setting off, then hold that. Legacy:
+    //            it's a guess about which way the art currently points, so <<face>>
+    //            plus hold is the version that's actually right every time.
+    // e.g. <<movement JoshHome freeze>>, <<movement HazeFloatDown hold freeze>>.
     [YarnCommand("movement")]
-    public static IEnumerator Movement(string movementName, string modifier1 = null, string modifier2 = null)
+    public static IEnumerator Movement(string movementName, string modifier1 = null, string modifier2 = null, string modifier3 = null)
     {
-        bool freeze = modifier1 == "freeze" || modifier2 == "freeze";
-        bool flip = modifier1 == "flip" || modifier2 == "flip";
+        bool Has(string word) => modifier1 == word || modifier2 == word || modifier3 == word;
+
+        bool freeze = Has("freeze");
+
+        // hold beats flip if somebody writes both — hold is the explicit "don't touch
+        // the facing" instruction, so silently inverting the sprite would defeat it.
+        Cutscener.FacingMode facing = Has("hold")  ? Cutscener.FacingMode.Hold
+                                    : Has("flip")  ? Cutscener.FacingMode.FlipOnce
+                                                   : Cutscener.FacingMode.Travel;
 
         if (freeze)
         {
-            Coroutine handle = Cutscener.TriggerAndWait(movementName, flip);
+            Coroutine handle = Cutscener.TriggerAndWait(movementName, facing);
             if (handle != null)
                 yield return handle;
         }
         else
         {
-            Cutscener.Trigger(movementName, flip);
+            Cutscener.Trigger(movementName, facing);
         }
     }
 
@@ -575,14 +586,30 @@ public class DialogueManager : MonoBehaviour
         Cutscener.TriggerSetActive(objectName, false);
     }
 
-    // Forces a named object's facing outright — e.g. <<face Josh left>> — instead of
-    // whatever direction a <<movement>> happened to travel in. Directions: left,
-    // right, up, down. The object must be registered in the same Cutscener Objects
-    // list <<enable>>/<<disable>> use.
-    [YarnCommand("face")]
-    public static void Face(string objectName, string direction)
+    // <<placeat TrueHaze HazeThree>> — puts the first object exactly where the second
+    // one is, matching its facing, instantly. Made for swapping a cutscene stand-in for
+    // the real object: place, disable the stand-in, enable the real one, and the
+    // handover is invisible instead of the replacement popping in somewhere else.
+    [YarnCommand("placeat")]
+    public static void PlaceAt(string objectName, string referenceName)
     {
-        Cutscener.TriggerFace(objectName, direction);
+        Cutscener.TriggerPlaceAt(objectName, referenceName);
+    }
+
+    // Forces a named object's facing outright, instead of whatever direction a
+    // <<movement>> happened to travel in. Two forms:
+    //   <<face Josh left>>      — a fixed compass direction: left, right, up, down.
+    //   <<face Josh HazeOne>>   — turn to look at ANOTHER registered object, wherever
+    //                             it currently is.
+    // Use the second form any time the player walked to the spot HIMSELF rather than
+    // being placed there by a <<movement>> — it is the only one that stays correct no
+    // matter which side he approached from.
+    // Both names must be registered in a Cutscener's Objects list (the same list
+    // <<enable>>/<<disable>> use); they may be in different Cutsceners.
+    [YarnCommand("face")]
+    public static void Face(string objectName, string towards)
+    {
+        Cutscener.TriggerFace(objectName, towards);
     }
 
     // <<wait seconds>> é um comando nativo do Yarn Spinner — não precisa de registro manual.

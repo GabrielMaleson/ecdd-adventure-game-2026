@@ -9,12 +9,24 @@ using UnityEngine;
 // "make X walk to Y" — just add an entry here and reference its name.
 public class Cutscener : MonoBehaviour
 {
+    // How a moving object's sprite decides which way to look during the move.
+    public enum FacingMode
+    {
+        Travel,    // default: follow the direction of travel, updated every frame
+        FlipOnce,  // <<movement X flip>>: invert once before setting off, then hold
+        Hold       // <<movement X hold>>: keep whatever facing it already had
+    }
+
     [System.Serializable]
     public class Movement
     {
         public string name;
         public Transform target;      // the object that moves
         public Transform destination; // where it moves to
+
+        [Tooltip("Deslocamento (em unidades) somado ao destino. Use com um destino que E OUTRO PERSONAGEM: p.ex. destino = Josh, offset X = -1.5 faz o Haze parar sempre 1.5 a ESQUERDA do Josh, onde quer que ele tenha parado.")]
+        public Vector2 destinationOffset;   // read once, when the move starts
+
         public float speed = 2f;
         public float arriveThreshold = 0.05f;
     }
@@ -102,16 +114,16 @@ public class Cutscener : MonoBehaviour
     // Fire-and-forget: returns immediately, the move plays out in the background.
     // Pass flip to have the target's sprite flip X once before it sets off, instead of
     // following the direction of travel like it normally does.
-    public void Move(string movementName, bool flip = false)
+    public void Move(string movementName, FacingMode facing = FacingMode.Travel)
     {
-        StartMove(movementName, flip);
+        StartMove(movementName, facing);
     }
 
     // Same move, but returns a handle the caller can yield on to wait for it to finish —
     // used by the blocking <<movement Name freeze>> form.
-    public Coroutine MoveAndWait(string movementName, bool flip = false)
+    public Coroutine MoveAndWait(string movementName, FacingMode facing = FacingMode.Travel)
     {
-        return StartMove(movementName, flip);
+        return StartMove(movementName, facing);
     }
 
     // Tracks whichever object is currently mid-move, per target Transform — so a
@@ -132,7 +144,7 @@ public class Cutscener : MonoBehaviour
 
     private readonly Dictionary<Transform, MoveState> moveStates = new Dictionary<Transform, MoveState>();
 
-    private Coroutine StartMove(string movementName, bool flip)
+    private Coroutine StartMove(string movementName, FacingMode facing)
     {
         Movement movement = movements.Find(m => m.name == movementName);
         if (movement == null)
@@ -167,26 +179,63 @@ public class Cutscener : MonoBehaviour
 
         int token = ++state.token;
 
-        return StartCoroutine(MoveRoutine(movement, flip, state, token));
+        return StartCoroutine(MoveRoutine(movement, facing, state, token));
     }
 
     // Static so a Yarn command (which must be a static method) can trigger a movement
     // without needing its own reference to a specific Cutscener — searches every
     // Cutscener in the scene for whichever one owns this movement name.
-    public static void Trigger(string movementName, bool flip = false)
+    public static void Trigger(string movementName, FacingMode facing = FacingMode.Travel)
     {
         Cutscener owner = FindOwner(c => c.HasMovement(movementName), "movement", movementName);
-        owner?.Move(movementName, flip);
+        owner?.Move(movementName, facing);
     }
 
-    public static Coroutine TriggerAndWait(string movementName, bool flip = false)
+    public static Coroutine TriggerAndWait(string movementName, FacingMode facing = FacingMode.Travel)
     {
         Cutscener owner = FindOwner(c => c.HasMovement(movementName), "movement", movementName);
-        return owner?.MoveAndWait(movementName, flip);
+        return owner?.MoveAndWait(movementName, facing);
     }
 
     private bool HasMovement(string movementName) => movements.Exists(m => m.name == movementName);
     private bool HasObject(string objectName) => objects.Exists(o => o.name == objectName);
+
+    private GameObject GetObject(string objectName)
+    {
+        NamedObject entry = objects.Find(o => o.name == objectName);
+        return entry != null ? entry.target : null;
+    }
+
+    // Looks a name up across EVERY Cutscener, not just this one — <<face Josh HazeOne>>
+    // routinely names two objects that live in different Cutsceners.
+    private static GameObject FindObjectAnywhere(string objectName)
+    {
+        foreach (var c in allInstances)
+        {
+            GameObject go = c.GetObject(objectName);
+            if (go != null) return go;
+        }
+        return null;
+    }
+
+    // Where a character STANDS, for working out who is to the left of whom.
+    //
+    // Deliberately the ground position and NOT the sprite centre. The player's sprite
+    // is 64px at scale 4 — about 2.5 world units tall — so its centre floats ~1.6
+    // above his feet, while a small floating creature's sits ~0.5 above the ground.
+    // Measuring centre-to-centre invents a vertical gap of over a unit that has nothing
+    // to do with where either of them is, and for two characters standing close that
+    // phantom Y beats the real X: the direction came out as "down", and down carries no
+    // left or right, so the facing flip was discarded and the MC faced the same way
+    // whoever he was talking to.
+    private static Vector2 FacingAnchor(GameObject go)
+    {
+        // For the player the entry is often wired to the visual child, which can carry
+        // its own offset — the controller's own transform is the honest ground point.
+        PlayerController controller = ControllerFor(go);
+        return controller != null ? (Vector2)controller.transform.position
+                                  : (Vector2)go.transform.position;
+    }
 
     // The external hook for <<enable Name>> / <<disable Name>> — toggles the named
     // entry's GameObject active state.
@@ -217,13 +266,17 @@ public class Cutscener : MonoBehaviour
         owner?.SetObjectActive(objectName, active);
     }
 
-    // The external hook for <<face Name Direction>> — sets a named object's facing
-    // outright ("left"/"right"/"up"/"down"), independent of any movement. Exists
-    // because a <<movement>>'s facing is derived from the ACTUAL travel direction each
-    // frame, which for the player depends on wherever he happened to be standing when
-    // the move started — reliable when you need a specific, guaranteed facing (e.g.
-    // after a <<movement ... freeze>>) rather than whatever direction he walked in from.
-    public void Face(string objectName, string direction)
+    // The external hook for <<face Name Towards>> — sets a named object's facing
+    // outright, independent of any movement. "Towards" is either a compass word
+    // ("left"/"right"/"up"/"down") or THE NAME OF ANOTHER REGISTERED OBJECT, in which
+    // case the object turns to look at wherever that one currently is.
+    //
+    // Exists because a <<movement>>'s facing is derived from the ACTUAL travel
+    // direction each frame, which for the player depends on wherever he happened to be
+    // standing when the move started. Prefer the object form whenever the player
+    // reached the spot ON HIS OWN (no <<movement>> put him there) — it is the only
+    // version that is right from every approach angle.
+    public void Face(string objectName, string towards)
     {
         NamedObject entry = objects.Find(o => o.name == objectName);
         if (entry == null || entry.target == null)
@@ -232,32 +285,115 @@ public class Cutscener : MonoBehaviour
             return;
         }
 
-        Vector2 dir = DirectionFromString(direction);
+        Vector2 dir = DirectionFromString(towards);
+
         if (dir == Vector2.zero)
         {
-            Debug.LogWarning($"Cutscener: '{direction}' isn't a recognized direction for Face (use left/right/up/down).", this);
-            return;
+            // Not a compass word — read it as ANOTHER registered object's name and turn
+            // toward wherever that object actually is. This is what makes a face-to-face
+            // survive the player stopping wherever he likes instead of on a scripted
+            // mark: "<<face Josh HazeOne>>" is correct from any approach angle, while
+            // "<<face Josh left>>" is only correct if he happened to stop to Haze's right.
+            GameObject other = FindObjectAnywhere(towards);
+            if (other == null)
+            {
+                Debug.LogWarning($"Cutscener: '{towards}' is neither a direction (left/right/up/down) nor the name of an object registered in any Cutscener.", this);
+                return;
+            }
+
+            dir = FacingAnchor(other) - FacingAnchor(entry.target);
+            if (dir.sqrMagnitude < 0.0001f)
+            {
+                Debug.LogWarning($"Cutscener: '{objectName}' and '{towards}' are on the same spot — no direction to face.", this);
+                return;
+            }
+            dir.Normalize();
         }
 
-        PlayerController controller = entry.target.GetComponent<PlayerController>();
+        PlayerController controller = ControllerFor(entry.target);
         if (controller != null)
         {
-            // Sets facing via the same path movement uses, then immediately idles —
-            // a facing update with no actual walk.
-            controller.SetCutsceneMoveDirection(dir);
-            controller.SetCutsceneMoveDirection(Vector2.zero);
+            // SetFacing rather than SetCutsceneMoveDirection twice: same result, but it
+            // says what it means — turn and stand, no walk. The pose is the ordinary
+            // Player_Idle plus the horizontal flip, i.e. exactly what the character
+            // looks like whenever he stops during normal play.
+            controller.SetFacing(dir);
             return;
         }
 
-        SpriteRenderer sprite = entry.target.GetComponentInChildren<SpriteRenderer>();
-        if (sprite != null)
+        // Fallback for characters that are just a sprite. EVERY renderer under the
+        // object flips, not the first one found: a character built out of parts (the
+        // player is a Top and a Bottom) would otherwise turn half of itself around.
+        if (Mathf.Abs(dir.x) <= 0.01f)
+            return;
+
+        foreach (SpriteRenderer sprite in entry.target.GetComponentsInChildren<SpriteRenderer>(true))
             sprite.flipX = dir.x < 0f;
     }
 
-    public static void TriggerFace(string objectName, string direction)
+    // The PlayerController is on the character's ROOT, but a Cutscener entry is very
+    // easy to wire to the visual child instead — the visual is what you see and click
+    // in the Hierarchy, and for <<enable>>/<<disable>> either one works, so nothing
+    // complains. Face then silently fell through to the dumb sprite-flip path and the
+    // MC stayed facing the camera through the whole conversation. Looking up and down
+    // from whatever was assigned makes both wirings behave the same.
+    private static PlayerController ControllerFor(GameObject go)
+    {
+        PlayerController controller = go.GetComponent<PlayerController>();
+        if (controller == null) controller = go.GetComponentInParent<PlayerController>();
+        if (controller == null) controller = go.GetComponentInChildren<PlayerController>();
+        return controller;
+    }
+
+    // The external hook for <<placeat A B>> — drops A exactly where B stands, matching
+    // its facing, with no walking and no interpolation.
+    //
+    // Exists for handing a cutscene stand-in over to the real object: enable the real
+    // one AT the stand-in's spot and the swap is invisible, instead of the replacement
+    // appearing wherever it was parked (or snapping to the player, which is what
+    // FragmentFollow used to do and what read as a teleport).
+    public void PlaceAt(string objectName, string referenceName)
+    {
+        GameObject target = GetObject(objectName);
+        GameObject reference = FindObjectAnywhere(referenceName);
+
+        if (target == null)
+        {
+            Debug.LogWarning($"Cutscener: no object named '{objectName}' is assigned for PlaceAt.", this);
+            return;
+        }
+        if (reference == null)
+        {
+            Debug.LogWarning($"Cutscener: PlaceAt reference '{referenceName}' is not registered in any Cutscener.", this);
+            return;
+        }
+
+        Vector3 pos = reference.transform.position;
+        pos.z = target.transform.position.z;   // keep whatever sorting depth it had
+        target.transform.position = pos;
+
+        Rigidbody2D rb = target.GetComponent<Rigidbody2D>();
+        if (rb != null) rb.position = pos;     // or physics drags it back next FixedUpdate
+
+        // Carry the facing over too, so the handover does not flip on the swap.
+        SpriteRenderer from = reference.GetComponentInChildren<SpriteRenderer>(true);
+        if (from != null)
+        {
+            foreach (SpriteRenderer to in target.GetComponentsInChildren<SpriteRenderer>(true))
+                to.flipX = from.flipX;
+        }
+    }
+
+    public static void TriggerPlaceAt(string objectName, string referenceName)
     {
         Cutscener owner = FindOwner(c => c.HasObject(objectName), "object", objectName);
-        owner?.Face(objectName, direction);
+        owner?.PlaceAt(objectName, referenceName);
+    }
+
+    public static void TriggerFace(string objectName, string towards)
+    {
+        Cutscener owner = FindOwner(c => c.HasObject(objectName), "object", objectName);
+        owner?.Face(objectName, towards);
     }
 
     private static Vector2 DirectionFromString(string direction)
@@ -272,10 +408,13 @@ public class Cutscener : MonoBehaviour
         }
     }
 
-    private IEnumerator MoveRoutine(Movement movement, bool flip, MoveState state, int token)
+    private IEnumerator MoveRoutine(Movement movement, FacingMode facing, MoveState state, int token)
     {
         Transform obj = movement.target;
-        Vector2 destination = movement.destination.position;
+        // Snapshotted at the START of the move, not tracked per frame: the destination
+        // is allowed to be another character (that's the point of destinationOffset),
+        // and chasing a live transform would turn a scripted walk into a pursuit.
+        Vector2 destination = (Vector2)movement.destination.position + movement.destinationOffset;
 
         // Rigidbody2D/PlayerController are expected on the assigned target itself (the
         // object that actually moves), but the sprite is often on a separate visual
@@ -284,7 +423,9 @@ public class Cutscener : MonoBehaviour
         // either way without requiring target to be reassigned to the visual object,
         // which would lose the Rigidbody2D that has to move instead.
         Rigidbody2D rb = obj.GetComponent<Rigidbody2D>();
-        SpriteRenderer sprite = obj.GetComponentInChildren<SpriteRenderer>();
+        // Every renderer, not the first one: a character built out of parts would
+        // otherwise turn half of itself around (see Face for the same reasoning).
+        SpriteRenderer[] sprites = obj.GetComponentsInChildren<SpriteRenderer>(true);
         PlayerController controller = obj.GetComponent<PlayerController>();
 
         if (rb != null) rb.bodyType = RigidbodyType2D.Kinematic;
@@ -296,13 +437,16 @@ public class Cutscener : MonoBehaviour
         if (controller != null)
             controller.InputEnabled = false;
 
-        // Flip is a one-time "turn around" before setting off (e.g. a villager
+        // FlipOnce is a one-time "turn around" before setting off (e.g. a villager
         // wheeling around to walk away) — only for plain sprites, since the player's
         // facing is driven by SetCutsceneMoveDirection instead. Once flipped, the
         // per-frame direction-based flip below is skipped so this doesn't immediately
         // get overwritten on the first step.
-        if (flip && controller == null && sprite != null)
-            sprite.flipX = !sprite.flipX;
+        if (facing == FacingMode.FlipOnce && controller == null)
+        {
+            foreach (SpriteRenderer sprite in sprites)
+                sprite.flipX = !sprite.flipX;
+        }
 
         while (Vector2.Distance(obj.position, destination) > movement.arriveThreshold)
         {
@@ -321,8 +465,11 @@ public class Cutscener : MonoBehaviour
 
             if (controller != null)
                 controller.SetCutsceneMoveDirection(dir);
-            else if (!flip && sprite != null && Mathf.Abs(dir.x) > 0.01f)
-                sprite.flipX = dir.x < 0f;
+            else if (facing == FacingMode.Travel && Mathf.Abs(dir.x) > 0.01f)
+            {
+                foreach (SpriteRenderer sprite in sprites)
+                    sprite.flipX = dir.x < 0f;
+            }
 
             yield return null;
         }

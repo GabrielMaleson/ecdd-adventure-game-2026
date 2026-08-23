@@ -4,13 +4,13 @@ This file is the living design reference for all collaborators (human and AI). U
 
 ---
 
-## REGRA ABSOLUTA PARA CLAUDE
+## REGRA PARA CLAUDE
 
-**LER: tudo. EDITAR: só `.cs` e `.yarn`.**
+**Leitura e escrita liberadas no projeto todo** — `.cs`, `.yarn`, cena, prefab, animator, meta, import settings.
 
-- **Leitura livre.** Claude pode abrir qualquer arquivo do projeto para OBSERVAR — prefab, scene, anim, controller, meta, sprite, vfx, YAML. Serve para entender o setup, nunca para mexer.
-- **Escrita.** Claude escreve direto em `.cs` e `.yarn` (`Assets/dialogo projeto/`). Nada mais.
-- **Qualquer alteração fora disso** (prefab, cena, meta, sprite, animator, vfx, import settings) Claude NÃO faz sozinho: descreve exatamente o que mudar e **pede permissão explícita**. Permissão dada para um arquivo não vale para o próximo.
+- **Unity precisa estar fechado, ou pelo menos sem alterações não salvas**, antes de o Claude editar `.unity` / `.prefab` / `.controller`. O Unity guarda a cena em memória: se salvar por cima depois, a edição do Claude some.
+- **Edição de cena/prefab é sempre por YAML na mão.** Antes de mexer, confira que o arquivo está limpo no git, para dar `git checkout` se quebrar.
+- **Continua valendo:** mudança em sistema central (movimento, colisão, diálogo, interação) o Claude descreve e pergunta antes — não pelo tipo do arquivo, mas pelo alcance da mudança.
 
 ---
 

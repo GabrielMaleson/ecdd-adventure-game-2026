@@ -1,7 +1,7 @@
 ﻿title: gamescript
 ---
 <<declare $YarnTalkedElder = false>>
-	Josh: There's more mist than usual...
+	Josh: ...
 ===
 
 title: square_initial
@@ -51,15 +51,52 @@ title: not_talked_friends
 Josh: Hmm... Maybe I should go see my friends before heading home. We haven't talked in a bit.
 <<progress NotTalkedFriendsYet>>
 ===
+title: home_outside_noise
+---
+// Trigger na CURVA da estrada (box "NoiseOnTheRoad").
+// Nao tem `movement` nenhum: o jogador andou ate aqui sozinho e continua andando
+// sozinho depois. O DialogueStarter congela e descongela ele automaticamente.
+//
+// O ruido e SOM, nao caixa de dialogo: nada de um falante chamado "Noise". O
+// `playsound` dispara junto com a fala de propósito — nao poe `wait` antes da
+// primeira linha do no, porque o LinePresenter so tem o alpha zerado no fim do
+// dialogo anterior e o texto velho continua no campo, entao a espera pisca a fala
+// passada na tela.
+//
+// Falta so registrar o clipe: DialogueManager > Sounds > entrada com Sound Name =
+// NoiseOnTheRoad. Enquanto nao existir, o PlaySound so loga "Sound not found" e o
+// dialogo segue normal.
+//
+// A guarda existe pra que o ruido nunca reapareca depois do encontro com o Haze,
+// mesmo que as Conditions do DialogueStarter estejam mal preenchidas ou que a cena
+// recarregue (o OnceTime do DialogueStarter e por instancia, morre no reload).
+<<if not hasprogress("HeardNoise") and not hasprogress("MetHaze")>>
+<<playsound NoiseOnTheRoad>>
+Josh: Hm...? What's that noise?
+<<progress HeardNoise>>
+<<endif>>
+===
+
 title: home_outside_first
 ---
-<<movement JoshApproach>>
-Josh: What's this?! 
-<<face Josh left>>
+// Trigger PERTO DE CASA (box "OutsideHouseHaze"). De novo sem `movement Josh...`:
+// ele para onde o jogador parou. Por isso todo `face` daqui aponta para o OBJETO
+// (`face Josh HazeOne`) e nao para um lado fixo — de qualquer angulo de chegada o
+// MC fica virado pro Haze.
 <<enable HazeOne>>
-<<movement HazeFloatDown flip freeze>>
+// Ele desce olhando pro lado pra onde anda (esquerda) e so vira pro Josh quando para
+// — foi o que ficou melhor no teste. Por isso o `face` vem DEPOIS do movimento, e o
+// movimento nao leva modificador nenhum.
+// (Pro contrario — virado pro Josh o trajeto inteiro — e por o `face` ANTES e escrever
+// `movement HazeFloatDown hold freeze`: "hold" = anda sem virar.)
+<<movement HazeFloatDown freeze>>
+<<face HazeOne Josh>>
+<<face Josh HazeOne>>
+Josh: What's this?!
 ...
-<<movement HazeEnter flip freeze>>
+<<movement HazeEnter freeze>>
+<<face HazeOne Josh>>
+<<face Josh HazeOne>>
 Haze: Hm... Hello sir.
 Josh: Wha—who... what are you?!
 Haze: Hmm... I'm me I guess, I don't know.
@@ -68,15 +105,22 @@ Haze: Nothing in particular.
 Josh: Okay just— come inside or else you'll freak people out.
 Haze: Why would I freak them out?
 Josh: Have you looked at yourself in the mirror?
-<<movement HazeApproach freeze>>
+// Aqui existia um `movement HazeApproach freeze`, que mandava o Haze pro marcador
+// fixo HazeFloat. Isso so funcionava quando o Josh era colocado no PlayerApproach por
+// um `movement`: agora que o JOGADOR anda ate a casa sozinho, o Josh para a esquerda
+// do HazeFloat, e o Haze "andava pro outro lado" no meio da conversa. Ele ja esta cara
+// a cara desde o HazeEnter, entao fica parado falando ate entrar na casa no HazeLeave.
 Haze: I... haven't.
 Josh: Yeah, figures.
 Haze: But you're not freaked out?
 Josh: You don't seem hostile.
 Haze: I don't feel hostile.
-Josh: Just come on in man.
-<<movement HazeRun flip freeze>>
-<<movement HazeLeave flip freeze>>
+Josh: Just go on in man.
+// Era HazeRun (ate WalkHome (2), no chao) e SO DEPOIS HazeLeave (ate WalkHome (1), a
+// porta) — dai o "desce e depois sobe". Um movimento so, direto pra porta: o
+// MoveTowards do Cutscener anda em linha reta, entao sai na diagonal.
+// Se ficar lento, sobe o Speed do HazeLeave no Inspector (o HazeRun era 4, esse e 2).
+<<movement HazeLeave freeze>>
 <<disable HazeOne>>
 Josh: (This is gonna be a long day...)
 <<progress MetHaze>>
@@ -84,51 +128,68 @@ Josh: (This is gonna be a long day...)
 
 title: home_inside_first
 ---
+// O Haze NAO passeia pela casa. Ele entra, fica parado conversando, vai UMA vez ate a
+// TV, volta pro lugar em que entrou pra falar "You're weird", e dali nao sai mais ate
+// ir embora. Todos os `movement HazeWander1/2/3` foram removidos por isso.
+//
+// O `movement JoshHouse freeze` tambem saiu: no Inspector ele esta com o Target
+// VAZIO, entao nunca moveu ninguem — so logava warning.
+//
+// O HazeHouse usa o marcador FIXO HazeSpawn (nao o Player com deslocamento): a sala e
+// pequena e o ponto certo e "a ponta do tapete", que se acerta a olho arrastando o
+// marcador na cena. Com destino = Player e deslocamento zero, o Haze anda pra DENTRO
+// do Josh — foi o que aconteceu.
+//
+// Geometria: Josh (-134.37, 88.41) | HazeSpawn (-132.86, 88.48) a direita dele |
+// TVPlace (-130.30, 89.63) acima e a direita | ExitHouse (-133.87, 86.62) abaixo e a
+// esquerda. Todas as viradas saem certas so pela direcao de viagem, sem "flip".
 <<enable HazeTwo>>
-<<movement JoshHouse freeze>>
 <<movement HazeHouse freeze>>
+<<face HazeTwo Josh>>
+<<face Josh HazeTwo>>
 Haze: Wow your home is so pretty!
 Josh: It really isn't.
-<<movement HazeWander1>>
 Haze: Then why are you here?
 Josh: Nowhere to go, I guess.
-<<movement HazeWander2 flip>>
 Haze: That's sad.
-<<movement HazeWander3 flip>>
+// Vai ate a TV e fica olhando pra ela (a TV esta a direita, entao a direcao de viagem
+// ja deixa ele virado pro lado certo).
+<<movement HazeTV freeze>>
+<<face Josh HazeTwo>>
 Haze: What's this?
 Josh: That's a TV.
-<<movement HazeTV flip>>
 Haze: What does it do?
 Josh: Shows moving images.
 Haze: Isn't that basically everything already?
 Josh: "Everything" is not engaging enough, I guess.
-<<movement HazeWander1>>
+// Vira pro Josh, anda ate ele, e so entao fala. Mesmo destino do HazeHouse, entao ele
+// para exatamente onde estava quando entrou.
+<<face HazeTwo Josh>>
+<<movement HazeHouse freeze>>
+<<face HazeTwo Josh>>
+<<face Josh HazeTwo>>
 Haze: You're weird.
 Josh: I'm weird? Says the orange floating thing that appeared out of nowhere. Look— who are you anyway, man? Why are you even here?
 Haze: As I said, I don't know!
 Josh: I'm guessing you don't have a name, also.
-<<movement HazeWander2 flip>>
 Haze: Not that I can remember, no.
 Josh: Okay then. I'll call you Haze for now. Call me Josh.
-<<movement HazeWander1 flip>>
 Haze: ...ok.
 Josh: So, you really have no idea how you wound up here?
 Haze: Nuh uh. I feel like I just woke up from a really long nap. Like, reeeeally long.
 Josh: Like, how long?
 Haze: Feels like it's been forever since I fell asleep, honestly.
 Josh: And you just suddenly fell asleep like that? For like, what, ages?
-<<movement HazeTV>>
 Haze: I'm trying to remember, but it's all too messy in my hea—
-<<movement HazeWander2 freeze>>
 Josh: Now what?
 Haze: Ugh!
 Josh: What?
-<<movement HazeWander1 flip>>
 Haze: Felt... something.
 Josh: What?
 Haze: Pain. But it's gone now.
 Josh: ...Ok, good. I'm gonna watch some TV then.
 Haze: I'm gonna go for a walk!
+// Um movimento so, direto pra porta — sai na diagonal, do mesmo jeito que entrou.
 <<movement HazeExit freeze>>
 <<disable HazeTwo>>
 Josh: No you're not, you'll stand out and freak out every—hey, WAIT!
@@ -138,36 +199,61 @@ Josh: No you're not, you'll stand out and freak out every—hey, WAIT!
 
 title: square_haze
 ---
+// O Haze fica PARADO no meio da estrada, virado pra direita, esperando. O jogador leva
+// o Josh ate ele — nao existe `movement` do Josh aqui, e ninguem sai do lugar durante
+// a conversa: o `movement HazeStand` (que mexia o Haze no "Ta-dah") e o `movement
+// JoshWalk` foram removidos.
+//
+// O Josh nao faz NADA sozinho aqui. Onde a cena comeca e definido so pelo marcador
+// SquareJosh: ele esta no campo "Transformthing" do DialogueStarter, e o trigger se
+// recentraliza nele no Start. Arrastar o marcador na cena move o ponto de disparo.
+//
+// A trava de ordem que voce pediu ja existe, no DialogueStarter deste trigger:
+// HasConditions ON, ConditionsCancel OFF, Progress = HazeRanOff. HazeRanOff so e
+// setado no fim do home_inside_first, entao cruzar este collider antes da cena de
+// dentro de casa nao dispara nada.
+// Nao existe `face HazeThree right` aqui de proposito: qualquer correcao de lado na
+// primeira linha aparece como um giro na cara do jogador no instante em que a caixa de
+// dialogo abre. O lado inicial dele e o estado do OBJETO na cena (SpriteRenderer >
+// Flip X desmarcado = olhando pra direita), nao do script.
+<<face JoshTwo HazeThree>>
 Josh: HEY, wa— huff... huff... wait. Are you insane? Do I have to remind you you're not human?
+// O Haze esta de costas pro Josh (olhando pra direita, estrada acima) e so se vira
+// quando comeca a responder.
+<<face HazeThree JoshTwo>>
 Haze: Relax my friend, I found something out! Look.
-<<movement HazeStand flip freeze>>
 Haze: Ta-dah!
 Josh: ...
 Haze: ...
 Josh: You know nothing happened right.
 Haze: Well, for you it didn't, but that's because you're the only one who can see me right now!
 Josh: What? Stop this nonsense dude. Come back to my house and stay there.
-<<movement JoshWalk freeze>>
-<<face JoshTwo right>>
-Haze: ...
-Josh: ...
 <<enable Villager>>
 <<movement VillagerEnter freeze>>
 Villager: Josh! What are you doing just standing here?
 Josh: Uhm... nothing really, I was just... taking a walk. Yes, a walk.
 Villager: Taking a walk? Are you insane? Can't you hear the noise coming from elder Amos' house?
 Josh: Oh, yeah. So that's where all the ruckus' coming from.
-Villager: Yeah. Anyway, meet everyone there then, after you finish your... walk or whatever. Hurry.
+Villager: Yeah. Anyway, meet everyone there then, after you finish your... walk or whatever. Hurry!
+// Entra pela DIREITA andando pra esquerda e sai de volta pela direita, ate fora da
+// camera. Sem "flip" nos dois: a virada vem da direcao de viagem, entao ele chega
+// olhando pra esquerda (pro Josh) e sai olhando pra direita sozinho.
 <<movement VillagerExit>>
 Haze: Turns out you're the insane one.
 Josh: Shut up.
 Haze: Trust me now?
 Josh: For this very specific topic, yes.
-Haze: Can I go, then?
+Haze: Can I go with you, then?
 <<disable Villager>>
+Josh: ...okay.
+// Troca sem teleporte, sem depender de marcador nenhum:
+// 1. o TrueHaze e colocado EXATAMENTE onde o Haze da cutscene esta (mesma posicao,
+//    mesmo lado), entao ligar ele nao muda nada na tela;
+// 2. o FragmentFollow nao teleporta mais para o lado do jogador quando e ligado —
+//    ele caminha ate la sozinho, limitado pelo Max Follow Speed.
+<<placeat TrueHaze HazeThree>>
 <<disable HazeThree>>
 <<enable TrueHaze>>
-Josh: ...okay.
 ===
 
 title: elders_house_outside

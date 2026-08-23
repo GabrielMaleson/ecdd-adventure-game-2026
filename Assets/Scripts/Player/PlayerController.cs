@@ -216,6 +216,34 @@ public class PlayerController : MonoBehaviour
         FaceDirection(direction);
     }
 
+    // Cutscene facing: play the IDLE animation, mirrored to the side the script asked
+    // for. Nothing else — no walk state, no frozen frame.
+    //
+    // The flip is written straight to visualTransform here, not just to desiredScale,
+    // because LateUpdate (which normally applies desiredScale every frame) does not run
+    // while DialogueManager has this component disabled for the conversation.
+    //
+    // Any horizontal component decides the side. Up/down would set desiredScale back to
+    // originalScale and throw the mirror away, and two characters talking in a top-down
+    // scene are always to the side of each other anyway.
+    public void SetFacing(Vector2 direction)
+    {
+        if (direction == Vector2.zero)
+        {
+            SetCutsceneMoveDirection(Vector2.zero);
+            return;
+        }
+
+        MoveDirection = Vector2.zero;
+
+        if (Mathf.Abs(direction.x) > 0.001f)
+            desiredScale = new Vector3(direction.x < 0 ? -originalScale.x : originalScale.x,
+                                       originalScale.y, originalScale.z);
+
+        visualTransform.localScale = desiredScale;
+        SetDir(DIR_IDLE);
+    }
+
     void FaceDirection(Vector2 dir)
     {
         if (Mathf.Abs(dir.x) >= Mathf.Abs(dir.y))
@@ -228,6 +256,13 @@ public class PlayerController : MonoBehaviour
             SetDir(dir.y < 0 ? DIR_DOWN : DIR_UP);
             desiredScale = originalScale;
         }
+
+        // Applied here as well as in LateUpdate because a cutscene turns the player
+        // with this component DISABLED (DialogueManager.DisablePlayerControl sets
+        // enabled = false), and a disabled component gets no LateUpdate — so the flip
+        // was being computed and then never written, which is why <<face Josh left>>
+        // left him looking at the camera.
+        visualTransform.localScale = desiredScale;
     }
 
     void SetDir(int dir)

@@ -27,7 +27,12 @@ public class FragmentFollow : MonoBehaviour
         lastPlayerPos      = player.position;
         activeOffset       = offset;
         desiredOffset      = offset;
-        transform.position = (Vector2)player.position + activeOffset;
+        // Deliberately does NOT snap to the player. Snapping here made the ghost pop
+        // into existence beside the MC the instant it was switched on, which reads as a
+        // teleport at the end of a cutscene where a stand-in was standing somewhere
+        // else. Left where it is, LateUpdate's SmoothDamp walks it in under
+        // maxFollowSpeed — the same "walks back instead of zipping" the cap exists for.
+        // Pair it with <<placeat TrueHaze Stand-in>> so it starts from the stand-in's spot.
         // Ensure the visual child has no stale local position offset.
         spriteRenderer.transform.localPosition = Vector3.zero;
     }
