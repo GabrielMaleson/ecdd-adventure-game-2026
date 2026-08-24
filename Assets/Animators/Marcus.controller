@@ -7,7 +7,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Erika_Walk_Side
+  m_Name: Marco_Side
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -20,7 +20,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 571f99a67f418284e881cae1b4a9500e, type: 2}
+  m_Motion: {fileID: 7400000, guid: 46c73f1c2a5796349b9c0a0503490b8d, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -33,7 +33,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Erika_Walk_Down
+  m_Name: Marco_Down
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -46,7 +46,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 8e3cd620eaf81f94cad383da2bee057c, type: 2}
+  m_Motion: {fileID: 7400000, guid: 027f5f4375d60fb4b8189acab1ce2fc8, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -172,7 +172,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Erika_Walk_Up
+  m_Name: Marco_Up
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -185,7 +185,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 03daaf3d0fbaa4f42988fec35bd8c11a, type: 2}
+  m_Motion: {fileID: 7400000, guid: 86613aa35eb8b9e449d7a067fe624f1a, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -223,7 +223,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Erika_Idle
+  m_Name: Marco_Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -236,7 +236,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 091b8eb4c9b000f42b67a420b0aaea2a, type: 2}
+  m_Motion: {fileID: 7400000, guid: 03526f86fe6566a4e964bb27eb1735da, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
