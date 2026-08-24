@@ -76,11 +76,11 @@ public class CharacterDialogue : MonoBehaviour
     private void Awake()
     {
         if (dialogueText == null)
-        {
-            Debug.LogError($"{name}: CharacterDialogue has no TextMeshPro assigned.", this);
-            enabled = false;
-            return;
-        }
+            dialogueText = TextStyle.CreateWorldLabel(transform, name + "Bark");
+        else
+            TextStyle.PlaceWorldLabel(transform, dialogueText);
+
+        ApplyTextStyle();
 
         originalLocalPosition = dialogueText.transform.localPosition;
         // Keep only the RGB. Alpha is driven entirely by the fade, so re-reading a
@@ -89,6 +89,20 @@ public class CharacterDialogue : MonoBehaviour
         dialogueText.gameObject.SetActive(false);
 
         visibilityRenderer = GetComponentInChildren<Renderer>();
+    }
+
+    // Font and size come from the single Assets/Resources/TextStyle.asset, so barks match
+    // the interact prompt and everything else without being tuned per character.
+    public void ApplyTextStyle()
+    {
+        TextStyle.Apply(dialogueText, TextStyle.Role.WorldText);
+
+        TextStyle style = TextStyle.Current;
+        if (style == null) return;
+
+        if (style.holdDuration > 0f)      holdDuration      = style.holdDuration;
+        if (style.floatDistance > 0f)     floatDistance     = style.floatDistance;
+        if (style.floatFadeDuration > 0f) floatFadeDuration = style.floatFadeDuration;
     }
 
     private void OnEnable()

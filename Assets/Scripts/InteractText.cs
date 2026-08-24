@@ -34,11 +34,11 @@ public class InteractDialogue : MonoBehaviour
     private void Awake()
     {
         if (dialogueText == null)
-        {
-            Debug.LogError($"{name}: InteractDialogue has no TextMeshPro assigned.", this);
-            enabled = false;
-            return;
-        }
+            dialogueText = TextStyle.CreateWorldLabel(transform, name + "Text");
+        else
+            TextStyle.PlaceWorldLabel(transform, dialogueText);
+
+        ApplyTextStyle();
 
         originalLocalPosition = dialogueText.transform.localPosition;
         originalColor = dialogueText.color;
@@ -66,6 +66,21 @@ public class InteractDialogue : MonoBehaviour
         playerObject = null;
         HideDialogue();
         ClearInteractButton();
+    }
+
+    // Font and size come from the single Assets/Resources/TextStyle.asset.
+    public void ApplyTextStyle()
+    {
+        TextStyle.Apply(dialogueText, TextStyle.Role.WorldText);
+
+        TextStyle style = TextStyle.Current;
+        if (style == null) return;
+
+        if (style.holdDuration > 0f)        holdDuration        = style.holdDuration;
+        if (style.floatDistance > 0f)       floatDistance       = style.floatDistance;
+        if (style.floatFadeDuration > 0f)   floatFadeDuration   = style.floatFadeDuration;
+        if (style.fadeInDuration > 0f)      fadeInDuration      = style.fadeInDuration;
+        if (style.fadeInFloatDistance > 0f) fadeInFloatDistance = style.fadeInFloatDistance;
     }
 
     private void SendToInteractButton()
@@ -120,6 +135,20 @@ public class InteractDialogue : MonoBehaviour
         currentIndex = 0;
     }
 
+    // Above THIS object's artwork, at the height set in Assets/Resources/TextStyle.asset.
+    // It used to be the player's position plus a hardcoded 1.5, which drew the prop's own
+    // line over Josh's head wherever he happened to be standing — and made World Text
+    // Height look like it did nothing, because nothing ever read it.
+    private Vector3 SpeechPosition()
+    {
+        float height = TextStyle.Current != null ? TextStyle.Current.worldTextHeight : 0.35f;
+
+        if (VisibleArt.TryGetBounds(transform, out Bounds bounds))
+            return new Vector3(bounds.center.x, bounds.max.y + height, dialogueText.transform.position.z);
+
+        return new Vector3(transform.position.x, transform.position.y + height, dialogueText.transform.position.z);
+    }
+
     private IEnumerator DisplayRoutine(string text)
     {
         if (playerObject == null)
@@ -129,7 +158,7 @@ public class InteractDialogue : MonoBehaviour
             yield break;
         }
 
-        Vector3 basePosition = playerObject.transform.position + Vector3.up * 1.5f;
+        Vector3 basePosition = SpeechPosition();
         dialogueText.text = text;
         dialogueText.gameObject.SetActive(true);
 

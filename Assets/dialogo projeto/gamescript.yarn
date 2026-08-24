@@ -43,7 +43,7 @@ title: square_marcus_erika
 ===
 title: not_talked_friends
 ---
-Josh: Hmm... Maybe I should go see my friends before heading home. We haven't talked in a bit.
+Josh: I should talk to my friends.
 <<progress NotTalkedFriendsYet>>
 ===
 title: home_outside_noise

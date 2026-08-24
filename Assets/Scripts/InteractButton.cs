@@ -10,34 +10,35 @@ using TMPro;
 // wrote the SAME label with no coordination, so one could silently stomp another's
 // prompt. Now there's exactly one registration at a time, with an explicit owner.
 //
-// WHERE the prompt is drawn has two modes, and the field decides:
-//   World Label EMPTY    → the old behaviour, a fixed label parked on the Canvas.
-//   World Label ASSIGNED → the prompt floats in the world, over whatever is
-//                          interactable. Clearing the field reverts, no code change.
+// This component decides WHERE the prompt floats. What it LOOKS like — font and size —
+// is not here: that lives in Assets/Resources/TextStyle.asset, one asset shared with every
+// other piece of text in the game, so changing the font is one edit and not six.
 //
-// Nothing is configured per object. The thing to hover over is the `caller` every
-// interactable ALREADY passes in (they all pass `this`, which is a Component, so it
-// carries a transform), and the height comes from that object's own sprite bounds. An
-// interactable only needs to say anything at all when its trigger sits somewhere other
-// than its art — a walk-into ZONE rather than a thing — and for those DialogueStarter
-// hands over its `transformthing` marker, which already means "where this zone really is".
+// It deliberately moves the EXISTING Canvas label instead of spawning a world-space text
+// object. An object added to the scene from outside the editor is lost the moment the
+// editor saves a scene it loaded before that object existed, and the prompt then
+// silently reverts with nothing to show for it. Owning no scene objects means there is
+// nothing to lose.
 public class InteractButton : MonoBehaviour
 {
-    [Header("Screen Prompt (legacy)")]
-    [Tooltip("Label fixo no Canvas. Usado apenas quando World Label esta vazio.")]
     [SerializeField] private TMP_Text label;
 
-    [Header("World Prompt")]
-    [Tooltip("TextMeshPro em WORLD SPACE (nao o UGUI). Preenchido = o prompt flutua sobre " +
-             "o objeto interagivel. Esvaziar volta pro label do Canvas.")]
-    [SerializeField] private TextMeshPro worldLabel;
+    [Header("Onde o prompt fica")]
+    [Tooltip("Ligado: o prompt paira sobre o objeto interagivel. Desligado: fica parado " +
+             "onde o label estiver posicionado no Canvas.")]
+    [SerializeField] private bool promptFollowsObject = true;
 
-    [Tooltip("Folga entre o topo do sprite do objeto e o prompt, em unidades.")]
+    [Tooltip("Folga entre o topo do sprite do objeto e o prompt, em unidades de mundo. " +
+             "Um InteractPromptAnchor no objeto pode sobrepor isto caso a caso.")]
     [SerializeField] private float heightMargin = 0.35f;
 
-    [Tooltip("Altura usada quando o objeto nao tem sprite nenhum — um marcador vazio, " +
-             "por exemplo. Objetos com sprite ignoram este campo e usam os proprios bounds.")]
+    [Tooltip("Altura usada quando nao ha sprite nenhum para medir. Objetos com arte " +
+             "ignoram isto e usam os proprios bounds.")]
     [SerializeField] private float fallbackHeight = 1.2f;
+
+    [Tooltip("Opcional. Vazio = usa a camera com tag MainCamera, ou a primeira camera da " +
+             "cena se nenhuma estiver com a tag.")]
+    [SerializeField] private Camera cameraOverride;
 
     public static InteractButton Instance { get; private set; }
 
@@ -51,24 +52,33 @@ public class InteractButton : MonoBehaviour
     private object owner;
     private System.Action onPress;
 
-    // What the world prompt hovers over, resolved once per registration rather than
-    // every frame — GetComponentsInChildren is not a per-frame cost worth paying for
-    // something that cannot change while one interactable stays registered.
+    // Resolved once per registration. The per-object override is re-asked every frame
+    // instead, because "nearest of these two" changes as the player walks.
     private Transform anchor;
-    private SpriteRenderer[] anchorSprites;
+    private InteractPromptAnchor anchorOverride;
 
-    private bool UsingWorldPrompt => worldLabel != null;
+    private Camera cam;
+    private Transform player;
 
     private void Awake()
     {
         Instance = this;
 
-        // Clears whatever was authored into the Canvas label, so a leftover "E" can't sit
-        // in the corner for the whole game once the world prompt takes over.
-        if (label != null)
-            label.text = string.Empty;
+        ApplyTextStyle();
+        Hide();
+    }
 
-        ShowWorldPrompt(false);
+    private void OnValidate()
+    {
+        ApplyTextStyle();
+    }
+
+    // Font and size for the prompt live in Assets/Resources/TextStyle.asset, alongside
+    // every other piece of text in the game. Public so editing that asset can push the
+    // change straight into the open scene.
+    public void ApplyTextStyle()
+    {
+        TextStyle.Apply(label, TextStyle.Role.InteractPrompt);
     }
 
     private void Update()
@@ -81,27 +91,29 @@ public class InteractButton : MonoBehaviour
             Press();
     }
 
-    // After everything has moved for the frame, so the prompt can't lag a frame behind a
-    // crate being pushed or an NPC walking out from under it.
+    // After everything has moved for the frame, so the prompt can't lag behind a crate
+    // being pushed or an NPC walking out from under it.
     private void LateUpdate()
     {
-        if (!UsingWorldPrompt || onPress == null)
+        if (!promptFollowsObject || label == null || onPress == null)
             return;
+
+        Transform target = CurrentTarget();
 
         // The interactable was switched off while the prompt was up — <<disable ElderAmos>>
         // with the player standing next to him is exactly this. Its OnTriggerExit never
         // runs, so without this the prompt would hang in the air over nobody, still armed.
-        if (anchor == null || !anchor.gameObject.activeInHierarchy)
+        if (target == null || !target.gameObject.activeInHierarchy)
         {
             owner = null;
             onPress = null;
             anchor = null;
-            anchorSprites = null;
-            ShowWorldPrompt(false);
+            anchorOverride = null;
+            Hide();
             return;
         }
 
-        worldLabel.transform.position = PromptPosition();
+        PlaceOver(target);
     }
 
     // Registers what's currently interactable: who's registering (pass `this`), the
@@ -111,28 +123,28 @@ public class InteractButton : MonoBehaviour
     //
     // promptAnchor is only for an interactable whose OWN transform is not where its art
     // is: a trigger zone laid over a stretch of ground. Everything whose transform is
-    // the object itself leaves it out and gets the right answer for free.
+    // the object itself leaves it out and gets the right answer for free. An
+    // InteractPromptAnchor component on the object beats both.
     public void SetInteraction(object caller, string labelText, System.Action action, Transform promptAnchor = null)
     {
         owner = caller;
         onPress = action;
 
-        if (promptAnchor == null)
-            promptAnchor = (caller as Component)?.transform;
+        Component callerComponent = caller as Component;
 
-        anchor = promptAnchor;
-        anchorSprites = anchor != null ? anchor.GetComponentsInChildren<SpriteRenderer>() : null;
+        anchorOverride = callerComponent != null
+            ? callerComponent.GetComponentInParent<InteractPromptAnchor>()
+            : null;
 
-        if (UsingWorldPrompt)
+        anchor = promptAnchor != null ? promptAnchor : callerComponent?.transform;
+
+        SetLabel(labelText);
+        if (label != null) label.enabled = !string.IsNullOrEmpty(labelText);
+
+        if (promptFollowsObject)
         {
-            worldLabel.text = labelText;
-            ShowWorldPrompt(!string.IsNullOrEmpty(labelText) && anchor != null);
-            if (anchor != null)
-                worldLabel.transform.position = PromptPosition();
-        }
-        else
-        {
-            SetLabel(labelText);
+            Transform target = CurrentTarget();
+            if (target != null) PlaceOver(target);
         }
     }
 
@@ -147,49 +159,88 @@ public class InteractButton : MonoBehaviour
         owner = null;
         onPress = null;
         anchor = null;
-        anchorSprites = null;
-        SetLabel(string.Empty);
-        ShowWorldPrompt(false);
+        anchorOverride = null;
+        Hide();
     }
 
-    // Top-centre of the interactable's artwork, plus the margin. Measured from the SPRITE
-    // and not the transform because a transform tells you nothing about how tall a thing
-    // is: the pivot of a 64px character at scale 4 sits in the middle of its own body,
-    // while a key lying on the floor is a few pixels tall. Reading the bounds is what
-    // makes one setting look right on a statue, an NPC and a dropped key at once, with
-    // nothing typed in per object.
-    private Vector3 PromptPosition()
+    private Transform CurrentTarget()
     {
-        float z = worldLabel.transform.position.z;
+        if (anchorOverride != null)
+            return anchorOverride.Resolve(Player());
 
-        if (anchorSprites != null && anchorSprites.Length > 0)
+        return anchor;
+    }
+
+    private void PlaceOver(Transform target)
+    {
+        if (cam == null) cam = ResolveCamera();
+        if (cam == null || label == null) return;
+
+        Vector3 screen = cam.WorldToScreenPoint(TopOf(target));
+
+        // The canvas is Screen Space - Overlay, where a RectTransform's world position IS
+        // a pixel coordinate. Z has to be flattened or the label is pushed off the canvas
+        // plane and stops drawing.
+        screen.z = 0f;
+        label.rectTransform.position = screen;
+    }
+
+    // Top-centre of the object's artwork, plus the margin. Measured from the SPRITE and
+    // not the transform because a transform tells you nothing about how tall a thing is:
+    // the pivot of a 64px character at scale 4 sits in the middle of its own body, while
+    // a key lying on the floor is a few pixels tall. Reading the bounds is what makes one
+    // setting look right on a statue, an NPC and a dropped key at once.
+    private Vector3 TopOf(Transform target)
+    {
+        // Per-object override first, then the shared asset, then this component's own
+        // field as the last word — so the height lives in the same place as every other
+        // text setting, without breaking a scene that has no asset.
+        float margin = heightMargin;
+        if (TextStyle.Current != null) margin = TextStyle.Current.promptHeight;
+        if (anchorOverride != null && anchorOverride.overrideHeightMargin)
+            margin = anchorOverride.heightMargin;
+
+        Vector2 extra = anchorOverride != null ? anchorOverride.offset : Vector2.zero;
+        bool useBounds = anchorOverride == null || anchorOverride.useSpriteBounds;
+
+        if (useBounds && VisibleArt.TryGetBounds(target, out Bounds bounds))
+            return new Vector3(bounds.center.x + extra.x, bounds.max.y + margin + extra.y, 0f);
+
+        // Nothing to measure — a bare trigger with no artwork under it. Nothing better
+        // than a number, which is exactly what an InteractPromptAnchor is for.
+        return new Vector3(target.position.x + extra.x, target.position.y + fallbackHeight + extra.y, 0f);
+    }
+
+    // Camera.main alone is not enough here: it resolves by TAG, and this scene's camera
+    // object is NAMED "MainCamera" while being tagged Untagged — so Camera.main is null
+    // and the prompt silently never moves.
+    private Camera ResolveCamera()
+    {
+        if (cameraOverride != null) return cameraOverride;
+
+        Camera tagged = Camera.main;
+        if (tagged != null) return tagged;
+
+        return FindFirstObjectByType<Camera>();
+    }
+
+    private Transform Player()
+    {
+        if (player == null)
         {
-            bool any = false;
-            Bounds bounds = default;
-
-            foreach (SpriteRenderer sprite in anchorSprites)
-            {
-                // A disabled renderer contributes nothing visible, so letting it into the
-                // bounds would push the prompt off into empty space.
-                if (sprite == null || !sprite.enabled || sprite.sprite == null)
-                    continue;
-
-                if (!any) { bounds = sprite.bounds; any = true; }
-                else bounds.Encapsulate(sprite.bounds);
-            }
-
-            if (any)
-                return new Vector3(bounds.center.x, bounds.max.y + heightMargin, z);
+            GameObject go = GameObject.FindGameObjectWithTag("Player");
+            player = go != null ? go.transform : null;
         }
-
-        // No artwork to measure — a bare marker Transform. Nothing better than a number.
-        return new Vector3(anchor.position.x, anchor.position.y + fallbackHeight, z);
+        return player;
     }
 
-    private void ShowWorldPrompt(bool visible)
+    // Nothing in range means nothing on screen. Switching the component off rather than
+    // only blanking the text also stops it laying out an empty mesh every frame.
+    private void Hide()
     {
-        if (worldLabel != null)
-            worldLabel.gameObject.SetActive(visible);
+        if (label == null) return;
+        label.text = string.Empty;
+        label.enabled = false;
     }
 
     private void SetLabel(string text)
@@ -208,9 +259,8 @@ public class InteractButton : MonoBehaviour
         owner = null;
         onPress = null;
         anchor = null;
-        anchorSprites = null;
-        SetLabel(string.Empty);
-        ShowWorldPrompt(false);
+        anchorOverride = null;
+        Hide();
 
         action?.Invoke();
         OnPressed?.Invoke();
