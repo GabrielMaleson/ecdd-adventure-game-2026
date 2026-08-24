@@ -7,17 +7,12 @@
 title: square_initial
 ---
 	Josh: What's up Elder Amos?
-	Elder Amos: Hmm, fine, fine indeed. I'm fine, yes. How about you, young one?
+	Elder Amos: Hmm, fine, I'm fine, yes. How about you, Josh?
 	Josh: I'm good. Kind of a misty day, don't you think?
-	Elder Amos: Yes, the mist. The mist is strong. I- very good. 
-	-> Uh... what's very good?
-		Josh: Uh... what's very good?
-		Elder Amos: Yes, indeed. Very good.
-	-> Yup. Very good...?
-		Josh: Yup. Very good...?
-		Elder Amos: The mist. Very good. It's strong. Very good.
+	Elder Amos: Yes, misty indeed.
+	Josh: Yeah.
+	Elder Amos: ...
 	Josh: Ok... good talk, I guess.
-	Josh: ... I swear this geezer wasn't as weird a few days ago.
 	<<set $YarnTalkedElder = true>>
 ===
 title: square_marcus_erika
@@ -195,6 +190,16 @@ Haze: I'm gonna go for a walk!
 Josh: No you're not, you'll stand out and freak out every—hey, WAIT!
 <<progress HazeRanOff>>
 <<enable HazeThree>>
+// O Marcus e a Erika estavam parados na praca ate aqui. Somem AGORA, com o Josh
+// ainda dentro de casa, e nao no comeco do square_haze: desligar o grupo com o
+// jogador olhando pra praca seria um pop na tela. "Friends" e o objeto PAI dos
+// dois na cena, entao os dois triggers de dialogo da praca (FriendNotTalkedStarter
+// e FriendDialogue) saem junto — nao da mais pra conversar com quem nao esta la.
+<<disable Friends>>
+// O Elder sai de cena no MESMO momento, e pelo mesmo motivo: e agora que ele
+// desaparece na historia. O collider e o DialogueStarter dele estao no proprio
+// objeto, entao desligar a raiz tira o homem E o gatilho de conversa junto.
+<<disable ElderAmos>>
 ===
 
 title: square_haze
@@ -245,7 +250,7 @@ Haze: Trust me now?
 Josh: For this very specific topic, yes.
 Haze: Can I go with you, then?
 <<disable Villager>>
-Josh: ...okay.
+Josh: ...Okay.
 // Troca sem teleporte, sem depender de marcador nenhum:
 // 1. o TrueHaze e colocado EXATAMENTE onde o Haze da cutscene esta (mesma posicao,
 //    mesmo lado), entao ligar ele nao muda nada na tela;
@@ -254,6 +259,17 @@ Josh: ...okay.
 <<placeat TrueHaze HazeThree>>
 <<disable HazeThree>>
 <<enable TrueHaze>>
+// O Marcus e a Erika reaparecem na casa do Elder. A ORDEM importa:
+// 1. `formation` coloca os dois no FriendsPosition enquanto ainda estao DESLIGADOS,
+//    entao nao existe frame nenhum em que eles apareçam no lugar antigo;
+// 2. `enable Friends` acende o grupo ja no lugar certo;
+// 3. `enable FriendsTalk` liga o trigger do E (fica desligado ate aqui pra nao piscar
+//    "E" numa estrada vazia);
+// 4. `progress` e o que arma o bark da Erika chamando o Josh na aproximacao.
+<<formation FriendsAtEldersHouse>>
+<<enable Friends>>
+<<enable FriendsTalk>>
+<<progress FriendsAtEldersHouse>>
 ===
 
 title: elders_house_outside
@@ -261,32 +277,32 @@ title: elders_house_outside
 Erika: Hey slowpoke.
 Marcus: Joshy!
 Josh: Hey guys, what happened?
-Erika: Basically, elder Amos disappeared. People are saying they saw him go into the forest, speaking nonsense.
+Erika: Basically, Elder Amos disappeared. People are saying they saw him go into the forest, speaking nonsense.
 Josh: Into the forest where, exactly?
 Marcus: No one saw exactly, spot was too misty, apparently.
 Haze: ...
 Marcus: They are scared, afraid to enter his house. Some saying it's cursed.
 Josh: What? No one went looking for him?
 Erika: They did, but didn't go very far.
-Haze: Josh, I feel like we should go in.
-Josh: Are you really inside my mind, man?
-Haze: Don't ask me how. Let's go in.
-Josh: Ok, why?
-Haze: Just trust me on this one, I feel like there's something there worth finding.
-Josh: ...ok.
+Haze: <i>Josh, I feel like we should go in.</i>
+Josh: <i>Are you really inside my mind, man?</i>
+Haze: <i>Don't ask me how. Let's go in.</i>
+Josh: <i>Ok, why?</i>
+Haze: <i>Just trust me on this one, I feel like there's something there worth finding.</i>
+Josh: <i>...Ok.</i>
 Josh: Ok, I guess I'm going to check his place, then.
 Erika: What, why?
 Marcus: What could be inside?
 Josh: I don't know, man. You two have a better idea?
 Erika: Why are you so proactive out of nowhere?
 Marcus: Who are you and where is our friend Josh?
-Haze: Haha!
-Josh: Funny. Kay, I'm going in.
+Haze: <i>Haha!</i>
+Josh: Funny. 'Kay, I'm going in.
 Erika: I'm going in then, also.
 Marcus: Yeah, me too.
-Haze: Would be better if we went by ourselves.
-Josh: Why? It doesn't matter anyway. I won't stop my friends.
-Haze: ..ok.
+Haze: <i>Would be better if we went by ourselves.</i>
+Josh: <i>Why? It doesn't matter anyway. I won't stop my friends.</i>
+Haze: <i>...Ok.</i>
 Josh: Let's go, then.
 ===
 

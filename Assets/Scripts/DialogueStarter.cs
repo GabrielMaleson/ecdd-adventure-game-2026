@@ -90,7 +90,14 @@ public class DialogueStarter : MonoBehaviour
 
     private void SendToInteractButton()
     {
-        InteractButton.Instance?.SetInteraction(this, "E", OnInteractPressed);
+        // transformthing is handed over as the prompt's anchor because this script's own
+        // transform is very often NOT where the thing you're talking to is: the trigger is
+        // a zone laid over a patch of ground, positioned by its collider offset. The
+        // marker already means "where this zone really is" — the same field that
+        // re-centres the collider in Start — so the floating E lands on the character
+        // instead of on the corner of an invisible box. Null just falls back to this
+        // object's transform, which is correct for a trigger sitting on its own subject.
+        InteractButton.Instance?.SetInteraction(this, "E", OnInteractPressed, transformthing);
     }
 
     private void ClearInteractButton()
