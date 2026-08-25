@@ -321,6 +321,16 @@ public class Cutscener : MonoBehaviour
             return;
         }
 
+        // A character that owns its facing turns itself: Marcus has both sides DRAWN (the
+        // watch, the jacket buttons) and must never be mirrored, and only he knows that.
+        CharacterFacing facing = FacingFor(entry.target);
+        if (facing != null)
+        {
+            facing.Set(dir);
+            facing.SetIdle();
+            return;
+        }
+
         // Fallback for characters that are just a sprite. EVERY renderer under the
         // object flips, not the first one found: a character built out of parts (the
         // player is a Top and a Bottom) would otherwise turn half of itself around.
@@ -337,6 +347,14 @@ public class Cutscener : MonoBehaviour
     // complains. Face then silently fell through to the dumb sprite-flip path and the
     // MC stayed facing the camera through the whole conversation. Looking up and down
     // from whatever was assigned makes both wirings behave the same.
+    private static CharacterFacing FacingFor(GameObject go)
+    {
+        CharacterFacing facing = go.GetComponent<CharacterFacing>();
+        if (facing == null) facing = go.GetComponentInParent<CharacterFacing>();
+        if (facing == null) facing = go.GetComponentInChildren<CharacterFacing>();
+        return facing;
+    }
+
     private static PlayerController ControllerFor(GameObject go)
     {
         PlayerController controller = go.GetComponent<PlayerController>();

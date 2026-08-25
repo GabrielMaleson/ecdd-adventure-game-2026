@@ -128,6 +128,16 @@ public class NpcFormation : MonoBehaviour
     // the same note for the same reason).
     private void SetFacing(Transform npc, bool faceLeft)
     {
+        // Same reason as Cutscener.Face: a two-sided character turns itself instead of
+        // being mirrored, or Marcus's watch ends up on the wrong wrist.
+        CharacterFacing facing = npc.GetComponentInChildren<CharacterFacing>();
+        if (facing == null) facing = npc.GetComponentInParent<CharacterFacing>();
+        if (facing != null)
+        {
+            facing.FaceHorizontal(faceLeft);
+            return;
+        }
+
         if (normalizeMirrorRotation)
         {
             // A 180 on Y mirrors the sprite too, so a character carrying both that and

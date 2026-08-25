@@ -36,6 +36,13 @@ public class TeleporterScript : MonoBehaviour
     public AudioClip teleportSound;
 
     private bool isOnCooldown;
+
+    // Set when a teleport DROPS the player inside this portal. It is not a timer: it is
+    // "you have to leave before this counts again", cleared by OnTriggerExit2D. A timer
+    // expires while the player is still standing inside, and OnTriggerEnter2D only fires on
+    // the way IN, so the portal would sit armed but unreachable until he walked out and
+    // back — which is exactly how leaving the house broke.
+    private bool suppressedUntilExit;
     private float cooldownTimer;
     private bool playerInRange;
     private GameObject player;
@@ -61,7 +68,7 @@ public class TeleporterScript : MonoBehaviour
         player = collision.gameObject;
         playerInRange = true;
 
-        if (teleportOnTrigger && !isOnCooldown)
+        if (teleportOnTrigger && !isOnCooldown && !suppressedUntilExit)
             Teleport();
         else
             RefreshPrompt();
@@ -73,7 +80,20 @@ public class TeleporterScript : MonoBehaviour
             return;
 
         playerInRange = false;
+        suppressedUntilExit = false;   // he left; the portal counts again
         RefreshPrompt();
+    }
+
+    // Walking around INSIDE a portal has to keep working after the suppression clears,
+    // otherwise a player who arrives inside one and never fully leaves is stuck.
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (!teleportOnTrigger || isOnCooldown || suppressedUntilExit) return;
+        if (!collision.CompareTag("Player")) return;
+
+        player = collision.gameObject;
+        playerInRange = true;
+        Teleport();
     }
 
     private void OnDisable()
@@ -87,7 +107,7 @@ public class TeleporterScript : MonoBehaviour
         if (teleportOnTrigger)
             return;
 
-        if (playerInRange && !isOnCooldown)
+        if (playerInRange && !isOnCooldown && !suppressedUntilExit)
             InteractButton.Instance?.SetInteraction(this, interactLabel, Teleport);
         else
             InteractButton.Instance?.ClearInteraction(this);
@@ -146,10 +166,26 @@ public class TeleporterScript : MonoBehaviour
         if (teleportSound != null)
             AudioSource.PlayClipAtPoint(teleportSound, transform.position);
 
+        // Measured BEFORE the move: reading it afterwards asks a collider that the physics
+        // world has not caught up with yet, which answers with the position the player just
+        // left — the reason the first attempt at this fix silently did nothing.
+        Collider2D body = target != null ? target.GetComponent<Collider2D>() : null;
+        Vector3 bodyOffset = Vector3.zero;
+        Vector3 bodySize = Vector3.zero;
+        if (body != null)
+        {
+            bodyOffset = body.bounds.center - target.transform.position;
+            bodySize = body.bounds.size;
+        }
+
         if (target != null)
             target.transform.position = destination.position;
         else
             Debug.LogWarning($"{name}: no player reference available for teleport.", this);
+
+        // Pushes the move into the physics world now instead of at the next FixedUpdate, so
+        // the trigger the player landed in is found this frame — before it can fire.
+        Physics2D.SyncTransforms();
 
         foreach (var obj in additionalObjects)
         {
@@ -160,8 +196,47 @@ public class TeleporterScript : MonoBehaviour
         if (teleportEffect != null)
             Destroy(Instantiate(teleportEffect, destination.position, Quaternion.identity), effectDuration);
 
+        // Landing inside ANOTHER portal's trigger must not bounce the player straight back
+        // out. The exit inside Josh's house sits ~0.06 units below where the front door
+        // drops you, so walking in put the player on top of the exit and teleported him
+        // outside again — while the "you're inside" dialogue, fired by the same arrival,
+        // carried on playing over the outdoor scene. Putting whatever you land in on
+        // cooldown means a portal only ever fires when you actually walk INTO it.
+        ArmArrivalCooldown(destination.position, bodyOffset, bodySize);
+
         playerInRange = false;
         InteractButton.Instance?.ClearInteraction(this);
+    }
+
+    private static void ArmArrivalCooldown(Vector3 arrival, Vector3 bodyOffset, Vector3 bodySize)
+    {
+        // Where the traveller's BODY ends up, not where its pivot does. A character's
+        // collider is a small box at his feet, well below the transform, so a pivot that
+        // clears a trigger by a hair still lands the feet inside it.
+        bool hasBody = bodySize.sqrMagnitude > 0f;
+        Bounds landed = new Bounds(arrival + bodyOffset, bodySize);
+
+        foreach (TeleporterScript other in FindObjectsByType<TeleporterScript>(FindObjectsSortMode.None))
+        {
+            if (other == null) continue;
+
+            foreach (Collider2D trigger in other.GetComponents<Collider2D>())
+            {
+                if (!trigger.isTrigger) continue;
+
+                // The point covers a destination marker with no body to measure; the bounds
+                // check is what catches a player whose feet clip the corner of a trigger his
+                // pivot is clear of, which is exactly the 6-centimetre overlap here.
+                bool landedInside = trigger.OverlapPoint(arrival)
+                                 || (hasBody && trigger.bounds.Intersects(landed));
+
+                if (!landedInside) continue;
+
+                other.suppressedUntilExit = true;
+                other.playerInRange = false;
+                break;
+            }
+        }
     }
 
     private void OnDrawGizmosSelected()

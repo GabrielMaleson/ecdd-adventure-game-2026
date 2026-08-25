@@ -26,6 +26,11 @@ public class InteractSettings : ScriptableObject
              "dispara, entao nao ha nada a preservar em deixar assim.")]
     public bool createMissingTrigger = true;
 
+    [Tooltip("Texto do prompt. Vazio = cada objeto mantem o proprio. Preenchido, TODO " +
+             "interagivel usa este — e o prompt para de ser uma frase escrita a mao em um " +
+             "objeto e um E em outro.")]
+    public string interactLabel = "E";
+
     private const string ResourcePath = "InteractSettings";
 
     private static InteractSettings cached;
@@ -87,7 +92,16 @@ public class InteractSettings : ScriptableObject
             // it makes scenes silently fail to fire.
             if (behaviour is DialogueStarter starter && !starter.IsClickNPC) continue;
 
+            if (!string.IsNullOrEmpty(interactLabel))
+                ApplyLabel(behaviour);
+
             bool found = false;
+
+            // An interaction that belongs to SEVERAL characters needs a trigger that
+            // reaches all of them, not one box parked on whichever was listed first.
+            // Talking to Marcus and Erika is one interaction covering two people standing
+            // apart: a flat 2x2 on Marcus means walking up to Erika does nothing.
+            bool group = TryGroupBox(behaviour.transform, out Vector2 groupOffset, out Vector2 groupSize);
 
             foreach (BoxCollider2D box in behaviour.GetComponents<BoxCollider2D>())
             {
@@ -95,7 +109,16 @@ public class InteractSettings : ScriptableObject
                 // solid body you bump into — the well has exactly this — and resizing that
                 // would change what the player can walk through.
                 if (!box.isTrigger) continue;
-                box.size = triggerSize;
+
+                if (group)
+                {
+                    box.offset = groupOffset;
+                    box.size = groupSize;
+                }
+                else
+                {
+                    box.size = triggerSize;
+                }
                 found = true;
             }
 
@@ -111,6 +134,51 @@ public class InteractSettings : ScriptableObject
                 added.size = triggerSize;
             }
         }
+    }
+
+    // The label field is named the same on all four components that have one, so one
+    // reflection write covers them without editing any of them.
+    private void ApplyLabel(MonoBehaviour behaviour)
+    {
+        var field = behaviour.GetType().GetField("interactLabel",
+            System.Reflection.BindingFlags.Instance |
+            System.Reflection.BindingFlags.Public |
+            System.Reflection.BindingFlags.NonPublic);
+
+        if (field != null && field.FieldType == typeof(string))
+            field.SetValue(behaviour, interactLabel);
+    }
+
+    // The box that reaches every character an InteractPromptAnchor names, plus the normal
+    // reach around each of them. Expressed in the collider's own space, so the gizmo in the
+    // Scene view shows the truth instead of wherever the trigger object happens to sit.
+    public static bool TryGroupBox(Transform owner, out Vector2 offset, out Vector2 size)
+    {
+        offset = Vector2.zero;
+        size = Vector2.zero;
+
+        InteractPromptAnchor anchor = owner.GetComponent<InteractPromptAnchor>();
+        if (anchor == null || anchor.nearestOf == null || anchor.nearestOf.Count < 2)
+            return false;
+
+        InteractSettings settings = Current;
+        Vector2 reach = settings != null ? settings.triggerSize : new Vector2(2f, 2f);
+
+        bool any = false;
+        Bounds bounds = default;
+
+        foreach (Transform t in anchor.nearestOf)
+        {
+            if (t == null) continue;
+            if (!any) { bounds = new Bounds(t.position, Vector3.zero); any = true; }
+            else bounds.Encapsulate(t.position);
+        }
+
+        if (!any) return false;
+
+        offset = (Vector2)(bounds.center - owner.position);
+        size = new Vector2(bounds.size.x + reach.x, bounds.size.y + reach.y);
+        return true;
     }
 
     // The six components that register with InteractButton. Named rather than marked with

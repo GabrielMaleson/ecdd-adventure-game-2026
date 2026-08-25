@@ -82183,7 +82183,7 @@ Transform:
   m_GameObject: {fileID: 330530880}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.92, y: -0.98, z: -10}
+  m_LocalPosition: {x: 6.75, y: 2.73, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -82697,7 +82697,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4779347641324548147, guid: caaeb67ef3e908043a4f2ff0ced8e72c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.8993998
+      value: 6.88
       objectReference: {fileID: 0}
     - target: {fileID: 4779347641324548147, guid: caaeb67ef3e908043a4f2ff0ced8e72c, type: 3}
       propertyPath: m_LocalPosition.y
@@ -88003,6 +88003,7 @@ GameObject:
   - component: {fileID: 720203517}
   - component: {fileID: 720203519}
   - component: {fileID: 720203518}
+  - component: {fileID: 720203520}
   m_Layer: 0
   m_Name: ToJoshHouse
   m_TagString: Teleport
@@ -88039,7 +88040,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TeleporterScript
   destination: {fileID: 1144894265}
   teleportOnTrigger: 0
-  interactLabel: Enter Josh's House
+  interactLabel: E
   Camera: {fileID: 0}
   OldCamera: {fileID: 0}
   additionalObjects: []
@@ -88095,6 +88096,24 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &720203520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720203516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89086258be1424f46b3af8bb10607cd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractPromptAnchor
+  anchor: {fileID: 0}
+  nearestOf: []
+  offset: {x: -0.2, y: -0.25}
+  useSpriteBounds: 0
+  overrideHeightMargin: 0
+  heightMargin: 0.35
 --- !u!1 &720275695
 GameObject:
   m_ObjectHideFlags: 0
@@ -90437,7 +90456,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Pickup
   grabMode: 0
-  interactLabel: Pick up (E)
+  interactLabel: E
   hide:
   - {fileID: 1933651323}
   show:
@@ -92026,7 +92045,7 @@ Transform:
   m_GameObject: {fileID: 952811011}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.75, y: -0.19000006, z: 0}
+  m_LocalPosition: {x: 12.635, y: -4.415, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -92066,7 +92085,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 1.65, y: -1.62}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -92076,7 +92095,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 3.33, y: 2.01}
   m_EdgeRadius: 0
 --- !u!114 &952811014
 MonoBehaviour:
@@ -92504,7 +92523,7 @@ Transform:
   m_GameObject: {fileID: 985129697}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.92, y: -0.98, z: -10}
+  m_LocalPosition: {x: 6.75, y: 2.73, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -99387,7 +99406,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SceneLoadTrigger
   sceneToLoad: CryptPuzzle
   enterMode: 0
-  interactLabel: Enter (E)
+  interactLabel: E
   onBeforeLoad:
     m_PersistentCalls:
       m_Calls: []
@@ -101990,7 +102009,7 @@ MonoBehaviour:
   dialogueText: {fileID: 0}
   dialogueLines:
   - Wouldn't want to fall in there.
-  holdDuration: 2
+  holdDuration: 1.5
   floatDistance: 0.6
   floatFadeDuration: 0.5
   fadeInDuration: 0.5
@@ -104582,7 +104601,7 @@ MonoBehaviour:
     counterClockwise: 0
   cycles:
   - {fileID: 955045318}
-  interactLabel: Statue (E)
+  interactLabel: E
   onActivated:
     m_PersistentCalls:
       m_Calls: []
@@ -209143,7 +209162,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 14.76771, y: -29.915802}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -209153,7 +209172,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 3.33, y: 2.0100002}
   m_EdgeRadius: 0
 --- !u!114 &1900000011
 MonoBehaviour:
@@ -210399,7 +210418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TeleporterScript
   destination: {fileID: 943572221}
   teleportOnTrigger: 1
-  interactLabel: Enter Josh's House
+  interactLabel: E
   Camera: {fileID: 0}
   OldCamera: {fileID: 0}
   additionalObjects: []
@@ -213942,6 +213961,10 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: -7517285544160936963, guid: dd27499be1bbe464f8b09b19deeb684b, type: 2}
+    - target: {fileID: 7200000000000000090, guid: 851fcb97a4d621e45943299da508d2dc, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 402182997}
     - target: {fileID: 9029520266342921181, guid: 851fcb97a4d621e45943299da508d2dc, type: 3}
       propertyPath: m_Name
       value: Erika
@@ -214156,6 +214179,10 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: -7517285544160936963, guid: dd27499be1bbe464f8b09b19deeb684b, type: 2}
+    - target: {fileID: 7100000000000000090, guid: 8e4e7b546b810364ea1af701b1f8f046, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 3495693095239985913}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -214352,11 +214379,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4474648276818384332, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.92
+      value: 6.75
       objectReference: {fileID: 0}
     - target: {fileID: 4474648276818384332, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.98
+      value: 2.73
       objectReference: {fileID: 0}
     - target: {fileID: 4474648276818384332, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
       propertyPath: m_LocalPosition.z

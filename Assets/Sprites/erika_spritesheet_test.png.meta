@@ -1,103 +1,103 @@
 fileFormatVersion: 2
-guid: 1775133e350be5540baaf297c493fc64
+guid: 398fa7c24fbc5584b81e7b39ef04e981
 TextureImporter:
   internalIDToNameTable:
   - first:
       213: -2112968277116804065
-    second: erika_spriteseet_0
+    second: erika_spritesheet_test_0
   - first:
       213: 2561020876513753624
-    second: erika_spriteseet_1
+    second: erika_spritesheet_test_1
   - first:
       213: -3664598542432306232
-    second: erika_spriteseet_2
+    second: erika_spritesheet_test_2
   - first:
       213: -3625339239421622341
-    second: erika_spriteseet_3
+    second: erika_spritesheet_test_3
   - first:
       213: -1821405709726592445
-    second: erika_spriteseet_4
+    second: erika_spritesheet_test_4
   - first:
       213: 5679879666379272193
-    second: erika_spriteseet_5
+    second: erika_spritesheet_test_5
   - first:
       213: -6313483528153045734
-    second: erika_spriteseet_6
+    second: erika_spritesheet_test_6
   - first:
       213: 3254043067668887750
-    second: erika_spriteseet_7
+    second: erika_spritesheet_test_7
   - first:
       213: -5530942079734571639
-    second: erika_spriteseet_8
+    second: erika_spritesheet_test_8
   - first:
       213: 931928617469865972
-    second: erika_spriteseet_9
+    second: erika_spritesheet_test_9
   - first:
       213: 1108423406600955858
-    second: erika_spriteseet_10
+    second: erika_spritesheet_test_10
   - first:
       213: 875248688788947539
-    second: erika_spriteseet_11
+    second: erika_spritesheet_test_11
   - first:
       213: 8231464358638875402
-    second: erika_spriteseet_12
+    second: erika_spritesheet_test_12
   - first:
       213: 162432434189929319
-    second: erika_spriteseet_13
+    second: erika_spritesheet_test_13
   - first:
       213: 8614361733343236801
-    second: erika_spriteseet_14
+    second: erika_spritesheet_test_14
   - first:
       213: 3612704665361644961
-    second: erika_spriteseet_15
+    second: erika_spritesheet_test_15
   - first:
       213: -2329897327431781245
-    second: erika_spriteseet_16
+    second: erika_spritesheet_test_16
   - first:
       213: 8366273679628335734
-    second: erika_spriteseet_17
+    second: erika_spritesheet_test_17
   - first:
       213: 801386984446632202
-    second: erika_spriteseet_18
+    second: erika_spritesheet_test_18
   - first:
       213: -7962669804784868244
-    second: erika_spriteseet_19
+    second: erika_spritesheet_test_19
   - first:
       213: 5233302735696639144
-    second: erika_spriteseet_20
+    second: erika_spritesheet_test_20
   - first:
       213: 3232591367284889002
-    second: erika_spriteseet_21
+    second: erika_spritesheet_test_21
   - first:
       213: 6475299983199771772
-    second: erika_spriteseet_22
+    second: erika_spritesheet_test_22
   - first:
       213: -5326818874985285188
-    second: erika_spriteseet_23
+    second: erika_spritesheet_test_23
   - first:
       213: -1853024924244644996
-    second: erika_spriteseet_24
+    second: erika_spritesheet_test_24
   - first:
       213: -1862706651277318060
-    second: erika_spriteseet_25
+    second: erika_spritesheet_test_25
   - first:
       213: 3695098888515351891
-    second: erika_spriteseet_26
+    second: erika_spritesheet_test_26
   - first:
       213: -8032581071013430179
-    second: erika_spriteseet_27
+    second: erika_spritesheet_test_27
   - first:
       213: 4999657219776687336
-    second: erika_spriteseet_28
+    second: erika_spritesheet_test_28
   - first:
       213: -8359936529052011808
-    second: erika_spriteseet_29
+    second: erika_spritesheet_test_29
   - first:
       213: 912793514632788469
-    second: erika_spriteseet_30
+    second: erika_spritesheet_test_30
   - first:
       213: 8201125961263820053
-    second: erika_spriteseet_31
+    second: erika_spritesheet_test_31
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -193,7 +193,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: erika_spriteseet_0
+      name: erika_spritesheet_test_0
       rect:
         serializedVersion: 2
         x: 0
@@ -215,7 +215,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_1
+      name: erika_spritesheet_test_1
       rect:
         serializedVersion: 2
         x: 64
@@ -237,7 +237,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_2
+      name: erika_spritesheet_test_2
       rect:
         serializedVersion: 2
         x: 128
@@ -259,7 +259,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_3
+      name: erika_spritesheet_test_3
       rect:
         serializedVersion: 2
         x: 192
@@ -281,7 +281,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_4
+      name: erika_spritesheet_test_4
       rect:
         serializedVersion: 2
         x: 256
@@ -303,7 +303,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_5
+      name: erika_spritesheet_test_5
       rect:
         serializedVersion: 2
         x: 320
@@ -325,7 +325,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_6
+      name: erika_spritesheet_test_6
       rect:
         serializedVersion: 2
         x: 384
@@ -347,7 +347,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_7
+      name: erika_spritesheet_test_7
       rect:
         serializedVersion: 2
         x: 448
@@ -369,7 +369,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_8
+      name: erika_spritesheet_test_8
       rect:
         serializedVersion: 2
         x: 0
@@ -391,7 +391,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_9
+      name: erika_spritesheet_test_9
       rect:
         serializedVersion: 2
         x: 64
@@ -413,7 +413,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_10
+      name: erika_spritesheet_test_10
       rect:
         serializedVersion: 2
         x: 128
@@ -435,7 +435,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_11
+      name: erika_spritesheet_test_11
       rect:
         serializedVersion: 2
         x: 192
@@ -457,7 +457,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_12
+      name: erika_spritesheet_test_12
       rect:
         serializedVersion: 2
         x: 256
@@ -479,7 +479,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_13
+      name: erika_spritesheet_test_13
       rect:
         serializedVersion: 2
         x: 320
@@ -501,7 +501,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_14
+      name: erika_spritesheet_test_14
       rect:
         serializedVersion: 2
         x: 384
@@ -523,7 +523,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_15
+      name: erika_spritesheet_test_15
       rect:
         serializedVersion: 2
         x: 448
@@ -545,7 +545,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_16
+      name: erika_spritesheet_test_16
       rect:
         serializedVersion: 2
         x: 0
@@ -567,7 +567,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_17
+      name: erika_spritesheet_test_17
       rect:
         serializedVersion: 2
         x: 64
@@ -589,7 +589,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_18
+      name: erika_spritesheet_test_18
       rect:
         serializedVersion: 2
         x: 128
@@ -611,7 +611,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_19
+      name: erika_spritesheet_test_19
       rect:
         serializedVersion: 2
         x: 192
@@ -633,7 +633,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_20
+      name: erika_spritesheet_test_20
       rect:
         serializedVersion: 2
         x: 256
@@ -655,7 +655,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_21
+      name: erika_spritesheet_test_21
       rect:
         serializedVersion: 2
         x: 320
@@ -677,7 +677,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_22
+      name: erika_spritesheet_test_22
       rect:
         serializedVersion: 2
         x: 384
@@ -699,7 +699,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_23
+      name: erika_spritesheet_test_23
       rect:
         serializedVersion: 2
         x: 448
@@ -721,7 +721,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_24
+      name: erika_spritesheet_test_24
       rect:
         serializedVersion: 2
         x: 0
@@ -743,7 +743,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_25
+      name: erika_spritesheet_test_25
       rect:
         serializedVersion: 2
         x: 64
@@ -765,7 +765,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_26
+      name: erika_spritesheet_test_26
       rect:
         serializedVersion: 2
         x: 128
@@ -787,7 +787,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_27
+      name: erika_spritesheet_test_27
       rect:
         serializedVersion: 2
         x: 192
@@ -809,7 +809,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_28
+      name: erika_spritesheet_test_28
       rect:
         serializedVersion: 2
         x: 256
@@ -831,7 +831,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_29
+      name: erika_spritesheet_test_29
       rect:
         serializedVersion: 2
         x: 320
@@ -853,7 +853,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_30
+      name: erika_spritesheet_test_30
       rect:
         serializedVersion: 2
         x: 384
@@ -875,7 +875,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spriteseet_31
+      name: erika_spritesheet_test_31
       rect:
         serializedVersion: 2
         x: 448
@@ -912,38 +912,38 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      erika_spriteseet_0: -2112968277116804065
-      erika_spriteseet_1: 2561020876513753624
-      erika_spriteseet_10: 1108423406600955858
-      erika_spriteseet_11: 875248688788947539
-      erika_spriteseet_12: 8231464358638875402
-      erika_spriteseet_13: 162432434189929319
-      erika_spriteseet_14: 8614361733343236801
-      erika_spriteseet_15: 3612704665361644961
-      erika_spriteseet_16: -2329897327431781245
-      erika_spriteseet_17: 8366273679628335734
-      erika_spriteseet_18: 801386984446632202
-      erika_spriteseet_19: -7962669804784868244
-      erika_spriteseet_2: -3664598542432306232
-      erika_spriteseet_20: 5233302735696639144
-      erika_spriteseet_21: 3232591367284889002
-      erika_spriteseet_22: 6475299983199771772
-      erika_spriteseet_23: -5326818874985285188
-      erika_spriteseet_24: -1853024924244644996
-      erika_spriteseet_25: -1862706651277318060
-      erika_spriteseet_26: 3695098888515351891
-      erika_spriteseet_27: -8032581071013430179
-      erika_spriteseet_28: 4999657219776687336
-      erika_spriteseet_29: -8359936529052011808
-      erika_spriteseet_3: -3625339239421622341
-      erika_spriteseet_30: 912793514632788469
-      erika_spriteseet_31: 8201125961263820053
-      erika_spriteseet_4: -1821405709726592445
-      erika_spriteseet_5: 5679879666379272193
-      erika_spriteseet_6: -6313483528153045734
-      erika_spriteseet_7: 3254043067668887750
-      erika_spriteseet_8: -5530942079734571639
-      erika_spriteseet_9: 931928617469865972
+      erika_spritesheet_test_0: -2112968277116804065
+      erika_spritesheet_test_1: 2561020876513753624
+      erika_spritesheet_test_10: 1108423406600955858
+      erika_spritesheet_test_11: 875248688788947539
+      erika_spritesheet_test_12: 8231464358638875402
+      erika_spritesheet_test_13: 162432434189929319
+      erika_spritesheet_test_14: 8614361733343236801
+      erika_spritesheet_test_15: 3612704665361644961
+      erika_spritesheet_test_16: -2329897327431781245
+      erika_spritesheet_test_17: 8366273679628335734
+      erika_spritesheet_test_18: 801386984446632202
+      erika_spritesheet_test_19: -7962669804784868244
+      erika_spritesheet_test_2: -3664598542432306232
+      erika_spritesheet_test_20: 5233302735696639144
+      erika_spritesheet_test_21: 3232591367284889002
+      erika_spritesheet_test_22: 6475299983199771772
+      erika_spritesheet_test_23: -5326818874985285188
+      erika_spritesheet_test_24: -1853024924244644996
+      erika_spritesheet_test_25: -1862706651277318060
+      erika_spritesheet_test_26: 3695098888515351891
+      erika_spritesheet_test_27: -8032581071013430179
+      erika_spritesheet_test_28: 4999657219776687336
+      erika_spritesheet_test_29: -8359936529052011808
+      erika_spritesheet_test_3: -3625339239421622341
+      erika_spritesheet_test_30: 912793514632788469
+      erika_spritesheet_test_31: 8201125961263820053
+      erika_spritesheet_test_4: -1821405709726592445
+      erika_spritesheet_test_5: 5679879666379272193
+      erika_spritesheet_test_6: -6313483528153045734
+      erika_spritesheet_test_7: 3254043067668887750
+      erika_spritesheet_test_8: -5530942079734571639
+      erika_spritesheet_test_9: 931928617469865972
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

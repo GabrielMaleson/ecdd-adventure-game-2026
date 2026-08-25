@@ -6,7 +6,7 @@
 
 title: square_initial
 ---
-	Josh: What's up Elder Amos?
+	Josh: What's up Amos?
 	Elder Amos: Hmm, fine, I'm fine, yes. How about you, Josh?
 	Josh: I'm good. Kind of a misty day, don't you think?
 	Elder Amos: Yes, misty indeed.
@@ -20,25 +20,26 @@ title: square_marcus_erika
 	Marcus: What's up Joshy?
 	Josh: 'Sup.
 	Erika: Wow, look who's in a good mood today.
-	Josh: Yup, brimmin' with joy.
-	Marcus: Ah, come on Joshy it's a beautiful day! Everyone's having fun, doing their things... a little misty, but beautiful anyway.
-	Josh: You have a weird concept of beauty.
+	Josh: Yup, can barely contain myself.
+	Marcus: Ah, come on man, it's a beautiful day! Everyone's having fun, doing their things.
+	// A pergunta sobre o Elder so existe se o Josh JA falou com ele — e por isso ela e a
+	// primeira metade de uma fala do Josh, nao uma fala solta: sem a condicional ele
+	// termina em "You have a weird concept of beauty." e a Erika emenda direto.
 	<<if $YarnTalkedElder is true>>
-		Josh: Anyway... have you talked to Elder Amos? He seems to be out of it.
-		Marcus: Ah, old man's always been like this, nothing new.
-		Josh: I don't know man, he seems worse.
-		Erika: Screw that fossil, what are we doing today?
+		Josh: You have a weird concept of beauty. Anyway... have you talked to Amos? He seems a bit off.
+		Marcus: Ah, old man's been off for some time now, nothing new.
+		Erika: Forget that fossil, what are we doing today?
 	<<else>>
+		Josh: You have a weird concept of beauty.
 		Erika: So, what are we doing today?
 	<<endif>>
 	Josh: I'm heading home I guess.
-	Marcus: Come on Joshy, you know I don't have much time...
-	Josh: He's really leaving, then.
+	Marcus: Come on Joshy, you know my time is due in this village.
+	Josh: <i>He's really leaving...</i>
 	Erika: Don't be a shut in for once, Josh.
-	Josh: Ok ok. I'll just relax for a bit, and I'll meet you.
+	Josh: Ok, ok...I'll just relax for a bit. Meet you here in an hour-ish.
 	Marcus: Nice, okay.
-	Erika: We meet here in an hour-ish.
-	Josh: 'Kay.
+	Erika: Don't know why you need to "relax" right now, but ok.
 	<<progress TalkedFriends>>
 ===
 title: not_talked_friends
@@ -88,36 +89,34 @@ title: home_outside_first
 <<face HazeOne Josh>>
 <<face Josh HazeOne>>
 Josh: What's this?!
-...
 <<movement HazeEnter freeze>>
 <<face HazeOne Josh>>
 <<face Josh HazeOne>>
-Haze: Hm... Hello sir.
-Josh: Wha—who... what are you?!
-Haze: Hmm... I'm me I guess, I don't know.
-Josh: Okay..? And what are you doing here?
-Haze: Nothing in particular.
-Josh: Okay just— come inside or else you'll freak people out.
-Haze: Why would I freak them out?
+?: Hello sir.
+Josh: Wha—who...what are you?!
+?: Hmm... I'm me I guess, I don't know.
+Josh: Ok? And what are you doing here?
+?: Nothing in particular.
+Josh: Ok just—come inside or else you'll freak people out.
+?: Why would I freak them out?
 Josh: Have you looked at yourself in the mirror?
 // Aqui existia um `movement HazeApproach freeze`, que mandava o Haze pro marcador
 // fixo HazeFloat. Isso so funcionava quando o Josh era colocado no PlayerApproach por
 // um `movement`: agora que o JOGADOR anda ate a casa sozinho, o Josh para a esquerda
 // do HazeFloat, e o Haze "andava pro outro lado" no meio da conversa. Ele ja esta cara
 // a cara desde o HazeEnter, entao fica parado falando ate entrar na casa no HazeLeave.
-Haze: I... haven't.
+?: ...I have not.
 Josh: Yeah, figures.
-Haze: But you're not freaked out?
-Josh: You don't seem hostile.
-Haze: I don't feel hostile.
+?: Do i look good?
 Josh: Just go on in man.
+?: Okay!
 // Era HazeRun (ate WalkHome (2), no chao) e SO DEPOIS HazeLeave (ate WalkHome (1), a
 // porta) — dai o "desce e depois sobe". Um movimento so, direto pra porta: o
 // MoveTowards do Cutscener anda em linha reta, entao sai na diagonal.
 // Se ficar lento, sobe o Speed do HazeLeave no Inspector (o HazeRun era 4, esse e 2).
 <<movement HazeLeave freeze>>
 <<disable HazeOne>>
-Josh: (This is gonna be a long day...)
+Josh: <i>This is going to be a</i> long <i>day.</i>
 <<progress MetHaze>>
 ===
 
@@ -142,20 +141,20 @@ title: home_inside_first
 <<movement HazeHouse freeze>>
 <<face HazeTwo Josh>>
 <<face Josh HazeTwo>>
-Haze: Wow your home is so pretty!
+?: Wow your home is so pretty!
 Josh: It really isn't.
-Haze: Then why are you here?
+?: Then why are you here?
 Josh: Nowhere to go, I guess.
-Haze: That's sad.
+?: That's sad.
 // Vai ate a TV e fica olhando pra ela (a TV esta a direita, entao a direcao de viagem
 // ja deixa ele virado pro lado certo).
 <<movement HazeTV freeze>>
 <<face Josh HazeTwo>>
-Haze: What's this?
+?: What's this?
 Josh: That's a TV.
-Haze: What does it do?
-Josh: Shows moving images.
-Haze: Isn't that basically everything already?
+?: What does it do?
+Josh: It shows moving images.
+?: Isn't that everything already?
 Josh: "Everything" is not engaging enough, I guess.
 // Vira pro Josh, anda ate ele, e so entao fala. Mesmo destino do HazeHouse, entao ele
 // para exatamente onde estava quando entrou.
@@ -163,15 +162,15 @@ Josh: "Everything" is not engaging enough, I guess.
 <<movement HazeHouse freeze>>
 <<face HazeTwo Josh>>
 <<face Josh HazeTwo>>
-Haze: You're weird.
-Josh: I'm weird? Says the orange floating thing that appeared out of nowhere. Look— who are you anyway, man? Why are you even here?
-Haze: As I said, I don't know!
+?: You're weird.
+Josh: I'm weird? Says the orange floating thing that appeared out of nowhere. Look—who are you anyway, man? Why are you even here?
+?: As I said, I don't know!
 Josh: I'm guessing you don't have a name, also.
-Haze: Not that I can remember, no.
+?: Not that I can remember, no.
 Josh: Okay then. I'll call you Haze for now. Call me Josh.
-Haze: ...ok.
+Haze: ...Ok.
 Josh: So, you really have no idea how you wound up here?
-Haze: Nuh uh. I feel like I just woke up from a really long nap. Like, reeeeally long.
+Haze: Nuh-uh. I feel like I just woke up from a really long nap. Like, reeeeally long.
 Josh: Like, how long?
 Haze: Feels like it's been forever since I fell asleep, honestly.
 Josh: And you just suddenly fell asleep like that? For like, what, ages?
@@ -179,10 +178,8 @@ Haze: I'm trying to remember, but it's all too messy in my hea—
 Josh: Now what?
 Haze: Ugh!
 Josh: What?
-Haze: Felt... something.
-Josh: What?
-Haze: Pain. But it's gone now.
-Josh: ...Ok, good. I'm gonna watch some TV then.
+Haze: I don't know, felt... weird for a second. But it's gone now.
+Josh: Good. I'm gonna watch some TV then.
 Haze: I'm gonna go for a walk!
 // Um movimento so, direto pra porta — sai na diagonal, do mesmo jeito que entrou.
 <<movement HazeExit freeze>>
@@ -222,7 +219,7 @@ title: square_haze
 // dialogo abre. O lado inicial dele e o estado do OBJETO na cena (SpriteRenderer >
 // Flip X desmarcado = olhando pra direita), nao do script.
 <<face JoshTwo HazeThree>>
-Josh: HEY, wa— huff... huff... wait. Are you insane? Do I have to remind you you're not human?
+Josh: HEY, wa— huff... huff... wait. Are you insane? Do I have to remind you you're <i>not human</i>?
 // O Haze esta de costas pro Josh (olhando pra direita, estrada acima) e so se vira
 // quando comeca a responder.
 <<face HazeThree JoshTwo>>
@@ -231,7 +228,7 @@ Haze: Ta-dah!
 Josh: ...
 Haze: ...
 Josh: You know nothing happened right.
-Haze: Well, for you it didn't, but that's because you're the only one who can see me right now!
+Haze: Well, for <i>you</i> it didn't, but that's because you're the only one who can see me right now!
 Josh: What? Stop this nonsense dude. Come back to my house and stay there.
 <<enable Villager>>
 <<movement VillagerEnter freeze>>

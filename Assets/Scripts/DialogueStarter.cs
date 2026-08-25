@@ -33,6 +33,22 @@ public class DialogueStarter : MonoBehaviour
     // player reaches the spot himself and the dialogue catches him there.
     private void Start()
     {
+        // A trigger whose interaction covers SEVERAL characters gets a box that reaches all
+        // of them, recomputed here rather than trusted from the scene: the friends are moved
+        // to the elder's house by <<formation>> before this object is enabled, so the right
+        // box can only be known now. Re-centring on one member instead is what made walking
+        // up to Erika do nothing while Marcus worked.
+        if (InteractSettings.TryGroupBox(transform, out Vector2 groupOffset, out Vector2 groupSize))
+        {
+            BoxCollider2D groupBox = GetComponent<BoxCollider2D>();
+            if (groupBox != null)
+            {
+                groupBox.offset = groupOffset;
+                groupBox.size = groupSize;
+                return;
+            }
+        }
+
         if (transformthing == null) return;
 
         Collider2D trigger = GetComponent<Collider2D>();

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 // "How tall is this thing, actually?" — one answer, shared by everything that has to put
@@ -29,7 +30,7 @@ public static class VisibleArt
         // hand-placed interactable: an empty trigger object parked under an "Interactables"
         // folder, sitting on top of scenery that lives somewhere else entirely. The well is
         // exactly that. So look for the artwork it is standing on.
-        SpriteRenderer under = SmallestContaining(target.position);
+        SpriteRenderer under = UnderneathOf(target);
         if (under != null)
         {
             bounds = Of(under);
@@ -58,14 +59,38 @@ public static class VisibleArt
     //
     // Runs once when an interactable registers (i.e. when you walk into its trigger), not
     // per frame.
+    // Cached per trigger: the sweep below walks every sprite in the scene, and the prompt
+    // asks for this every frame while you stand next to something. Scenery does not move,
+    // so the answer for a given trigger does not change.
+    private static readonly Dictionary<Transform, SpriteRenderer> underneathCache = new Dictionary<Transform, SpriteRenderer>();
+
+    private static SpriteRenderer UnderneathOf(Transform target)
+    {
+        if (underneathCache.TryGetValue(target, out SpriteRenderer cached) && cached != null)
+            return cached;
+
+        SpriteRenderer found = SmallestContaining(target.position);
+        underneathCache[target] = found;
+        return found;
+    }
+
     private static SpriteRenderer SmallestContaining(Vector3 point)
     {
+        // The player is standing ON the doorway when he interacts with it, so he is a
+        // sprite containing that point — and a smaller one than the house. Without this he
+        // wins the search and the prompt rides his head instead of marking the door.
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        Transform player = playerObject != null ? playerObject.transform : null;
+
         SpriteRenderer best = null;
         float bestArea = float.MaxValue;
 
         foreach (SpriteRenderer sprite in Object.FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None))
         {
             if (sprite == null || !sprite.enabled || sprite.sprite == null)
+                continue;
+
+            if (player != null && sprite.transform.IsChildOf(player))
                 continue;
 
             Bounds b = sprite.bounds;
