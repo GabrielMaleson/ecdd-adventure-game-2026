@@ -577,7 +577,7 @@ GameObject:
   - component: {fileID: 40897109}
   m_Layer: 0
   m_Name: StairsTeleporter
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -38090,7 +38090,7 @@ Transform:
   m_GameObject: {fileID: 330530880}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -105.6, y: 147.91, z: -10}
+  m_LocalPosition: {x: -1.7, y: 29.1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -43133,7 +43133,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2, y: 2.223991}
+  m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
 --- !u!114 &545246202
 MonoBehaviour:
@@ -52233,7 +52233,7 @@ Transform:
   m_GameObject: {fileID: 985129697}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -105.6, y: 147.91, z: -10}
+  m_LocalPosition: {x: -1.7, y: 29.1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -52596,7 +52596,7 @@ GameObject:
   - component: {fileID: 998266549}
   m_Layer: 0
   m_Name: FromElderSecondFloor
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -55638,7 +55638,7 @@ GameObject:
   - component: {fileID: 1136455803}
   m_Layer: 0
   m_Name: FromElderFirstFloor
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -174071,7 +174071,7 @@ GameObject:
   - component: {fileID: 1900000141}
   m_Layer: 0
   m_Name: EnterElderHouse
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -174102,7 +174102,7 @@ GameObject:
   - component: {fileID: 1900000143}
   m_Layer: 0
   m_Name: ElderHouseExit
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -174136,7 +174136,7 @@ GameObject:
   - component: {fileID: 1900000152}
   m_Layer: 0
   m_Name: ToElderHouse
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -174239,7 +174239,7 @@ GameObject:
   - component: {fileID: 1900000151}
   m_Layer: 0
   m_Name: ExitFromElderHouse
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -174358,7 +174358,7 @@ GameObject:
   - component: {fileID: 1900000161}
   m_Layer: 0
   m_Name: ElderHouse
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -176359,7 +176359,7 @@ GameObject:
   - component: {fileID: 2014358419}
   m_Layer: 0
   m_Name: StairsTeleporter
-  m_TagString: Untagged
+  m_TagString: Teleport
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -180898,11 +180898,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4474648276818384332, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -105.6
+      value: -1.7
       objectReference: {fileID: 0}
     - target: {fileID: 4474648276818384332, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 147.91
+      value: 29.1
       objectReference: {fileID: 0}
     - target: {fileID: 4474648276818384332, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
       propertyPath: m_LocalPosition.z
@@ -180936,6 +180936,46 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5295424879000798412, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 13.018828
+      objectReference: {fileID: 0}
+    - target: {fileID: 5295424879000798412, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 10.647104
+      objectReference: {fileID: 0}
+    - target: {fileID: 5295424879000798412, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.0172
+      objectReference: {fileID: 0}
+    - target: {fileID: 5295424879000798412, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.0664
+      objectReference: {fileID: 0}
+    - target: {fileID: 6799918791915225158, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+      propertyPath: m_Size.x
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6799918791915225158, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+      propertyPath: m_Size.y
+      value: 1.78
+      objectReference: {fileID: 0}
+    - target: {fileID: 6799918791915225158, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6799918791915225158, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7496573320087887984, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7496573320087887984, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+      propertyPath: m_TagString
+      value: Mist
+      objectReference: {fileID: 0}
     - target: {fileID: 8401506921409497735, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
       propertyPath: m_Name
       value: Player
@@ -180943,13 +180983,50 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7496573320087887984, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7142182942047287635}
   m_SourcePrefab: {fileID: 100100000, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
 --- !u!1 &7142182942047287633 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1484419885966995054, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
   m_PrefabInstance: {fileID: 7142182942047287632}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7142182942047287634 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7496573320087887984, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+  m_PrefabInstance: {fileID: 7142182942047287632}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7142182942047287635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7142182942047287634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c018823221c0b14ab713a938016ff96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MistDirector
+  stages:
+  - alpha: 0.15
+    activeLayers: 1
+  - alpha: 0.3
+    activeLayers: 2
+  - alpha: 0.5
+    activeLayers: 2
+  - alpha: 0.7
+    activeLayers: 3
+  fogSprite: {fileID: -1766006069671443837, guid: bcbd6760be446f04a84413d1a88f19e1, type: 3}
+  fogAnimator: {fileID: 9100000, guid: ecc57602f95714f4aae165b71174a11a, type: 2}
+  layerCount: 3
+  layerScale: 30
+  sortingOrder: 500
+  fadeSpeed: 0.3
+  driftRange: 2
+  driftFrequency: 0.15
 --- !u!1001 &7293496846679469991
 PrefabInstance:
   m_ObjectHideFlags: 0

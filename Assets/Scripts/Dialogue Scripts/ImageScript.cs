@@ -612,5 +612,14 @@ public class DialogueManager : MonoBehaviour
         Cutscener.TriggerFace(objectName, towards);
     }
 
+    // Advances the story mist to stage N — e.g. <<mist 2>>. Stages only ever go up
+    // (calling a lower number than already reached is a no-op); see MistDirector for
+    // what each stage actually looks like.
+    [YarnCommand("mist")]
+    public static void Mist(int stage)
+    {
+        MistDirector.Trigger(stage);
+    }
+
     // <<wait seconds>> é um comando nativo do Yarn Spinner — não precisa de registro manual.
 }

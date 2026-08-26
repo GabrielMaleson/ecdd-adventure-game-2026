@@ -11,6 +11,7 @@ TagManager:
   - Haze
   - FakeHaze
   - Teleport
+  - Mist
   layers:
   - Default
   - TransparentFX
