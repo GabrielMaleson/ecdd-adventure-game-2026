@@ -78,9 +78,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 329423151
-  m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingLayerID: 90091165
+  m_SortingLayer: 1
+  m_SortingOrder: -206
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2112968277116804065, guid: 398fa7c24fbc5584b81e7b39ef04e981, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -247,8 +247,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 6
-  m_fontSizeBase: 6
+  m_fontSize: 3
+  m_fontSizeBase: 3
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -333,6 +333,68 @@ Transform:
   - {fileID: 7200000000000000001}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!50 &7200000000000000091
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9029520266342921181}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 1
+  m_UseAutoMass: 0
+  m_Mass: 0.0001
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 4
+--- !u!114 &7200000000000000090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9029520266342921181}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecdd7e5701a54c0d9b3f0a2c4d8e6f30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NpcFollow
+  followerName: Erika
+  target: {fileID: 0}
+  mode: 0
+  followDistance: 1.5
+  offset: {x: -1, y: -0.6}
+  arriveThreshold: 0.02
+  animator: {fileID: 0}
+  visual: {fileID: 0}
+--- !u!114 &7200000000000000092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9029520266342921181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecdd7e5701a54c0d9b3f0a2c4d8e6f31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterFacing
+  sidesDrawnSeparately: 0
+  animator: {fileID: 0}
+  visual: {fileID: 0}
 --- !u!114 &7200000000000000000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -358,8 +420,8 @@ MonoBehaviour:
   scaleDurationWithLength: 1
   secondsPerCharacter: 0.045
   maxHoldDuration: 6
-  floatDistance: 0.125
-  floatFadeDuration: 1
+  floatDistance: 0.6
+  floatFadeDuration: 0.5
 --- !u!61 &6925323459601285038
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -406,59 +468,3 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.53, y: 0.3310415}
   m_EdgeRadius: 0
---- !u!114 &7200000000000000090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9029520266342921181}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecdd7e5701a54c0d9b3f0a2c4d8e6f30, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NpcFollow
-  followerName: Erika
-  target: {fileID: 0}
-  mode: 0
-  followDistance: 1.5
-  offset: {x: -1, y: -0.6}
-  arriveThreshold: 0.02
-  animator: {fileID: 0}
-  visual: {fileID: 0}
---- !u!50 &7200000000000000091
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9029520266342921181}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 1
-  m_UseAutoMass: 0
-  m_Mass: 0.0001
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 1
-  m_Constraints: 4
---- !u!114 &7200000000000000092
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9029520266342921181}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecdd7e5701a54c0d9b3f0a2c4d8e6f31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CharacterFacing
-  sidesDrawnSeparately: 0
-  animator: {fileID: 0}
-  visual: {fileID: 0}

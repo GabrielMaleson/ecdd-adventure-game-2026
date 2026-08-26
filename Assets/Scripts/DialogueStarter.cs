@@ -68,6 +68,24 @@ public class DialogueStarter : MonoBehaviour
 
         playerInRange = true;
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        // "Cheguei perto e nao apareceu nada" tem quatro causas que de fora sao iguais:
+        // Is Click NPC desmarcado (dispara ao pisar, sem prompt), ja jogado com Once Time,
+        // sem no de dialogo escrito, ou sem InteractButton na cena. Cada uma se identifica.
+        if (!IsClickNPC)
+            Debug.Log($"[DialogueStarter] '{name}': entrei no trigger, mas IS CLICK NPC esta " +
+                      "DESMARCADO — ele dispara ao pisar, sem prompt de E.", this);
+        else if (OnceTime && hasPlayed)
+            Debug.Log($"[DialogueStarter] '{name}': ja foi jogado uma vez (Once Time).", this);
+        else if (string.IsNullOrEmpty(Dialogue))
+            Debug.LogWarning($"[DialogueStarter] '{name}': o campo Dialogue esta VAZIO — nao " +
+                             "ha no de .yarn para disparar.", this);
+        else if (InteractButton.Instance == null)
+            Debug.LogWarning($"[DialogueStarter] '{name}': nao ha InteractButton na cena.", this);
+        else
+            Debug.Log($"[DialogueStarter] '{name}': prompt oferecido para o no '{Dialogue}'.", this);
+#endif
+
         if (OnceTime && hasPlayed)
             return;
 

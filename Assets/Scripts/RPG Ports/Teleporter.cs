@@ -127,6 +127,17 @@ public class TeleporterScript : MonoBehaviour
 
         GameObject target = player;
 
+#if UNITY_EDITOR
+        // Quem disparou, de onde, e para onde. Um teleporte inesperado e impossivel de
+        // diagnosticar de fora do jogo: a unica pergunta que importa e QUAL portal pegou o
+        // jogador, e so ele mesmo pode responder. Teleporte e evento raro, entao isto nao
+        // enche o Console.
+        Vector3 from = target != null ? target.transform.position : transform.position;
+        Debug.Log($"[Teleporte] '{name}' disparou. Jogador em {from} -> '{destination.name}' " +
+                  $"em {destination.position}. Gatilho deste portal esta em {transform.position}, " +
+                  $"modo={(teleportOnTrigger ? "automatico" : "prompt " + interactLabel)}.", this);
+#endif
+
         if (useScreenTransition && ScreenTransition.Instance != null)
             StartCoroutine(TransitionThenTeleport(target));
         else
@@ -151,6 +162,14 @@ public class TeleporterScript : MonoBehaviour
 
     private void StartCooldown()
     {
+        // So o portal AUTOMATICO precisa de cooldown. Ele dispara ao encostar, entao sem uma
+        // janela morta ele te devolveria no instante em que voce aterrissa nele.
+        //
+        // No portal de E o gate ja e o aperto do jogador — o cooldown so criava dois segundos
+        // em que o prompt some. Numa escada de ida e volta rapida isso aparece como "as vezes
+        // funciona, as vezes nao", porque depende de voce voltar antes ou depois dos 2s.
+        if (!teleportOnTrigger) return;
+
         isOnCooldown = true;
         cooldownTimer = teleportCooldown;
     }
@@ -193,6 +212,15 @@ public class TeleporterScript : MonoBehaviour
                 obj.transform.position = destination.position;
         }
 
+        // Quem SEGUE o viajante viaja com ele, sem precisar ser arrastado em lista nenhuma.
+        //
+        // A lista acima e manual e por teleporte: serve para um extra especifico, e falha
+        // exatamente onde mais importa — a Haze e ligada e desligada ao longo do jogo, e
+        // cada porta nova nasceria esquecendo dela. Aqui a regra e uma so: se o seu lider e
+        // quem acabou de atravessar, voce atravessou junto.
+        if (target != null)
+            BringFollowers(target.transform, destination.position);
+
         if (teleportEffect != null)
             Destroy(Instantiate(teleportEffect, destination.position, Quaternion.identity), effectDuration);
 
@@ -208,6 +236,33 @@ public class TeleporterScript : MonoBehaviour
         InteractButton.Instance?.ClearInteraction(this);
     }
 
+    // Fantasma e companheiros, os dois sistemas de seguir que existem no projeto.
+    private static void BringFollowers(Transform leader, Vector3 arrival)
+    {
+        foreach (FragmentFollow ghost in FindObjectsByType<FragmentFollow>(FindObjectsSortMode.None))
+        {
+            if (ghost == null || ghost.player != leader) continue;
+
+            // AttachTo com snap poe a Haze ao lado dele ja no offset dela e zera a suavizacao.
+            // Sem zerar, ela tentaria "caminhar" a distancia inteira do teleporte, limitada
+            // pelo maxFollowSpeed — atravessando o mapa a pe depois de cada porta.
+            ghost.AttachTo(leader, snap: true);
+        }
+
+        foreach (NpcFollow companion in FindObjectsByType<NpcFollow>(FindObjectsSortMode.None))
+        {
+            if (companion == null || !companion.enabled || companion.target != leader) continue;
+
+            Rigidbody2D rb = companion.GetComponent<Rigidbody2D>();
+            if (rb != null) rb.position = arrival;
+            companion.transform.position = arrival;
+
+            // A trilha guardada e do outro lado da porta. Andar por ela faria o companheiro
+            // refazer um caminho que nao comeca mais onde ele esta.
+            companion.Reseed();
+        }
+    }
+
     private static void ArmArrivalCooldown(Vector3 arrival, Vector3 bodyOffset, Vector3 bodySize)
     {
         // Where the traveller's BODY ends up, not where its pivot does. A character's
@@ -219,6 +274,14 @@ public class TeleporterScript : MonoBehaviour
         foreach (TeleporterScript other in FindObjectsByType<TeleporterScript>(FindObjectsSortMode.None))
         {
             if (other == null) continue;
+
+            // Portal de E nao precisa ser suprimido: ele nao dispara sozinho, so responde a
+            // um aperto deliberado. Suprimir so escondia o prompt de quem acabou de chegar —
+            // era preciso sair do gatilho e voltar para poder subir ou descer de novo.
+            //
+            // A supressao existe para o portal AUTOMATICO, que dispara ao encostar e por isso
+            // devolveria o jogador na hora em que ele aterrissa dentro dele. So esse caso.
+            if (!other.teleportOnTrigger) continue;
 
             foreach (Collider2D trigger in other.GetComponents<Collider2D>())
             {
@@ -239,17 +302,61 @@ public class TeleporterScript : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        if (destination == null)
-            return;
+    // A AREA, e nao um ponto.
+    //
+    // Antes isto desenhava duas bolinhas de raio fixo 0.5 — um numero inventado que nao tem
+    // relacao nenhuma com o collider de verdade. Posicionar um teleporte assim e adivinhar:
+    // a bolinha diz uma coisa e a caixa que realmente dispara diz outra. Agora o gizmo mostra
+    // o collider EXATO, sempre visivel, e a distancia ate a marca de chegada.
+    private void OnDrawGizmos() => DrawGizmo(false);
+    private void OnDrawGizmosSelected() => DrawGizmo(true);
 
+    private void DrawGizmo(bool selected)
+    {
+        Collider2D col = GetComponent<Collider2D>();
+
+        // Verde = pisou e vai. Amarelo = precisa apertar E. A cor diz o modo sem abrir o
+        // Inspector, que e o que se quer ao olhar seis teleportes na cena de uma vez.
+        Color c = teleportOnTrigger ? new Color(0.2f, 1f, 0.3f) : new Color(1f, 0.85f, 0.2f);
+        Gizmos.color = selected ? c : new Color(c.r, c.g, c.b, 0.35f);
+
+        if (col != null)
+        {
+            Gizmos.DrawWireCube(col.bounds.center, col.bounds.size);
+
+            if (selected)
+            {
+                Gizmos.color = new Color(c.r, c.g, c.b, 0.15f);
+                Gizmos.DrawCube(col.bounds.center, col.bounds.size);
+            }
+        }
+        else
+        {
+            // Sem collider ele NUNCA dispara. Vermelho para isso saltar aos olhos na cena em
+            // vez de virar meia hora de teste.
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, 0.4f);
+        }
+
+        if (destination == null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, 0.25f);
+            return;
+        }
+
+        if (!selected) return;
+
+        // A linha ate a chegada, e a marca dela. Se a marca cair DENTRO da caixa de outro
+        // teleporte, e dali que vem o "me teleporta sozinho sem parar" — ver a linha e as
+        // duas caixas juntas na cena e o que torna isso obvio.
         Gizmos.color = Color.cyan;
         Gizmos.DrawLine(transform.position, destination.position);
 
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, 0.5f);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(destination.position, 0.5f);
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireSphere(destination.position, 0.35f);
+        Gizmos.DrawLine(destination.position + Vector3.left * 0.5f, destination.position + Vector3.right * 0.5f);
+        Gizmos.DrawLine(destination.position + Vector3.down * 0.5f, destination.position + Vector3.up * 0.5f);
     }
 }
+

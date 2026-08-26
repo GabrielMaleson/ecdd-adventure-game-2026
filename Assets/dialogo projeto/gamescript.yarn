@@ -34,7 +34,7 @@ title: square_marcus_erika
 		Erika: So, what are we doing today?
 	<<endif>>
 	Josh: I'm heading home I guess.
-	Marcus: Come on Joshy, you know my time is due in this village.
+	Marcus: Come on Joshy, you know my time is due here.
 	Josh: <i>He's really leaving...</i>
 	Erika: Don't be a shut in for once, Josh.
 	Josh: Ok, ok...I'll just relax for a bit. Meet you here in an hour-ish.
@@ -274,32 +274,33 @@ title: elders_house_outside
 Erika: Hey slowpoke.
 Marcus: Joshy!
 Josh: Hey guys, what happened?
-Erika: Basically, Elder Amos disappeared. People are saying they saw him go into the forest, speaking nonsense.
+Erika: Basically, Amos disappeared. People are saying they saw him go into the forest.
 Josh: Into the forest where, exactly?
-Marcus: No one saw exactly, spot was too misty, apparently.
-Haze: ...
-Marcus: They are scared, afraid to enter his house. Some saying it's cursed.
+Marcus: No one saw, visibility was poor.
+Erika: This fucking mist.
+Marcus: They are scared, afraid to enter his house. Saying it's cursed.
 Josh: What? No one went looking for him?
-Erika: They did, but didn't go very far.
+Erika: They did, but not very far.
 Haze: <i>Josh, I feel like we should go in.</i>
 Josh: <i>Are you really inside my mind, man?</i>
-Haze: <i>Don't ask me how. Let's go in.</i>
-Josh: <i>Ok, why?</i>
-Haze: <i>Just trust me on this one, I feel like there's something there worth finding.</i>
-Josh: <i>...Ok.</i>
-Josh: Ok, I guess I'm going to check his place, then.
+Haze: <i>Yup.</i>
+Josh: <i>Jesus Christ dude, I just wanted to watch some TV...</i>
+Josh: </i>Ugh, ok, why should we go in?</i>
+Haze: <i>Just trust me on this one.</i>
+Josh: <i>Fine, whatever.</i>
+Josh: Ok, I guess I'm going to check his place.
 Erika: What, why?
-Marcus: What could be inside?
-Josh: I don't know, man. You two have a better idea?
+Marcus: What could be inside there?
+Josh: I don't know, man. You two have something better to do?
 Erika: Why are you so proactive out of nowhere?
 Marcus: Who are you and where is our friend Josh?
-Haze: <i>Haha!</i>
+Haze: <i>Ha!</i>
 Josh: Funny. 'Kay, I'm going in.
 Erika: I'm going in then, also.
 Marcus: Yeah, me too.
-Haze: <i>Would be better if we went by ourselves.</i>
-Josh: <i>Why? It doesn't matter anyway. I won't stop my friends.</i>
-Haze: <i>...Ok.</i>
+Haze: <i>Wouldn't it be better if we went by ourselves?</i>
+Josh: <i>Why? It doesn't matter anyway. I'm not stopping them.</i>
+Haze: <i>...Okay.</i>
 Josh: Let's go, then.
 ===
 
@@ -318,40 +319,41 @@ Haze: Books! Let's see here... "Suddenly, he sits up and tugs my panties off and
 Josh: Ok, ok, that's enough.
 ===
 
+title: elders_house_bookshelf_two
+---
+Josh: Let's see if there's anything better here... "Desire pools dark and deadly in my—" Yep. No. Old man's a pervert.
+Haze: What's a pervert?
+Josh: ...
+===
+
 title: elders_house_wardrobe
 ---
 Haze: Anything there?
-Josh: Nope, it's a mess, I couldn't find anything useful if I really wanted to.
+Josh: Nope, it's a mess, couldn't find anything useful if I really wanted to.
 ===
 
 title: elders_house_writing_table
 ---
 Haze: What are these? Notes?
 Josh: Let's see...
-Josh: It's been calling to me, calling to me sometime now, calling to me... WHAT SHOULD I DO WHAT SHOULD I DO HELP HELP HELP I NEED TO GO THERE, I NEED TO FIND IT, I NEED TO GET IT IT'S THE ONLY WAY ONLY I CAN DO IT... only I know about it.
-Josh: Holy fuck, he was really losing it. What is he talking about?
+Elder Amos: It's been calling to me, calling to me for some time now, calling to me... WHAT SHOULD I DO WHAT SHOULD I DO HELP HELP HELP I NEED TO GO THERE, I NEED TO FIND IT, I NEED TO GET IT IT'S THE ONLY WAY ONLY I CAN DO IT... only I know about it.
+Josh: Damn, he was really losing it. What is he talking about?
 Haze: There's more down there.
-Josh: It's a poem... I can barely read it, must be ages-old.
-Josh: North you must go
-To get what you need
-Through the dark forest path
-A new site you shall see
-Solve the riddles therein
-Before time runs out
-Or else for the land
-Ruin will befall
+Josh: It's a poem... I can barely read it, must be ages old.
+Josh: "North you must go / To get what you need / Through the dark forest path / A new site you shall see"
+Josh: "Solve the riddles therein / Before time runs out / Or else for the land / Ruin will befall"
 Josh: Huh... Riddles? What is this, a game? Why was this geezer fooling around with this?
 Haze: I guess we need to go North and find out, no?
-Josh: I don't know. Do I need to find anything out? As far as I know a senile old man got lost in the forest. The only really weird thing here is still you.
-Josh: Which leads me to think... do you have anything to do with all this?
-Haze: ...I might, but I'm not sure. I really feel like we need to follow this trail.
-Josh: Ok, then, let's check it out. I'll talk to Erika and Mark.
-Haze: Is it wise to tell them? It might blow my cover.
+Josh: Do I really need to find anything out? As far as I know a senile old man got lost in the woods. The only really weird thing here is still you.
+Josh: Which leads me to ask... what have anything to do with all this?
+Haze: ...I'm not sure. I really feel like we need to follow this trail.
+Josh: Ok then, let's check it out. I'll talk to Erika and Marcus.
+Haze: Should you really tell them? They might notice me.
 Josh: Well, they are my best—actually, only, friends. I'd rather be close to them if anything's happening around here. Besides, they would like you, I think.
-Haze: Would they?! Ok then, let's go!
+Haze: Would they? Let's go then!
 Josh: Don't get too excited, an old man just disappeared.
 Haze: Oh, yes, of course. That's so sad, I'm sorry.
-Josh: Nahh I'm just messing with you man.
+Josh: Naaah I'm just messing with you man.
 Haze: ...
 ===
 

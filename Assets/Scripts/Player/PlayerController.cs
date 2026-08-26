@@ -137,6 +137,19 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        // A posicao do Josh e decidida SO por MovePosition. Qualquer velocidade no corpo e
+        // sobra de colisao, e tem que morrer aqui.
+        //
+        // Sem isto ele era empurrado e saia deslizando sem parar: um NPC Kinematic empurrando
+        // um corpo Dynamic tem massa efetiva INFINITA na fisica 2D — a massa e o drag do Josh
+        // nao entram na conta, por isso subir a massa dele para 50 nao mudou nada. O empurrao
+        // vira velocidade no corpo, e MovePosition nao zera velocidade: ele reposiciona por
+        // cima, e o que sobrou continua empurrando no quadro seguinte, para sempre.
+        //
+        // Fica FORA do InputEnabled de proposito: durante uma cutscene o jogador nao tem
+        // controle, e e exatamente quando um NPC andando pode encostar nele e manda-lo embora.
+        rb.linearVelocity = Vector2.zero;
+
         if (!InputEnabled) return;
 
         float step = (moveSpeed / PPU) * Time.fixedDeltaTime;

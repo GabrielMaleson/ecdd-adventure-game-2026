@@ -13,7 +13,7 @@ public enum BarkPriority
 }
 
 // Floating world-space text above a character. Filled three ways:
-//   - idle chatter on a timer (randomLines, or a BarkSet asset)
+//   - idle chatter on a timer (a BarkSet asset)
 //   - a specific line pushed in by BarkDirector / BarkTrigger / a UnityEvent
 //   - a line of a Yarn conversation, routed here by BarkPresenter
 // Whichever it is, the line holds, then floats up and fades.
@@ -26,14 +26,27 @@ public class CharacterDialogue : MonoBehaviour
 
     [Header("Text")]
     [Tooltip("World-space TextMeshPro positioned above the character. Assign in the Inspector.")]
-    [SerializeField] private TextMeshPro dialogueText;
+    public TextMeshPro dialogueText;
 
-    [Header("Random Dialogue")]
-    [Tooltip("Idle lines typed straight onto this character. Used when Bark Set is empty, " +
-             "so existing prefabs keep working untouched.")]
-    public List<string> randomLines = new List<string>();
+    [Tooltip("Somado a altura global do TextStyle, so para ESTE objeto. Existe porque a "
+           + "altura global e um numero ABSOLUTO somado ao topo da arte, e as artes tem "
+           + "alturas muito diferentes: um personagem em escala 4 tem varios units (com "
+           + "espaco vazio acima da cabeca), um poco tem dois. O valor que acerta um erra "
+           + "o outro. Use isto para a excecao, sem mexer no global.")]
+    public float heightOffset;
 
-    [Tooltip("Preferred source of idle lines. When assigned, Random Lines is ignored.")]
+    [Header("Estilo")]
+    [Tooltip("Ligado: fonte, cor, tamanho e posicao vem do TextStyle global "
+           + "(Assets/Resources/TextStyle.asset). Desligado: este objeto ignora o global "
+           + "e mantem o que estiver escrito nele — util para uma placa ou uma fala que "
+           + "precisa ser diferente de todo o resto. Os dois deslocamentos valem nos dois casos.")]
+    public bool useUniversalSettings = true;
+
+    [Tooltip("Deslocamento HORIZONTAL so deste objeto, somado ao global. Positivo vai para a direita.")]
+    public float offsetX;
+
+    [Header("Idle Dialogue")]
+    [Tooltip("De onde saem as falas de conversa fiada deste personagem.")]
     public BarkSet barkSet;
 
     public bool autoPlayRandomDialogue = true;
@@ -56,8 +69,8 @@ public class CharacterDialogue : MonoBehaviour
     public float maxHoldDuration = 6f;
 
     [Header("Float & Fade")]
-    public float floatDistance = 0.5f;
-    public float floatFadeDuration = 1f;
+    [Tooltip("Duracao do fade out, em segundos. A fala nao se move — so apaga no lugar.")]
+    public float fadeOutDuration = 0.15f;
 
     private Vector3 originalLocalPosition;
     private Color originalColor;
@@ -78,7 +91,7 @@ public class CharacterDialogue : MonoBehaviour
         if (dialogueText == null)
             dialogueText = TextStyle.CreateWorldLabel(transform, name + "Bark");
         else
-            TextStyle.PlaceWorldLabel(transform, dialogueText);
+            TextStyle.PlaceWorldLabel(transform, dialogueText, offsetX, heightOffset);
 
         ApplyTextStyle();
 
@@ -95,15 +108,74 @@ public class CharacterDialogue : MonoBehaviour
     // the interact prompt and everything else without being tuned per character.
     public void ApplyTextStyle()
     {
-        TextStyle.Apply(dialogueText, TextStyle.Role.WorldText);
+        // Desligado, o objeto e deixado inteiramente em paz: fonte, cor e tamanho ficam
+        // como foram autorados. So os dois deslocamentos continuam valendo.
+        if (useUniversalSettings)
+            TextStyle.Apply(dialogueText, TextStyle.Role.WorldText);
+
+        // A ALTURA tambem, e nao so fonte/cor/tamanho. Sem esta linha, mexer em
+        // World Text Height no asset nao movia nada: a altura so era aplicada no Awake, ou
+        // seja, so ao entrar em Play — no editor o campo parecia morto.
+        if (dialogueText != null)
+        {
+            TextStyle.PlaceWorldLabel(transform, dialogueText, offsetX, heightOffset);
+
+            // A animacao sobe a partir de uma posicao de repouso guardada no Awake. Mudar a
+            // altura sem atualizar essa referencia faria a fala voltar para a altura velha
+            // no primeiro float. So enquanto ninguem esta falando, para nao teleportar uma
+            // fala no meio da subida.
+            if (displayRoutine == null)
+                originalLocalPosition = dialogueText.transform.localPosition;
+        }
 
         TextStyle style = TextStyle.Current;
-        if (style == null) return;
+        if (style == null || !useUniversalSettings) return;
 
-        if (style.holdDuration > 0f)      holdDuration      = style.holdDuration;
-        if (style.floatDistance > 0f)     floatDistance     = style.floatDistance;
-        if (style.floatFadeDuration > 0f) floatFadeDuration = style.floatFadeDuration;
+        if (style.holdDuration > 0f)    holdDuration    = style.holdDuration;
+        if (style.fadeOutDuration > 0f) fadeOutDuration = style.fadeOutDuration;
     }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    // F4: a medida da arte de TODO mundo que fala, lado a lado, com o balao de cada um.
+    // Existe porque "a altura nao bate entre dois personagens" so se resolve comparando os
+    // numeros dos dois no MESMO instante — separado, cada um parece plausivel.
+    private void Update()
+    {
+        var kb = UnityEngine.InputSystem.Keyboard.current;
+        if (kb == null || !kb[UnityEngine.InputSystem.Key.F4].wasPressedThisFrame) return;
+        if (BarkDirector.Instance == null || !ReferenceEquals(this, FirstSpeaker())) return;
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"[Bark F4] altura global={TextStyle.Current?.worldTextHeight}");
+
+        foreach (CharacterDialogue c in FindObjectsByType<CharacterDialogue>(
+                     FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            string art = VisibleArt.TryGetBounds(c.transform, out Bounds b)
+                ? $"arte y[{b.min.y:F2}..{b.max.y:F2}] (altura {b.size.y:F2})"
+                : "SEM arte";
+
+            string lbl = c.dialogueText != null
+                ? $"balao world={c.dialogueText.transform.position.y:F2} local={c.dialogueText.transform.localPosition.y:F2}"
+                : "sem balao";
+
+            sb.AppendLine($"   {c.barkId,-8} pivo y={c.transform.position.y:F2}  {art}  {lbl}");
+
+            foreach (SpriteRenderer sr in c.GetComponentsInChildren<SpriteRenderer>(true))
+                if (sr.sprite != null)
+                    sb.AppendLine($"        sprite '{sr.name}' y[{sr.bounds.min.y:F2}..{sr.bounds.max.y:F2}] enabled={sr.enabled}");
+        }
+
+        Debug.Log(sb.ToString());
+    }
+
+    private static CharacterDialogue FirstSpeaker()
+    {
+        CharacterDialogue[] all = FindObjectsByType<CharacterDialogue>(
+            FindObjectsInactive.Include, FindObjectsSortMode.None);
+        return all.Length > 0 ? all[0] : null;
+    }
+#endif
 
     private void OnEnable()
     {
@@ -134,13 +206,55 @@ public class CharacterDialogue : MonoBehaviour
     // BarkPresenter uses the return value to know how long to wait.
     public float Show(string text, BarkPriority priority)
     {
-        if (!enabled || !gameObject.activeInHierarchy || dialogueText == null || string.IsNullOrEmpty(text))
-            return 0f;
+        if (string.IsNullOrEmpty(text)) return 0f;
 
-        // A line already on screen is only displaced by something more important.
-        // Equal priority is dropped rather than queued: a queue would hold stale lines
-        // that arrive long after the moment that asked for them.
-        if (displayRoutine != null && priority <= currentPriority)
+        // Cada recusa daqui era um return 0 mudo: a fala simplesmente nao aparecia e nao
+        // havia uma linha no Console para explicar. Agora cada motivo se identifica, porque
+        // "o bark nao aparece" sem causa nomeada custa uma sessao inteira de tentativa e erro.
+        if (!enabled)
+        {
+            Debug.LogWarning($"Bark de '{name}' ignorado: o componente CharacterDialogue esta " +
+                             "DESMARCADO no Inspector.", this);
+            return 0f;
+        }
+
+        if (!gameObject.activeInHierarchy)
+        {
+            Debug.LogWarning($"Bark de '{name}' ignorado: o objeto (ou algum pai dele) esta " +
+                             "desativado na cena.", this);
+            return 0f;
+        }
+
+        // Sem balao nao ha onde escrever. Em vez de desistir calado, cria um agora — e a
+        // mesma coisa que o Awake faria com o campo vazio. Isto elimina a falha em vez de
+        // so denuncia-la.
+        if (dialogueText == null)
+        {
+            dialogueText = TextStyle.CreateWorldLabel(transform, name + "Bark");
+
+            if (dialogueText == null)
+            {
+                Debug.LogWarning($"Bark de '{name}' ignorado: o campo Dialogue Text esta vazio " +
+                                 "e nao foi possivel criar um balao (falta o asset TextStyle " +
+                                 "em Assets/Resources).", this);
+                return 0f;
+            }
+
+            originalLocalPosition = dialogueText.transform.localPosition;
+            originalColor = dialogueText.color;
+            dialogueText.gameObject.SetActive(false);
+        }
+
+        // Fala nova SUBSTITUI a que esta na tela, salvo quando e menos importante que ela.
+        //
+        // Antes era `<=`: prioridade IGUAL tambem era descartada. Isso quebrava o caso mais
+        // comum que existe — apertar E duas vezes seguidas no mesmo personagem. A segunda
+        // linha chegava como Scripted, encontrava uma Scripted ainda na tela, e sumia sem
+        // dizer nada. Continuar mudo quando o jogador acabou de pedir a proxima fala e o
+        // oposto do que ele pediu.
+        //
+        // Menos importante continua sendo descartado: conversa fiada nunca atropela roteiro.
+        if (displayRoutine != null && priority < currentPriority)
             return 0f;
 
         if (displayRoutine != null)
@@ -148,12 +262,38 @@ public class CharacterDialogue : MonoBehaviour
 
         currentPriority = priority;
         float duration = DurationFor(text);
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        // "A fala nao aparece" tem varias causas que de fora sao identicas: balao fora da
+        // tela, alpha zero, fonte minuscula, camada errada. Uma linha com os numeros reais
+        // separa todas de uma vez.
+        Renderer r = dialogueText.GetComponent<Renderer>();
+
+        // A MEDIDA de onde o balao deveria estar, e nao so onde ele esta: a altura e somada
+        // ao topo da arte de cada um, entao para saber por que dois personagens nao batem e
+        // preciso ver o topo da arte dos dois lado a lado.
+        string art = VisibleArt.TryGetBounds(transform, out Bounds ab)
+            ? $"arte y[{ab.min.y:F2}..{ab.max.y:F2}] altura={ab.size.y:F2} centro.x={ab.center.x:F2}"
+            : "SEM arte medivel";
+        Debug.Log($"[Bark] '{barkId}' vai dizer \"{text}\" por {duration:F2}s. " +
+                  $"Balao em {dialogueText.transform.position} (escala {dialogueText.transform.lossyScale}), " +
+                  $"fontSize={dialogueText.fontSize}, alpha={dialogueText.color.a}, " +
+                  $"camada={(r != null ? UnityEngine.SortingLayer.IDToName(r.sortingLayerID) : "?")}, " +
+                  $"order={(r != null ? r.sortingOrder : 0)}, ativo={dialogueText.gameObject.activeSelf}.\n" +
+                  $"      dono '{name}' em {transform.position}, {art}. " +
+                  $"Altura global={(TextStyle.Current != null ? TextStyle.Current.worldTextHeight : 0f)}, offset local={heightOffset}.", this);
+#endif
         displayRoutine = StartCoroutine(DisplayRoutine(text, duration));
         return duration;
     }
 
     public void HideDialogue()
     {
+        // Uma fala de roteiro em andamento nunca e apagada por quem so queria parar a
+        // conversa fiada. Sem esta guarda, ligar o idle num personagem apaga o bark que
+        // acabou de ser pedido.
+        if (displayRoutine != null && currentPriority >= BarkPriority.Scripted) return;
+
         if (displayRoutine != null)
         {
             StopCoroutine(displayRoutine);
@@ -173,7 +313,7 @@ public class CharacterDialogue : MonoBehaviour
         if (scaleDurationWithLength)
             hold = Mathf.Clamp(text.Length * secondsPerCharacter, holdDuration, maxHoldDuration);
 
-        return hold + floatFadeDuration;
+        return hold + fadeOutDuration;
     }
 
     // ---------------------------------------------------------------- idle chatter
@@ -181,6 +321,14 @@ public class CharacterDialogue : MonoBehaviour
     public void StartRandomDialogue()
     {
         if (!isActiveAndEnabled)
+            return;
+
+        // Sem BarkSet nao ha o que dizer, e a rotina so faz mal: ela acorda, nao acha linha
+        // nenhuma, e esconde o balao — por cima da fala de roteiro que acabou de ser pedida.
+        // Foi assim que a primeira fala do Josh sumiu. Um personagem que ganha o componente
+        // no Inspector nasce com este campo LIGADO, entao a protecao tem de estar aqui e
+        // nao no valor padrao.
+        if (barkSet == null || barkSet.lines.Count == 0)
             return;
 
         if (randomRoutine != null)
@@ -238,14 +386,15 @@ public class CharacterDialogue : MonoBehaviour
         return true;
     }
 
-    // Active source of idle lines: the BarkSet asset if there is one and its condition
-    // passes, otherwise whatever was typed on the prefab.
+    // De onde saem as falas ociosas: o BarkSet, quando existe e a condicao dele passa.
+    // Antes havia tambem uma lista digitada no proprio prefab (randomLines); foi removida
+    // por nunca ter sido usada em personagem nenhum — o BarkSet e a unica fonte.
     private List<string> ActiveLines()
     {
         if (barkSet != null && barkSet.lines.Count > 0 && barkSet.ConditionsMet())
             return barkSet.lines;
 
-        return randomLines;
+        return null;
     }
 
     public void SetBarkSet(BarkSet set)
@@ -299,7 +448,10 @@ public class CharacterDialogue : MonoBehaviour
 
     private IEnumerator DisplayRoutine(string text, float totalDuration)
     {
-        float hold = Mathf.Max(0f, totalDuration - floatFadeDuration);
+        // Sem movimento nenhum: a fala aparece parada, fica, e apaga no lugar. O float
+        // antigo (subir enquanto some) foi removido a pedido — sobrou so o fade out, e
+        // curto.
+        float hold = Mathf.Max(0f, totalDuration - fadeOutDuration);
 
         dialogueText.transform.localPosition = originalLocalPosition;
         dialogueText.color = originalColor;
@@ -308,20 +460,14 @@ public class CharacterDialogue : MonoBehaviour
 
         yield return new WaitForSeconds(hold);
 
-        Vector3 startPos = dialogueText.transform.localPosition;
-        Vector3 endPos = startPos + Vector3.up * floatDistance;
         Color startColor = dialogueText.color;
         Color endColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
 
         float elapsed = 0f;
-        while (elapsed < floatFadeDuration)
+        while (elapsed < fadeOutDuration)
         {
             elapsed += Time.deltaTime;
-            float t = elapsed / floatFadeDuration;
-
-            dialogueText.transform.localPosition = Vector3.Lerp(startPos, endPos, t);
-            dialogueText.color = Color.Lerp(startColor, endColor, t);
-
+            dialogueText.color = Color.Lerp(startColor, endColor, elapsed / fadeOutDuration);
             yield return null;
         }
 

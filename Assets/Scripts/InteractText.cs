@@ -1,57 +1,52 @@
 using UnityEngine;
-using TMPro;
-using System.Collections;
 using System.Collections.Generic;
 
+// Objeto examinavel: chega perto, aperta E, e o JOSH comenta.
+//
+// ------------------------------------------------------------------ o rework, e por que
+//
+// Antes cada objeto examinavel desenhava a propria fala: tinha um TextMeshPro proprio, uma
+// posicao propria, um fade proprio e ajustes de X e Y so dele. Eram DOIS sistemas de texto
+// flutuante no jogo, e toda correcao precisava ser feita duas vezes — foi o que fez o texto
+// do poco sair com tamanho, altura e posicao diferentes dos personagens, mesmo com os
+// numeros iguais no asset.
+//
+// A percepcao que desfaz tudo isso: **quem fala nunca e o objeto, e sempre o Josh**. Um
+// poco nao diz "nao ia querer cair ai" — o Josh diz, olhando para o poco. Entao isto nao e
+// um sistema de texto: e um bark do Josh, disparado por um objeto.
+//
+// O que sobra aqui e a lista de falas e o gatilho. Fonte, tamanho, altura, cor, tempo e
+// fade vem do CharacterDialogue do Josh, como qualquer outra fala dele. Ajustar o texto do
+// jogo inteiro volta a ser um lugar so.
+//
+// ------------------------------------------------------------------ o prompt
+//
+// O E continua ancorado NO OBJETO, e nao no Josh, de proposito: ele marca o que voce vai
+// examinar. So a fala e que sai do Josh.
 public class InteractDialogue : MonoBehaviour
 {
-    [Header("Text")]
-    [SerializeField] private TextMeshPro dialogueText;
+    [Header("Quem comenta")]
+    [Tooltip("Bark Id de quem fala. Praticamente sempre o Josh — texto de objeto examinado " +
+             "e ele comentando o que ve.")]
+    public string speakerId = "josh";
 
-    [Header("Dialogue Sequence")]
-    [Tooltip("List of dialogue lines to cycle through sequentially.")]
+    [Header("Falas")]
+    [Tooltip("Ditas em ordem, uma por aperto de E. No fim, volta para a primeira.")]
     public List<string> dialogueLines = new List<string>();
 
-    [Header("Display Timing")]
-    [Tooltip("How long a line stays fully visible before it starts floating up and fading.")]
-    public float holdDuration = 1.5f;
+    [Tooltip("Letra do prompt.")]
+    public string interactLabel = "E";
 
-    [Header("Float & Fade")]
-    public float floatDistance = 0.5f;
-    public float floatFadeDuration = 1f;
+    private bool isPlayerInRange;
+    private int currentIndex;
 
-    [Header("Fade In")]
-    public float fadeInDuration = 0.3f;
-    public float fadeInFloatDistance = 0.3f;
-
-    private Vector3 originalLocalPosition;
-    private Color originalColor;
-    private Coroutine displayRoutine;
-    private bool isPlayerInRange = false;
-    private GameObject playerObject;
-    private int currentIndex = 0;
-
-    private void Awake()
-    {
-        if (dialogueText == null)
-            dialogueText = TextStyle.CreateWorldLabel(transform, name + "Text");
-        else
-            TextStyle.PlaceWorldLabel(transform, dialogueText);
-
-        ApplyTextStyle();
-
-        originalLocalPosition = dialogueText.transform.localPosition;
-        originalColor = dialogueText.color;
-        dialogueText.gameObject.SetActive(false);
-    }
+    // ------------------------------------------------------------------ gatilho
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!collision.CompareTag("Player"))
-            return;
+        if (!collision.CompareTag("Player")) return;
 
         isPlayerInRange = true;
-        playerObject = collision.gameObject;
 
         if (dialogueLines.Count > 0)
             SendToInteractButton();
@@ -59,153 +54,97 @@ public class InteractDialogue : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (!collision.CompareTag("Player"))
-            return;
+        if (!collision.CompareTag("Player")) return;
 
         isPlayerInRange = false;
-        playerObject = null;
-        HideDialogue();
-        ClearInteractButton();
+        InteractButton.Instance?.ClearInteraction(this);
     }
 
-    // Font and size come from the single Assets/Resources/TextStyle.asset.
-    public void ApplyTextStyle()
+    private void OnDisable()
     {
-        TextStyle.Apply(dialogueText, TextStyle.Role.WorldText);
-
-        TextStyle style = TextStyle.Current;
-        if (style == null) return;
-
-        if (style.holdDuration > 0f)        holdDuration        = style.holdDuration;
-        if (style.floatDistance > 0f)       floatDistance       = style.floatDistance;
-        if (style.floatFadeDuration > 0f)   floatFadeDuration   = style.floatFadeDuration;
-        if (style.fadeInDuration > 0f)      fadeInDuration      = style.fadeInDuration;
-        if (style.fadeInFloatDistance > 0f) fadeInFloatDistance = style.fadeInFloatDistance;
+        isPlayerInRange = false;
+        InteractButton.Instance?.ClearInteraction(this);
     }
 
     private void SendToInteractButton()
     {
-        InteractButton.Instance?.SetInteraction(this, "E", OnInteractPressed);
+        InteractButton.Instance?.SetInteraction(this, interactLabel, OnInteractPressed);
     }
 
-    private void ClearInteractButton()
-    {
-        InteractButton.Instance?.ClearInteraction(this);
-    }
+    // ------------------------------------------------------------------ falar
 
     public void OnInteractPressed()
     {
-        if (!isPlayerInRange || dialogueLines.Count == 0)
-            return;
+        if (!isPlayerInRange || dialogueLines.Count == 0) return;
 
         ShowNextDialogue();
+
+        // O InteractButton solta o registro a cada aperto. Sem re-registrar, o E so voltava
+        // depois de sair do collider e entrar de novo — e passar as linhas em sequencia
+        // ficava impossivel.
+        if (isPlayerInRange)
+            SendToInteractButton();
     }
 
     public void ShowNextDialogue()
     {
-        if (!enabled || dialogueText == null || dialogueLines.Count == 0)
-            return;
+        if (!enabled || dialogueLines.Count == 0) return;
 
-        if (!isPlayerInRange)
-            return;
-
-        string text = dialogueLines[currentIndex];
+        string line = dialogueLines[currentIndex];
         currentIndex = (currentIndex + 1) % dialogueLines.Count;
 
-        if (displayRoutine != null)
-            StopCoroutine(displayRoutine);
-
-        displayRoutine = StartCoroutine(DisplayRoutine(text));
-    }
-
-    public void HideDialogue()
-    {
-        if (displayRoutine != null)
+        CharacterDialogue speaker = ResolveSpeaker();
+        if (speaker == null)
         {
-            StopCoroutine(displayRoutine);
-            displayRoutine = null;
+            Debug.LogWarning($"'{name}': nao achei quem fala com o bark id '{speakerId}'. " +
+                             "Texto de objeto examinado sai pela boca do Josh, entao ele " +
+                             "precisa existir na cena com a tag Player.", this);
+            return;
         }
 
-        if (dialogueText != null)
-            dialogueText.gameObject.SetActive(false);
+        speaker.Show(line, BarkPriority.Scripted);
     }
 
-    public void ResetSequence()
+    public void ResetSequence() => currentIndex = 0;
+
+    // Acha o CharacterDialogue de quem fala — e cria um se o Josh ainda nao tiver.
+    //
+    // Criar na hora, em vez de exigir que alguem monte o componente no prefab do Player, e
+    // o que faz isto funcionar sem nenhum passo manual. O balao nasce pelo TextStyle, igual
+    // ao de qualquer personagem, entao ja sai com a fonte, o tamanho e a altura certos.
+    private CharacterDialogue ResolveSpeaker()
     {
-        currentIndex = 0;
-    }
+        CharacterDialogue found = BarkDirector.Instance != null
+            ? BarkDirector.Instance.Find(speakerId)
+            : null;
 
-    // Above THIS object's artwork, at the height set in Assets/Resources/TextStyle.asset.
-    // It used to be the player's position plus a hardcoded 1.5, which drew the prop's own
-    // line over Josh's head wherever he happened to be standing — and made World Text
-    // Height look like it did nothing, because nothing ever read it.
-    private Vector3 SpeechPosition()
-    {
-        float height = TextStyle.Current != null ? TextStyle.Current.worldTextHeight : 0.35f;
+        if (found != null) return found;
 
-        if (VisibleArt.TryGetBounds(transform, out Bounds bounds))
-            return new Vector3(bounds.center.x, bounds.max.y + height, dialogueText.transform.position.z);
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null) return null;
 
-        return new Vector3(transform.position.x, transform.position.y + height, dialogueText.transform.position.z);
-    }
+        found = player.GetComponentInChildren<CharacterDialogue>();
 
-    private IEnumerator DisplayRoutine(string text)
-    {
-        if (playerObject == null)
+        if (found == null)
         {
-            dialogueText.gameObject.SetActive(false);
-            displayRoutine = null;
-            yield break;
+            found = player.AddComponent<CharacterDialogue>();
+            found.barkId = speakerId;
+
+            // DESLIGAR a conversa fiada. O campo nasce ligado por padrao, e nos prefabs do
+            // Marcus e da Erika ele esta desligado — era essa a assimetria que fazia a fala
+            // do Josh nao aparecer: a rotina ociosa nao tem nenhuma linha para dizer e
+            // desliga o balao logo depois, por cima da fala que acabou de ser pedida.
+            found.autoPlayRandomDialogue = false;
+
+            // Registrar na mao: o OnEnable do componente ja rodou com o barkId ainda vazio,
+            // entao o registro automatico dele nao pegou.
+            BarkDirector.Register(found);
+
+            Debug.Log($"'{name}': o Player nao tinha CharacterDialogue — criei um com bark id " +
+                      $"'{speakerId}'. Para controlar as falas dele pelo Inspector, adicione o " +
+                      "componente no prefab do Player.", player);
         }
 
-        Vector3 basePosition = SpeechPosition();
-        dialogueText.text = text;
-        dialogueText.gameObject.SetActive(true);
-
-        dialogueText.transform.position = basePosition - Vector3.up * fadeInFloatDistance;
-        dialogueText.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0f);
-
-        float fadeElapsed = 0f;
-        while (fadeElapsed < fadeInDuration)
-        {
-            fadeElapsed += Time.deltaTime;
-            float t = fadeElapsed / fadeInDuration;
-
-            dialogueText.transform.position = Vector3.Lerp(basePosition - Vector3.up * fadeInFloatDistance, basePosition, t);
-            dialogueText.color = new Color(originalColor.r, originalColor.g, originalColor.b, t);
-
-            yield return null;
-        }
-
-        dialogueText.transform.position = basePosition;
-        dialogueText.color = originalColor;
-
-        yield return new WaitForSeconds(holdDuration);
-
-        Vector3 startPos = dialogueText.transform.position;
-        Vector3 endPos = startPos + Vector3.up * floatDistance;
-        Color startColor = dialogueText.color;
-        Color endColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
-
-        float elapsed = 0f;
-        while (elapsed < floatFadeDuration)
-        {
-            elapsed += Time.deltaTime;
-            float t = elapsed / floatFadeDuration;
-
-            dialogueText.transform.position = Vector3.Lerp(startPos, endPos, t);
-            dialogueText.color = Color.Lerp(startColor, endColor, t);
-
-            yield return null;
-        }
-
-        dialogueText.gameObject.SetActive(false);
-        displayRoutine = null;
-    }
-
-    private void OnDestroy()
-    {
-        if (displayRoutine != null)
-            StopCoroutine(displayRoutine);
+        return found;
     }
 }

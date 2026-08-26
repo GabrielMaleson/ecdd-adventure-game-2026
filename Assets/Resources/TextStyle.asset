@@ -12,16 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecdd7e5701a54c0d9b3f0a2c4d8e6f10, type: 3}
   m_Name: TextStyle
   m_EditorClassIdentifier: 
-  font: {fileID: 11400000, guid: dd27499be1bbe464f8b09b19deeb684b, type: 2}
+  font: {fileID: 11400000, guid: 083a70f60cfa6664cbc93e9eb731412d, type: 2}
   promptFont: {fileID: 0}
   promptColor: {r: 1, g: 1, b: 1, a: 1}
   worldTextColor: {r: 1, g: 1, b: 1, a: 1}
-  interactPromptSize: 20
-  worldTextSize: 3
-  worldTextHeight: 2.5
+  interactPromptSize: 22
+  worldTextSize: 2.5
+  worldTextScale: 1
+  worldTextOffsetX: 0
+  worldTextHeight: -2
   promptHeight: 0.35
-  holdDuration: 1.5
-  floatDistance: 0.6
-  floatFadeDuration: 0.5
-  fadeInDuration: 0.5
-  fadeInFloatDistance: 0.3
+  holdDuration: 2.5
+  fadeOutDuration: 0.15

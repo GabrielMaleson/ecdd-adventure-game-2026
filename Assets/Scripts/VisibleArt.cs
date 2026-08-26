@@ -108,6 +108,36 @@ public static class VisibleArt
         return best;
     }
 
+    // Efeito de atmosfera preso a um personagem — a nevoa do Josh e um sprite em escala
+    // 8.4 grudado nele. Ele NAO e o corpo do personagem, mas entrava na medida e dominava:
+    // "o topo da arte do Josh" virava o topo da nevoa, varios metros acima da cabeca, e a
+    // mesma altura global que acertava o Marcus e a Erika errava nele por completo.
+    //
+    // Marcus e Erika batem entre si apesar de terem tamanhos diferentes justamente porque
+    // nenhum dos dois tem um filho desses. Nao era padding de sheet: era um sprite de
+    // efeito entrando na conta.
+    //
+    // A camada Dialogue sai junto pelo mesmo motivo: o proprio balao de fala nao pode
+    // entrar na medida de onde por o balao de fala.
+    private static bool IsEffect(SpriteRenderer sprite)
+    {
+        if (SortingLayer.IDToName(sprite.sortingLayerID) == "Dialogue") return true;
+
+        string name = sprite.gameObject.name.ToLowerInvariant();
+
+        foreach (string s in EffectNames)
+            if (name.Contains(s)) return true;
+
+        return false;
+    }
+
+    // Filtrar por nome e fragil, e aqui e assumido: um sprite de atmosfera nao tem nenhum
+    // sinal fisico que o distinga do corpo do personagem — os dois sao sprite, os dois
+    // estao ligados, os dois sao filhos. "haze" fica DE FORA da lista de proposito: Haze e
+    // um NPC principal deste jogo, e filtra-lo tiraria a fala dela do lugar.
+    private static readonly string[] EffectNames =
+        { "mist", "fog", "nevoa", "vignette", "smoke", "fumaca", "glow", "aura" };
+
     public static bool Encapsulate(SpriteRenderer[] sprites, out Bounds bounds)
     {
         bounds = default;
@@ -119,6 +149,8 @@ public static class VisibleArt
             // bounds would push things off into empty space.
             if (sprite == null || !sprite.enabled || sprite.sprite == null)
                 continue;
+
+            if (IsEffect(sprite)) continue;
 
             Bounds b = Of(sprite);
 

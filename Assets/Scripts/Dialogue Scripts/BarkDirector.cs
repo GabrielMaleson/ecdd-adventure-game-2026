@@ -65,6 +65,22 @@ public class BarkDirector : MonoBehaviour
         }
     }
 
+    // Alguem com fala na tela AGORA. O prompt de interacao se apaga enquanto isto for
+    // verdade: um E boiando por cima de uma fala compete com ela pela atencao, e pior,
+    // convida a apertar no meio da frase.
+    public static bool AnyBarkShowing
+    {
+        get
+        {
+            if (instance == null) return false;
+
+            foreach (var pair in instance.speakers)
+                if (pair.Value != null && pair.Value.IsShowing) return true;
+
+            return false;
+        }
+    }
+
     public static Transform PlayerTransform
     {
         get
@@ -140,7 +156,13 @@ public class BarkDirector : MonoBehaviour
         // Characters register themselves in their own OnEnable, which can run BEFORE this
         // director's Awake — those registrations hit a null instance and are lost. One
         // sweep here picks up everyone who was too early. Re-registering is harmless.
-        foreach (CharacterDialogue speaker in FindObjectsByType<CharacterDialogue>(FindObjectsSortMode.None))
+        // FindObjectsInactive.Include, e nao a sobrecarga curta: aquela IGNORA objetos
+        // inativos, e Marcus e Erika comecam desativados — eram varridos como se nao
+        // existissem, e so entravam no registro se o OnEnable deles rodasse depois. Um
+        // personagem que nunca e reativado nunca ficava registrado, e o bark dele falhava
+        // sem dizer nada.
+        foreach (CharacterDialogue speaker in FindObjectsByType<CharacterDialogue>(
+                     FindObjectsInactive.Include, FindObjectsSortMode.None))
             Register(speaker);
     }
 
@@ -162,6 +184,67 @@ public class BarkDirector : MonoBehaviour
         string key = speaker.barkId.ToLowerInvariant();
         if (instance.speakers.TryGetValue(key, out CharacterDialogue registered) && registered == speaker)
             instance.speakers.Remove(key);
+    }
+
+    // Acha quem fala e, se ele ainda nao tiver CharacterDialogue, MONTA um na hora.
+    //
+    // Existe porque so o Marcus e a Erika tem o componente no prefab. O Josh e a Haze nao
+    // tem, e exigir que alguem monte cada um a mao antes de qualquer fala funcionar e um
+    // passo silencioso que ninguem lembra — o balao nasce pelo TextStyle de qualquer jeito,
+    // entao ja sai com a fonte, o tamanho e a altura dos outros.
+    //
+    // A busca acontece na HORA DE FALAR, e nao ao carregar a cena, de proposito: os quatro
+    // objetos Haze comecam desativados, e qual deles esta em cena muda conforme o beat.
+    // Procurar agora acha o que esta de pe agora.
+    public static CharacterDialogue EnsureSpeaker(string id)
+    {
+        if (string.IsNullOrEmpty(id) || instance == null) return null;
+
+        CharacterDialogue found = instance.Find(id);
+        if (found != null && found.gameObject.activeInHierarchy) return found;
+
+        GameObject host = FindHost(id);
+        if (host == null) return found;   // o registrado, mesmo desligado, e melhor que nada
+
+        CharacterDialogue speaker = host.GetComponentInChildren<CharacterDialogue>();
+
+        if (speaker == null)
+        {
+            speaker = host.AddComponent<CharacterDialogue>();
+            speaker.barkId = id;
+
+            // Conversa fiada DESLIGADA: os prefabs do Marcus e da Erika estao assim, e o
+            // padrao do campo e ligado. Ligada, a rotina ociosa nao tem nada para dizer e
+            // apaga o balao por cima da fala que acabou de ser pedida.
+            speaker.autoPlayRandomDialogue = false;
+
+            Debug.Log($"BarkDirector: '{host.name}' nao tinha CharacterDialogue — criei um " +
+                      $"com bark id '{id}'.", host);
+        }
+
+        if (string.IsNullOrEmpty(speaker.barkId)) speaker.barkId = id;
+        Register(speaker);
+        return speaker;
+    }
+
+    // O objeto que deve falar com este id. Player pela tag; o resto pelo nome, preferindo
+    // sempre quem esta ATIVO — "Haze" e "CutsceneHaze" coexistem na cena e so um deles
+    // esta de pe em cada momento.
+    private static GameObject FindHost(string id)
+    {
+        if (id.Equals("josh", System.StringComparison.OrdinalIgnoreCase))
+            return GameObject.FindGameObjectWithTag("Player");
+
+        GameObject best = null;
+
+        foreach (Transform t in FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (!t.name.Equals(id, System.StringComparison.OrdinalIgnoreCase)) continue;
+            if (t.gameObject.activeInHierarchy) return t.gameObject;
+            if (best == null) best = t.gameObject;
+        }
+
+        return best;
     }
 
     public CharacterDialogue Find(string id)
@@ -192,7 +275,7 @@ public class BarkDirector : MonoBehaviour
     {
         if (instance == null) return;
 
-        CharacterDialogue speaker = instance.Find(id);
+        CharacterDialogue speaker = EnsureSpeaker(id);
         if (speaker == null)
         {
             Debug.LogWarning($"<<barkset>>: no character registered with bark id '{id}'.");
@@ -223,7 +306,7 @@ public class BarkDirector : MonoBehaviour
     {
         if (instance == null) return;
 
-        CharacterDialogue speaker = instance.Find(id);
+        CharacterDialogue speaker = EnsureSpeaker(id);
         if (speaker == null) return;
 
         speaker.HideDialogue();
@@ -248,22 +331,34 @@ public class BarkDirector : MonoBehaviour
 
     // ---------------------------------------------------------------- api
 
-    public static void Bark(string id, string line, BarkPriority priority = BarkPriority.Scripted)
+    // Devolve a duracao da fala, ou 0 quando ela NAO foi mostrada. Quem chama precisa
+    // saber: avancar o proprio estado por cima de uma fala descartada corrompe a sequencia
+    // — foi assim que uma entrada de duas linhas se esgotou tendo dito so a primeira.
+    public static float Bark(string id, string line, BarkPriority priority = BarkPriority.Scripted)
     {
         if (instance == null)
         {
             Debug.LogWarning("BarkDirector.Bark called but there is no BarkDirector in the scene.");
-            return;
+            return 0f;
         }
 
-        CharacterDialogue speaker = instance.Find(id);
+        CharacterDialogue speaker = EnsureSpeaker(id);
         if (speaker == null)
         {
-            Debug.LogWarning($"BarkDirector.Bark: no character registered with bark id '{id}'.");
-            return;
+            // Listar QUEM esta registrado, e nao so dizer que faltou: na pratica o erro e
+            // sempre um Bark Id escrito diferente dos dois lados, e ver a lista resolve na
+            // hora em vez de virar caca ao tesouro pelo Inspector.
+            string known = instance.speakers.Count > 0
+                ? string.Join(", ", instance.speakers.Keys)
+                : "(ninguem)";
+
+            Debug.LogWarning($"BarkDirector.Bark: nenhum personagem registrado com o bark id " +
+                             $"'{id}'. Registrados agora: {known}. O Bark Id do " +
+                             "CharacterDialogue tem que bater com o Speaker Id de quem pediu a fala.");
+            return 0f;
         }
 
-        speaker.Show(line, priority);
+        return speaker.Show(line, priority);
     }
 
     // Starts a node on the bark runner. Returns false when it couldn't start, so

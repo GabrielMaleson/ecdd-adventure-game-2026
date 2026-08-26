@@ -1,110 +1,24 @@
 TODO — ECDD adventure game
 ==========================
-Atualizado 2026-08-06.
 
-O TODO antigo (dungeon, Y-sort, statue puzzles, bugs de crate, histórico das
-sessões de julho) foi limpo daqui a pedido. Nada foi perdido — está no git:
-    git show 5c2e654:TODO.txt
+* barkRunner — conversa de bark direto do .yarn  (MAYBE, nao urgente)
 
+  Hoje uma conversa em bark (as falas marcadas AD no roteiro) e montada no
+  componente BarkConversation, no Inspector. Funciona e nao depende de nada.
 
-========================================================================
-1. BUG — não dá pra entrar no pit do primeiro puzzle
-========================================================================
-[ ] O personagem não consegue entrar no pit do primeiro puzzle. Começou a
-    acontecer DEPOIS de eu mexer na PushableCrate.
+  O que falta e o outro caminho: <<barkconvo NomeDoNo>> no .yarn, para uma
+  troca de falas viver no roteiro junto com o resto em vez de ser digitada na
+  cena. O codigo ja existe (BarkDirector.RunConversation), so o runner nao
+  esta montado.
 
-    Antes de mexer em código, capturar (não adivinhar — a saga de 22/07 foi
-    perdida exatamente por chutar física antes de ler o motivo da recusa):
-      - Mexi no SCRIPT PushableCrate.cs ou no PREFAB do crate? (se foi o
-        prefab: qual campo — tamanho/forma do Collider2D, Body Type,
-        offset, escala?)
-      - O player para na BORDA do pit, ou entra e é empurrado de volta?
-      - Tem algum crate parado na entrada do pit? Se sim, tira ele do
-        caminho e testa: se passar, é o collider do crate bloqueando.
-      - PuzzleGrid > Show Occupancy LIGADO: alguma célula da entrada está
-        marcada como ocupada?
-      - PuzzleGrid > Log Push Failures LIGADO: aparece alguma linha no
-        console quando encosto na entrada?
+  Para ligar:
+    - um GameObject novo na cena com um SEGUNDO DialogueRunner
+    - unico Dialogue Presenter dele = BarkPresenter
+    - mesmo YarnProject do runner principal
+    - Variable Storage apontando para o MESMO objeto do principal, senao os
+      barks nao leem $YarnTalkedElder e as condicoes falham
+    - arrastar esse runner no campo "Bark Runner" do BarkDirector
 
-    Suspeita principal (a confirmar): o collider sólido do crate ficou maior
-    e um crate perto da entrada agora tapa a passagem. O CLAUDE.md já
-    registra que a distância de parada do player é definida pelo TAMANHO DOS
-    DOIS COLLIDERS (dado de prefab), não por código.
-
-
-========================================================================
-2. SISTEMA DE BARK — setup de cena (código já escrito, falta montar)
-========================================================================
-Código pronto em Assets/Scripts/Dialogue Scripts/:
-  BarkDirector.cs, BarkPresenter.cs, BarkSet.cs, BarkTrigger.cs (novos)
-  CharacterDialogue.cs (reescrito — nenhum campo de prefab foi perdido)
-
-[ ] ABRIR A UNITY E CHECAR O CONSOLE. Nada disso foi compilado ainda.
-
-[ ] Um GameObject com BarkDirector. Atribuir:
-      - Main Runner = o DialogueRunner que está no DialogueManager
-      - Bark Runner = o segundo runner (item abaixo)
-
-[ ] Um SEGUNDO GameObject com DialogueRunner próprio:
-      - único Dialogue Presenter = BarkPresenter
-      - mesmo YarnProject do runner principal
-      - Variable Storage apontando pro MESMO objeto de storage do principal
-        (senão os barks não leem $YarnTalkedElder)
-
-[ ] Preencher "Bark Id" em cada CharacterDialogue que vai falar. Tem que
-    bater com o character name usado no .yarn:
-      josh / marcus / erika / haze / elder amos
-
-[ ] O MC precisa de um CharacterDialogue com bark id "josh". Sem isso as
-    falas dele nas conversas de bark não têm onde aparecer.
-
-[ ] (Opcional, não urgente) Criar assets BarkSet — Create > ECDD > Bark Set —
-    e adicionar na lista "Bark Sets" do director pro <<barkset>> achar por
-    nome. A List<string> "Random Lines" do prefab continua funcionando como
-    fallback, dá pra migrar aos poucos.
-
-Comandos disponíveis no .yarn depois do setup:
-    <<bark marcus "Cara, essa névoa tá pior hoje.">>
-    <<barkset marcus Marcus_MistRising>>      (ou "none" pra voltar ao prefab)
-    <<barkstop marcus>>  /  <<barkresume marcus>>
-    <<barkconvo overheard_marcus_erika>>      (nó inteiro como bark flutuante)
-
-
-========================================================================
-3. DECISÃO PENDENTE — idioma do Yarn
-========================================================================
-[ ] HistoriasVN.yarnproject declara baseLanguage "pt-BR" e só tem localização
-    pt-BR, mas TODAS as falas dos .yarn estão em INGLÊS.
-    Decidir antes de escrever mais conteúdo. Isso trava o item 4.
-
-
-========================================================================
-4. ESCREVER AS CENAS EM YARN
-========================================================================
-[ ] Continuar gamescript.yarn (hoje tem 16 nós, vai até puzzle_entrance).
-[ ] Claude está autorizado a criar/editar .yarn direto (Assets/dialogo projeto/).
-    Prefab, cena, meta e sprite continuam sendo só do usuário.
-[ ] 23 comandos Yarn + 3 funções já existem e valem dentro de bark também.
-    Lista gerada em:
-    ProjectSettings/Packages/dev.yarnspinner/Assembly-CSharp-generated.ysls.json
-
-
-========================================================================
-5. PENDÊNCIAS MENORES
-========================================================================
-[ ] InteractText.cs tem a classe InteractDialogue — nome de arquivo diferente
-    do nome da classe. Foi isso que quebrou o Barker.cs/CharacterBark antes.
-    Conferir se o Interact Text.prefab está com o script certo ou missing.
-
-[ ] InteractDialogue e os barks do MC desenham os dois acima do PLAYER e não
-    se enxergam — podem se sobrepor. O Gabriel vetou fundir os dois sistemas,
-    então só foi amenizado: o BarkDirector apaga o bark do MC quando o
-    InteractButton.OnPressed dispara.
-
-[ ] Teleporter.cs usa SetLabel() direto em vez de SetInteraction(). Player no
-    trigger do teleporte e de um NPC ao mesmo tempo: os dois brigam pelo label
-    e um clique pode disparar diálogo E teleporte.
-
-[ ] ProjectSettings/Packages/dev.yarnspinner/Assembly-CSharp-generated.ysls.json
-    é autogerado e muda por locale ("0,37" numa máquina, "0.37" na outra).
-    Conflita todo commit — jogar no .gitignore.
+  Por que e MAYBE: o BarkConversation ja cobre troca curta de duas ou tres
+  linhas, que e o formato de quase todo AD do roteiro. Isto so vale a pena
+  quando aparecer uma conversa longa que faca sentido morar no .yarn.

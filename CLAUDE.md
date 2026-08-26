@@ -14,6 +14,23 @@ This file is the living design reference for all collaborators (human and AI). U
 
 ---
 
+## REGRA PARA CLAUDE — TEXTO E DIÁLOGO
+
+**"Corrigir gramática" significa SÓ gramática.** Nunca mexer em estilo, ritmo, voz de personagem ou pontuação opcional. Vale para `.yarn`, roteiro e qualquer fala do jogo.
+
+**É erro, pode corrigir:** construção que não existe no idioma (`sometime now` → `for some time now`), concordância, hífen em posição errada (`ages-old` depois do verbo → `ages old`), palavra trocada.
+
+**NÃO é erro, nunca tocar:**
+- vírgula antes de vocativo em diálogo — `messing with you man` está certo; a ausência dá frase corrida, de propósito
+- pontuação em texto que representa alguém escrevendo em pânico — o gibberish do Elder Amos não leva vírgula, ninguém pontua enquanto surta num caderno
+- travessão único marcando quebra brusca de pensamento — **não precisa fechar**
+- `Ok` vs `Okay`, `they would` vs `they'd`, alongamentos (`Naaah`)
+- vírgula depois de oração introdutória em fala informal
+
+Na dúvida entre erro e escolha, **não mexer** — perguntar. Ao entregar, listar cada mudança e por que é erro de gramática. Se a justificativa for "fica melhor", "é mais comum" ou "é o padrão do resto do texto", não é gramática: é estilo, e fica de fora.
+
+---
+
 ## What Is This Game
 
 2D top-down mystery/horror narrative adventure. Point-and-click interactions, puzzle-solving, investigation. Third person. Target length: **1–2 hours**.
@@ -201,3 +218,87 @@ Grid-based crate puzzle. Logic is grid-based; the player moves freely.
 **Related but SEPARATE:** `PortalPulse` (portal's VFX goes out ~0.5s after a crate settles on its cell) is its own component and does not depend on Cosmetic Seating. Killing one does not kill the other.
 
 **How to rip it out:** delete `portalLandingOffset`, the offset lines in `StepTo`, and `SettleIfAuthoredOnPortal` from `PushableCrate`; delete `CosmeticOffset` from `GridObject` and restore `VisualCenter` to `visual.bounds.center`. Undo's `RestoreTo(cell, pos, cosmetic)` third parameter is optional and can stay or go. Nothing else in the project reads `CosmeticOffset`.
+
+---
+
+## Y-Sort — quem desenha na frente de quem (implementado, `Assets/Scripts/Rendering/`)
+
+**A regra:** quem está mais para baixo na tela desenha na frente. `Sorting Order = -Y * Precision`.
+
+Antes disso a ordem de desenho era digitada na mão, centenas de Sorting Orders espalhados pela cena — trabalhoso e **impossível de acertar**, porque quem está na frente muda conforme o jogador anda. Uma árvore precisa cobrir o Josh quando ele passa atrás dela e ser coberta quando ele passa na frente; um número fixo só consegue uma das duas.
+
+**Não há componente para adicionar, nem migração para rodar.** `YSortWorld` é uma classe estática que varre a cena em tempo de execução e ordena tudo sozinha. Objeto novo entra sozinho, cena nova funciona sozinha, e **o arquivo da cena nunca é tocado** — nada disso vive em `.unity` ou `.prefab`. (Uma primeira versão era um componente por objeto + ferramenta de migração; foi descartada porque gravaria 325 componentes e ~700 Sorting Orders no arquivo da cena que o Olavo e o Gabriel editam juntos.)
+
+**Arquivos:**
+- `YSortWorld` — o motor. Varre, agrupa, calcula, aplica. Não é um `MonoBehaviour`; em Play ele cria um objeto escondido (`HideAndDontSave`) só para ter um `LateUpdate`.
+- `YSortSettings` (+ `Assets/Resources/YSortSettings.asset`) — os números. Achado por `Resources.Load`, nada é arrastado para campo nenhum.
+- `YSort` — o **ajuste**, não o motor. Componente opcional, só onde o padrão erra.
+- `Editor/YSortEditorDriver` — faz valer na Scene View sem entrar em Play.
+- `Editor/YSortTools` — `Tools > Y-Sort > Relatório` (não muda nada), `Ajustar âncora da seleção`, `Remontar agora`.
+
+### O bug dos interiores, e como foi resolvido (vale para TODA casa nova)
+
+**Sintoma:** dentro da casa do Elder, os personagens desapareciam atrás do tapete, da escada, do sofá, da estante — de tudo. Fora, na vila, funcionava.
+
+**Causa,** lida do dump do F3 e não deduzida:
+
+```
+order=6408  MarcusVisual   (raiz: Marcus)
+order=8037  BigRedCarpet   (raiz: ElderHouseInside1stfloor)
+order=8037  Stairs         (raiz: ElderHouseInside1stfloor)
+order=8037  Chair2, Sofa, Bookshelf, Bible, Table_d, Fireplace…
+```
+
+Vinte e um objetos com **a mesma ordem** e **a mesma raiz**. O `RootOf` sobe enquanto o pai tiver sprite/collider/animator — e **o chão da casa é um sprite**. Cada móvel subiu até ele, e o cômodo inteiro virou UM objeto: uma âncora só (o pé da casa, lá embaixo), uma ordem só, desenhada por cima de quem anda dentro.
+
+É a ideia de GRUPO funcionando ao contrário. Certa para uma árvore — sombra, tronco e copa são partes de um objeto. Errada para um cômodo, cujos filhos são objetos independentes por onde o jogador anda.
+
+**A correção — `maxObjectHeight` (padrão 6 unidades):** um pai só conta como "o mesmo objeto" se tiver **até essa altura**. Árvore, móvel e personagem têm poucos metros; um cômodo tem dezenas. Acima disso, o objeto deixa de ser unidade: não é ordenado (fica intacto, embaixo) e **cada filho passa a ser ordenado por si**.
+
+O discriminador é físico — altura medida do sprite — igual ao do collider. Não é palpite por nome.
+
+**Numa casa nova, se acontecer de novo:** entra em Play, aperta **F3** dentro dela e olha a coluna `raiz`. Se vários objetos diferentes mostrarem a MESMA raiz, é este bug — o sprite do chão está grande e mesmo assim abaixo de `maxObjectHeight`, ou há um contêiner intermediário com sprite. Baixar `maxObjectHeight` resolve; o limite é não ficar menor que a altura da maior árvore.
+
+**Duas ideias que sustentam tudo:**
+
+- **GRUPO.** Um objeto quase nunca é um sprite só — a árvore tem três (sombra, tronco, copa) e o Josh tem dois (Top e Bottom). Ordenar cada sprite pelo próprio Y destruiria o objeto: a copa tem Y maior que o tronco, então seria desenhada *atrás* dele. Então o Y de **um** ponto decide a ordem do grupo todo, e dentro do grupo cada sprite mantém a ordem relativa com que a arte foi montada. É por isso que os Sorting Orders que já existem não são jogados fora: eles **viram** essa ordem relativa (normalizados pelo menor, então `1,2,3` e `11,12,13` são a mesma coisa). A conta é idempotente — remontar depois que o sistema já escreveu recupera exatamente os mesmos valores relativos.
+- **ÂNCORA.** O Y que importa é onde o objeto **toca o chão**, não o centro do sprite nem o pivô. Uma árvore de 3 metros medida pelo meio some atrás de coisas que deveria cobrir. O padrão é a base do collider sólido (a parte por onde o jogador esbarra); sem collider, a base da arte; sem arte utilizável, o pivô. Medido **uma vez** por objeto — a distância do pivô até o pé não muda quando ele anda.
+
+**Sorting Layer manda mais que Sorting Order.** Com o Josh em `Objects`, os NPCs em `NPCs` e as árvores em `Default`, nenhum personagem consegue passar atrás de uma árvore por mais que o Y diga que deveria. Por isso `forceSortingLayer` move tudo para uma camada só (`Objects`). Os Tilemaps (chão, penhasco) são `TilemapRenderer`, ficam em `Default` e não são tocados — `Objects` está acima de `Default`, então nada afunda no chão. Se um dia o penhasco precisar se entrelaçar com personagens, o caminho é o Mode `Individual` do Tilemap Renderer, não isto aqui.
+
+**QUEM ENTRA — a pergunta mais importante do sistema.** Só entra o objeto que tem **collider sólido** *ou* **Rigidbody2D**. Todo o resto fica **intacto**: nem a ordem nem a camada são tocadas.
+
+As duas portas são físicas, não palpite sobre nome:
+1. **Collider sólido** = "ocupa espaço no mundo" = "o personagem esbarra nisto, logo passa atrás disto". Árvore, casa, cerca, pedra, móvel, estátua.
+2. **Rigidbody2D** = quem se *move* pelo mundo mesmo sem colidir. Isto é o que salva a **Haze**: sendo o fantasma, ela atravessa tudo e só tem collider de trigger — pela porta 1 sozinha, um personagem principal ficaria de fora.
+
+**Por que isso importa (erro real, cometido e corrigido):** a primeira versão ordenava tudo que tinha sprite, e varreu junto `RoadsAndGrassSprites` (38), `InteriorSprites` (8) e as poças. **Chão ordenado por Y passa por CIMA do personagem**, porque na tela o chão está embaixo dele — a regra "quem está mais embaixo desenha na frente", aplicada a uma coisa *deitada*, produz o oposto exato do que se quer. Estrada e poça não têm collider; é por isso que o discriminador físico funciona e o palpite por nome não.
+
+Hoje na MainScene: **311 instâncias entram**, 12 ficam intactas (`portal`, `Fur`, `Flower_a/b`, `Bible`, `Candle`, `Chair2`, `WritingTable`) — mais os 52 sprites de chão/interior da própria cena. `portal` e `Fur` ficarem de fora está certo, são tapetes. `Chair2`/`WritingTable` são os candidatos a `Incluir Sem Collider` se algum dia precisarem se entrelaçar.
+
+**Fica de fora também:** camada `Dialogue` (balão de fala, prompt de interação), qualquer coisa dentro de um `Canvas`, e nomes contendo `fog`/`mist`/`nevoa`/`vignette`.
+
+**Cuidado com esse filtro por nome.** `haze` já esteve nessa lista por parecer névoa — e **Haze é um NPC principal**, então teria tirado um personagem do Y-Sort inteiro, silenciosamente. Filtrar por nome é frágil num jogo cujo tema *é* a névoa. Na dúvida, deixa o objeto entrar no sistema e marca `Não ordenar` no `YSort` dele: é explícito, aparece no Inspector, e não pega ninguém de surpresa.
+
+**Quando colocar um `YSort` na mão** (só nesses dois casos):
+1. A linha do chão está errada — collider que é gatilho grande, corrimão, colisão no meio do tronco. O gizmo amarelo mostra onde o sistema acha que está o chão; `Ancora: Pivo` e/ou `anchorOffsetY` arrumam.
+2. O objeto não deveria ser ordenado: `Não ordenar`.
+3. O objeto **precisa** entrar mas não tem collider sólido nem Rigidbody2D: `Incluir Sem Collider`.
+
+**Scene View x Play.** Mexer em `sortingOrder` por script não faz a Scene View se redesenhar sozinha — os números ficam certos e a imagem continua a antiga até você clicar em algo. Era por isso que o Play mostrava a ordem certa e a cena não. `YSortEditorDriver` chama `SceneView.RepaintAll()` quando algum objeto muda de ordem.
+
+**Preview no editor.** Ligado por padrão (`previewInEditor`): a Scene View mostra a ordem certa sem entrar em Play. O preço é que salvar a cena grava os Sorting Orders calculados no arquivo — não quebra nada (tudo é recalculado do zero a cada quadro), mas engorda o diff. Desligar no asset se atrapalhar o trabalho junto com o Gabriel.
+
+**Custo.** Ordenação roda todo quadro, mas com early-out por âncora: objeto parado custa uma comparação de float. Só quem se moveu escreve. Não existe distinção Static/Dynamic para configurar — "se moveu" é detectado, não declarado. A varredura por objetos novos roda a cada `rescanInterval` (padrão 2s; 0 = só ao carregar a cena).
+
+**Interruptor geral:** apagar `Assets/Resources/YSortSettings.asset` desliga o sistema inteiro e o jogo volta a desenhar pelos Sorting Orders escritos na mão. Nome de Sorting Layer inexistente também não move ninguém (devolveria `Default`, a mesma camada dos Tilemaps, e metade dos objetos sumiria debaixo do chão).
+
+**Diagnóstico em Play — use isto antes de deduzir qualquer coisa:**
+- Ao entrar em Play, uma linha `[Y-Sort] ATIVO. N objetos ordenados…` diz se o motor está de pé e com que números. `N = 0` significa que nada entrou.
+- **F3** despeja todo sprite a 12 unidades do Josh, **ordenado por ordem de desenho, de trás para a frente**, marcando `[Y-SORT]` ou `[intacto]` e mostrando a **raiz** de cada um. É literalmente a ordem que a tela usa. Foi esse dump que encontrou o bug dos interiores em um minuto, depois de horas de palpite.
+
+**`orderBase` (padrão 20000):** a conta crua é `-Y * Precision`, então dentro de uma casa em Y=137 o personagem receberia `-13700` — abaixo de qualquer arte com ordem escrita à mão (perto de zero) e abaixo de valores antigos carimbados no arquivo. O deslocamento joga tudo que é ordenado por Y para uma faixa positiva, sempre acima da arte de chão. A ordem relativa entre os ordenados não muda.
+
+**Cuidado com bounds de objeto desativado.** Renderer e collider de objeto inativo devolvem bounds **zerados**. Medir a âncora nesse momento dava `0 - posiçãoY` — um personagem em Y=137 ganhava âncora 0, como se estivesse na origem do mundo — e a medida ficava cacheada para sempre. Hoje a medida só é aceita se o objeto estiver ativo e os bounds forem reais; enquanto não for, a `Entry` remede a cada quadro.
+
+**Testado em Play e funcionando** na casa do Elder (verificado pelo dump do F3).

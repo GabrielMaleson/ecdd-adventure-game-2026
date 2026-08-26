@@ -81,9 +81,14 @@ public class InteractButton : MonoBehaviour
         TextStyle.Apply(label, TextStyle.Role.InteractPrompt);
     }
 
+    // Fala na tela: o E some e o E nao responde. Some porque disputa a atencao com a fala;
+    // nao responde porque um aperto no meio da frase dispara a interacao seguinte sem que
+    // ninguem veja o que aconteceu.
+    private static bool Suppressed => BarkDirector.AnyBarkShowing || BarkConversation.AnyRunning;
+
     private void Update()
     {
-        if (onPress == null)
+        if (onPress == null || Suppressed)
             return;
 
         var kb = Keyboard.current;
@@ -95,7 +100,21 @@ public class InteractButton : MonoBehaviour
     // being pushed or an NPC walking out from under it.
     private void LateUpdate()
     {
-        if (!promptFollowsObject || label == null || onPress == null)
+        if (label == null) return;
+
+        // Apagar o ROTULO, e nao o registro. Zerar o registro obrigaria quem registrou a
+        // fazer tudo de novo quando a fala acabasse — e ninguem faz. Assim o E volta
+        // sozinho, sobre o mesmo objeto, no instante em que a fala sai da tela.
+        if (onPress != null && Suppressed)
+        {
+            label.enabled = false;
+            return;
+        }
+
+        if (onPress != null && !label.enabled && !string.IsNullOrEmpty(label.text))
+            label.enabled = true;
+
+        if (!promptFollowsObject || onPress == null)
             return;
 
         Transform target = CurrentTarget();

@@ -33,15 +33,29 @@ public class TextStyle : ScriptableObject
     public Color worldTextColor = Color.white;
 
     [Header("Tamanhos — 0 = nao mexe")]
-    [Tooltip("Prompt de interacao (o E). Esta num Canvas, entao o numero e em PIXELS.")]
-    public float interactPromptSize = 60f;
+    [Tooltip("Prompt de interacao (o E). Esta e a unidade de referencia: o campo abaixo usa " +
+             "a MESMA escala.")]
+    public float interactPromptSize = 20f;
 
     [Tooltip("Todo texto flutuante no mundo: falas de personagem (barks) E texto de " +
-             "objeto examinado. Um numero so, porque os dois tem que ser iguais. " +
-             "World-space, em UNIDADES — nao em pixels como o prompt.")]
-    public float worldTextSize = 6f;
+             "objeto examinado. Um numero so, porque os dois tem que ser iguais.\n\n" +
+             "MESMA ESCALA do prompt acima — 20 aqui e 20 la sao o mesmo tamanho na tela.")]
+    public float worldTextSize = 20f;
 
-    [Header("Posicao — acima do TOPO DA ARTE, em unidades")]
+    [Tooltip("Quanto vale UM ponto da escala do prompt em tamanho de fonte no mundo.\n\n" +
+             "Existe porque o prompt vive num Canvas e a fala vive no mundo: sao duas " +
+             "unidades diferentes, e sem um fator ligando as duas os campos acima nao " +
+             "poderiam usar o mesmo numero. 0.45 e a calibragem dos valores que ja estavam " +
+             "certos aqui (prompt 20, fala 9).\n\n" +
+             "So mexa se a fala e o prompt pararem de casar depois de trocar a fonte ou o " +
+             "zoom da camera. Para mudar o tamanho da fala, mexa no campo de cima.")]
+    public float worldTextScale = 0.45f;
+
+    [Header("Posicao — a partir do TOPO DA ARTE, em unidades")]
+    [Tooltip("Deslocamento HORIZONTAL do texto falado. Positivo vai para a direita. "
+           + "O padrao 0 centraliza no objeto.")]
+    public float worldTextOffsetX;
+
     [Tooltip("Altura do texto FALADO (barks e examine).")]
     public float worldTextHeight = 0.35f;
 
@@ -49,21 +63,13 @@ public class TextStyle : ScriptableObject
              "que a fala, ou o contrario.")]
     public float promptHeight = 0.35f;
 
-    [Header("Tempo e animacao — 0 = nao mexe")]
-    [Tooltip("Quanto tempo a fala fica parada antes de subir e sumir.")]
+    [Header("Tempo — 0 = nao mexe")]
+    [Tooltip("Quanto tempo a fala fica na tela antes de sumir.")]
     public float holdDuration = 1.5f;
 
-    [Tooltip("Quanto ela sobe enquanto some, em unidades.")]
-    public float floatDistance = 0.6f;
-
-    [Tooltip("Quanto tempo dura a subida + fade out.")]
-    public float floatFadeDuration = 1f;
-
-    [Tooltip("Fade de entrada. So o texto de examinar objeto usa.")]
-    public float fadeInDuration = 1f;
-
-    [Tooltip("Quanto ela sobe durante o fade de entrada. So o examine usa.")]
-    public float fadeInFloatDistance = 0.6f;
+    [Tooltip("Duracao do fade OUT, em segundos. A fala nao se move mais — ela so apaga no "
+           + "lugar. Valores baixos (0.1-0.2) somem quase na hora.")]
+    public float fadeOutDuration = 0.15f;
 
     private const string ResourcePath = "TextStyle";
 
@@ -113,12 +119,44 @@ public class TextStyle : ScriptableObject
         float size = style.SizeFor(role);
         if (size > 0f)
         {
+            // O prompt e a referencia e vai CRU — ele ja estava certo em 20 e nada aqui
+            // mexe nele. Quem converte e a fala, multiplicando pelo fator calibrado.
+            if (role == Role.WorldText)
+                size *= Mathf.Max(0.0001f, style.worldTextScale);
+
             text.fontSize = size;
             // Auto-sizing silently overrides fontSize, so a size set here would look
             // like it did nothing at all on any object that happens to have it on.
             text.enableAutoSizing = false;
         }
+
+        if (role == Role.WorldText)
+        {
+            // O MESMO retangulo, pivo e alinhamento para todo texto de mundo.
+            //
+            // Era daqui que vinha a diferenca entre a fala do Josh e a dos amigos, e nao da
+            // posicao: os balcoes estavam a 0.06 um do outro, medido. O retangulo tem 5
+            // units de altura com pivo no centro, entao vai de y-2.5 a y+2.5 — e o texto e
+            // desenhado no TOPO ou no FUNDO dele conforme o alinhamento. Os prefabs do
+            // Marcus e da Erika tinham VerticalAlignment=Top (desenha em +2.5); o balao
+            // criado em tempo de execucao para o Josh vinha com Bottom (-2.5). Cinco units
+            // de diferenca com a posicao identica.
+            //
+            // Normalizar os tres valores aqui e o que faz "a mesma altura" significar a
+            // mesma coisa na tela, seja o balao autorado no prefab ou criado na hora.
+            text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            text.rectTransform.sizeDelta = new Vector2(20f, 5f);
+            text.alignment = TMPro.TextAlignmentOptions.Top;
+
+            // Uma linha so, sem quebra. Com quebra, uma frase longa se dobra dentro da
+            // caixa e passa a ocupar duas linhas menores — o mesmo tamanho de fonte
+            // rendendo dois tamanhos diferentes na tela conforme o comprimento da fala.
+            // Sem quebra, a fala cresce para os lados e o corpo da letra nunca muda.
+            text.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
+            text.overflowMode = TMPro.TextOverflowModes.Overflow;
+        }
     }
+
 
     // Builds the floating text object an InteractDialogue / CharacterDialogue needs, so
     // nobody has to create a TextMeshPro child by hand and drag it into a field for every
@@ -130,38 +168,26 @@ public class TextStyle : ScriptableObject
     // that was placed deliberately is left completely alone.
     public static TMPro.TextMeshPro CreateWorldLabel(Transform owner, string name, float heightAbove = -1f)
     {
-        if (heightAbove < 0f)
-            heightAbove = Current != null ? Current.worldTextHeight : 0.35f;
-
         var go = new GameObject(name);
         go.transform.SetParent(owner, false);
 
-        // World scale 1 whatever the owner is scaled to. Characters sit at scale 4, so a
-        // label inheriting that would render four times too big and float four times too
-        // far up as it fades.
-        Vector3 s = owner.lossyScale;
-        go.transform.localScale = new Vector3(
-            s.x != 0f ? 1f / s.x : 1f,
-            s.y != 0f ? 1f / s.y : 1f,
-            s.z != 0f ? 1f / s.z : 1f);
-
         var text = go.AddComponent<TMPro.TextMeshPro>();
         text.text = string.Empty;
-        text.alignment = TMPro.TextAlignmentOptions.Bottom;
-        text.rectTransform.sizeDelta = new Vector2(20f, 5f);
 
         Apply(text, Role.WorldText);
 
-        // Above the ART, not above the transform — see VisibleArt for why those are very
-        // different numbers on a character sheet.
-        // Falling through to the owner's own position matters: an unmeasurable object
-        // would otherwise take bounds' zeroed default and put its label on the world
-        // origin, nowhere near the thing it belongs to.
-        Vector3 spot = VisibleArt.TryGetBounds(owner, out Bounds bounds)
-            ? new Vector3(bounds.center.x, bounds.max.y, 0f)
-            : new Vector3(owner.position.x, owner.position.y, 0f);
-
-        go.transform.position = new Vector3(spot.x, spot.y + heightAbove, owner.position.z);
+        // UM caminho de posicionamento para todo mundo.
+        //
+        // Antes esta funcao posicionava por conta propria, e o PlaceWorldLabel fazia o mesmo
+        // com outro codigo. Balao autorado no prefab (Marcus, Erika) ia por um; balao criado
+        // aqui (o Josh) ia pelo outro. Duas contas parecidas mas nao iguais — a daqui nunca
+        // somou os offsets — e por isso a fala do Josh nao ficava na mesma altura por mais
+        // que o valor global fosse o mesmo.
+        //
+        // O parametro heightAbove ainda existe para quem quiser uma altura avulsa, mas o
+        // padrao (-1) NAO significa mais "sem valor": worldTextHeight e negativo neste
+        // projeto, entao usar negativo como sentinela era uma armadilha esperando acontecer.
+        PlaceWorldLabel(owner, text, 0f, heightAbove > -0.5f && heightAbove != -1f ? heightAbove : 0f);
 
         var renderer = go.GetComponent<Renderer>();
         if (renderer != null && SortingLayer.NameToID("Dialogue") != 0)
@@ -174,18 +200,44 @@ public class TextStyle : ScriptableObject
     }
 
     // Puts an EXISTING floating label at the standard height above the owner's artwork.
-    public static void PlaceWorldLabel(Transform owner, TMPro.TextMeshPro text)
+    public static void PlaceWorldLabel(Transform owner, TMPro.TextMeshPro text, float extraX = 0f, float extraY = 0f)
     {
         if (owner == null || text == null) return;
 
         TextStyle style = Current;
         if (style == null) return;
 
+        // Escala do MUNDO igual a 1, seja qual for a escala do dono.
+        //
+        // CreateWorldLabel ja fazia isso, mas so roda quando o campo esta vazio. Um balao
+        // arrastado a mao no prefab nunca passava por la e herdava a escala do dono — e os
+        // personagens deste projeto estao em escala 4. Era por isso que duas falas com o
+        // MESMO tamanho 20 apareciam com tamanhos completamente diferentes na tela: nao era
+        // o tamanho da fonte, era a escala herdada.
+        // Escala do mundo 1, seja qual for a escala do dono. Personagens deste projeto
+        // estao em escala 4 no visual; um balao herdando isso renderiza quatro vezes maior.
+        NormalizeScale(text.transform);
+
         Vector3 spot = VisibleArt.TryGetBounds(owner, out Bounds bounds)
             ? new Vector3(bounds.center.x, bounds.max.y, 0f)
             : new Vector3(owner.position.x, owner.position.y, 0f);
 
-        text.transform.position = new Vector3(spot.x, spot.y + style.worldTextHeight, text.transform.position.z);
+        text.transform.position = new Vector3(
+            spot.x + style.worldTextOffsetX + extraX,
+            spot.y + style.worldTextHeight + extraY,
+            text.transform.position.z);
+    }
+
+    // Anula a escala do pai, para o texto sair sempre do mesmo tamanho na tela.
+    private static void NormalizeScale(Transform t)
+    {
+        Transform parent = t.parent;
+        Vector3 s = parent != null ? parent.lossyScale : Vector3.one;
+
+        t.localScale = new Vector3(
+            s.x != 0f ? 1f / s.x : 1f,
+            s.y != 0f ? 1f / s.y : 1f,
+            s.z != 0f ? 1f / s.z : 1f);
     }
 
     private float SizeFor(Role role)
@@ -212,8 +264,9 @@ public class TextStyle : ScriptableObject
         foreach (CharacterDialogue bark in FindObjectsByType<CharacterDialogue>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             bark.ApplyTextStyle();
 
-        foreach (InteractDialogue examine in FindObjectsByType<InteractDialogue>(FindObjectsInactive.Include, FindObjectsSortMode.None))
-            examine.ApplyTextStyle();
+        // InteractDialogue nao aparece mais aqui: objeto examinavel nao desenha texto
+        // proprio. A fala dele sai pela boca do Josh, entao quem ja foi reestilizado no
+        // laco acima — o CharacterDialogue dele — cobre esse caso tambem.
     }
 #endif
 }
