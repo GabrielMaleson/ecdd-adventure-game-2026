@@ -1,0 +1,949 @@
+fileFormatVersion: 2
+guid: dae59399c7950ed4c8b64149a570a9a6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3034427393261913338
+    second: erica_finalspriteSheet 1_0
+  - first:
+      213: 7118148409861124859
+    second: erica_finalspriteSheet 1_1
+  - first:
+      213: -6228650638274833447
+    second: erica_finalspriteSheet 1_2
+  - first:
+      213: 2374848757621423652
+    second: erica_finalspriteSheet 1_3
+  - first:
+      213: -4861393143154668920
+    second: erica_finalspriteSheet 1_4
+  - first:
+      213: -8280573499568753039
+    second: erica_finalspriteSheet 1_5
+  - first:
+      213: -4233376037987885842
+    second: erica_finalspriteSheet 1_6
+  - first:
+      213: -7502716866976665180
+    second: erica_finalspriteSheet 1_7
+  - first:
+      213: -714210628243685999
+    second: erica_finalspriteSheet 1_8
+  - first:
+      213: 5539578230858047903
+    second: erica_finalspriteSheet 1_9
+  - first:
+      213: -7760332408125129944
+    second: erica_finalspriteSheet 1_10
+  - first:
+      213: 7447002256467065240
+    second: erica_finalspriteSheet 1_11
+  - first:
+      213: 4795015842045576785
+    second: erica_finalspriteSheet 1_12
+  - first:
+      213: -4536011111225798514
+    second: erica_finalspriteSheet 1_13
+  - first:
+      213: 815705866687603233
+    second: erica_finalspriteSheet 1_14
+  - first:
+      213: -8775204125203970663
+    second: erica_finalspriteSheet 1_15
+  - first:
+      213: -997764936647777565
+    second: erica_finalspriteSheet 1_16
+  - first:
+      213: -4945465494753987508
+    second: erica_finalspriteSheet 1_17
+  - first:
+      213: 8479476833825557227
+    second: erica_finalspriteSheet 1_18
+  - first:
+      213: 465945518903015692
+    second: erica_finalspriteSheet 1_19
+  - first:
+      213: -1722012404119011004
+    second: erica_finalspriteSheet 1_20
+  - first:
+      213: 440924312638359710
+    second: erica_finalspriteSheet 1_21
+  - first:
+      213: 5464236901225674538
+    second: erica_finalspriteSheet 1_22
+  - first:
+      213: 7447314755073038601
+    second: erica_finalspriteSheet 1_23
+  - first:
+      213: 6323817415715020056
+    second: erica_finalspriteSheet 1_24
+  - first:
+      213: 3788944455887802749
+    second: erica_finalspriteSheet 1_25
+  - first:
+      213: 663706512486499144
+    second: erica_finalspriteSheet 1_26
+  - first:
+      213: -6764037546366921238
+    second: erica_finalspriteSheet 1_27
+  - first:
+      213: -8190542656480070862
+    second: erica_finalspriteSheet 1_28
+  - first:
+      213: 2129377739764781343
+    second: erica_finalspriteSheet 1_29
+  - first:
+      213: 1419355842566489852
+    second: erica_finalspriteSheet 1_30
+  - first:
+      213: 4476487732535499796
+    second: erica_finalspriteSheet 1_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_0
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 206
+        width: 18
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60bb8e7ec5c83e5d0800000000000000
+      internalID: -3034427393261913338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_1
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 206
+        width: 18
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf2b844e34eb8c260800000000000000
+      internalID: 7118148409861124859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_2
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 206
+        width: 17
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d35e9bce336f89a0800000000000000
+      internalID: -6228650638274833447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_3
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 206
+        width: 17
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42e7d41dc5825f020800000000000000
+      internalID: 2374848757621423652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_4
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 206
+        width: 18
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88a0fbc61bcd88cb0800000000000000
+      internalID: -4861393143154668920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_5
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 206
+        width: 18
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 176f0b5464e751d80800000000000000
+      internalID: -8280573499568753039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_6
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 206
+        width: 17
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eecd41f3ce60045c0800000000000000
+      internalID: -4233376037987885842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_7
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 206
+        width: 17
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a13685b2cef0e790800000000000000
+      internalID: -7502716866976665180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_8
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 142
+        width: 19
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19df9b8b73d9616f0800000000000000
+      internalID: -714210628243685999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_9
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 142
+        width: 17
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f91e7cf0d0980ec40800000000000000
+      internalID: 5539578230858047903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_10
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 142
+        width: 12
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82bffb27ac2cd4490800000000000000
+      internalID: -7760332408125129944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_11
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 142
+        width: 13
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 899704aa811195760800000000000000
+      internalID: 7447002256467065240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_12
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 142
+        width: 17
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1564f75d0815b8240800000000000000
+      internalID: 4795015842045576785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_13
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 144
+        width: 18
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e80592a5de9dc01c0800000000000000
+      internalID: -4536011111225798514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_14
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 142
+        width: 13
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 122ed19f928f15b00800000000000000
+      internalID: 815705866687603233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_15
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 142
+        width: 16
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 995cca55756383680800000000000000
+      internalID: -8775204125203970663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_16
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 78
+        width: 15
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e2e4c5931a3722f0800000000000000
+      internalID: -997764936647777565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_17
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 78
+        width: 16
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c44bc30b55d2e5bb0800000000000000
+      internalID: -4945465494753987508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_18
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 79
+        width: 14
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bea835111472da570800000000000000
+      internalID: 8479476833825557227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_19
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 79
+        width: 14
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0936e21bfe577600800000000000000
+      internalID: 465945518903015692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_20
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 78
+        width: 15
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4418ba197de2a18e0800000000000000
+      internalID: -1722012404119011004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_21
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 78
+        width: 16
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9884a3835a7e1600800000000000000
+      internalID: 440924312638359710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_22
+      rect:
+        serializedVersion: 2
+        x: 409
+        y: 79
+        width: 14
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a27332ac28ed4db40800000000000000
+      internalID: 5464236901225674538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_23
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 79
+        width: 14
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90957aaef4d2a5760800000000000000
+      internalID: 7447314755073038601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_24
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 14
+        width: 16
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81d5f104f66b2c750800000000000000
+      internalID: 6323817415715020056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_25
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 14
+        width: 17
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d71d0ee68e8059430800000000000000
+      internalID: 3788944455887802749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_26
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 14
+        width: 16
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8430fdf7e85f53900800000000000000
+      internalID: 663706512486499144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_27
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 14
+        width: 14
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae5156160bf4122a0800000000000000
+      internalID: -6764037546366921238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_28
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 14
+        width: 15
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23332da69d8555e80800000000000000
+      internalID: -8190542656480070862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_29
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 14
+        width: 18
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f11dd4bb5c11d8d10800000000000000
+      internalID: 2129377739764781343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_30
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 14
+        width: 16
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf60d066e9092b310800000000000000
+      internalID: 1419355842566489852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: erica_finalspriteSheet 1_31
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 14
+        width: 14
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41c1c2310edaf1e30800000000000000
+      internalID: 4476487732535499796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      erica_finalspriteSheet 1_0: -3034427393261913338
+      erica_finalspriteSheet 1_1: 7118148409861124859
+      erica_finalspriteSheet 1_10: -7760332408125129944
+      erica_finalspriteSheet 1_11: 7447002256467065240
+      erica_finalspriteSheet 1_12: 4795015842045576785
+      erica_finalspriteSheet 1_13: -4536011111225798514
+      erica_finalspriteSheet 1_14: 815705866687603233
+      erica_finalspriteSheet 1_15: -8775204125203970663
+      erica_finalspriteSheet 1_16: -997764936647777565
+      erica_finalspriteSheet 1_17: -4945465494753987508
+      erica_finalspriteSheet 1_18: 8479476833825557227
+      erica_finalspriteSheet 1_19: 465945518903015692
+      erica_finalspriteSheet 1_2: -6228650638274833447
+      erica_finalspriteSheet 1_20: -1722012404119011004
+      erica_finalspriteSheet 1_21: 440924312638359710
+      erica_finalspriteSheet 1_22: 5464236901225674538
+      erica_finalspriteSheet 1_23: 7447314755073038601
+      erica_finalspriteSheet 1_24: 6323817415715020056
+      erica_finalspriteSheet 1_25: 3788944455887802749
+      erica_finalspriteSheet 1_26: 663706512486499144
+      erica_finalspriteSheet 1_27: -6764037546366921238
+      erica_finalspriteSheet 1_28: -8190542656480070862
+      erica_finalspriteSheet 1_29: 2129377739764781343
+      erica_finalspriteSheet 1_3: 2374848757621423652
+      erica_finalspriteSheet 1_30: 1419355842566489852
+      erica_finalspriteSheet 1_31: 4476487732535499796
+      erica_finalspriteSheet 1_4: -4861393143154668920
+      erica_finalspriteSheet 1_5: -8280573499568753039
+      erica_finalspriteSheet 1_6: -4233376037987885842
+      erica_finalspriteSheet 1_7: -7502716866976665180
+      erica_finalspriteSheet 1_8: -714210628243685999
+      erica_finalspriteSheet 1_9: 5539578230858047903
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -202,8 +202,10 @@ public class NpcFormation : MonoBehaviour
             if (slot == null) continue;
 
             Vector3 spot = origin + new Vector3(slot.offset.x, slot.offset.y, 0f);
+
             Gizmos.DrawLine(origin, spot);
-            Gizmos.DrawWireCube(spot, new Vector3(0.4f, 0.1f, 0f));
+            Gizmos.DrawWireSphere(spot, 0.35f);
+            Gizmos.DrawWireCube(spot, new Vector3(0.7f, 0.25f, 0f));
         }
     }
 }

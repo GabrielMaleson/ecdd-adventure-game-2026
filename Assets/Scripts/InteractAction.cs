@@ -39,6 +39,13 @@ public class InteractAction : MonoBehaviour
     [Tooltip("Depois de disparar uma vez, o E nao aparece mais aqui.")]
     public bool onceOnly;
 
+    [Tooltip("O E some quando o BarkBook deste objeto nao tiver mais nenhuma fala que sirva " +
+             "agora. E a regra normal do jogo: quem ja disse tudo o que tinha para dizer " +
+             "naquele ponto da historia para de oferecer conversa. Desligue em objeto de " +
+             "exploracao que deve responder sempre. So vale quando o E fala por BarkBook — " +
+             "com On Interact preenchido nao ha como saber se ainda ha o que fazer.")]
+    public bool sumirQuandoAcabaremAsFalas = true;
+
     [Header("Condicao")]
     [Tooltip("So oferece o E com este progresso gravado (SaveManager). Vazio = sem condicao.")]
     public string requiresProgress = "";
@@ -132,8 +139,34 @@ public class InteractAction : MonoBehaviour
         else
             Debug.Log($"[InteractAction] '{name}': jogador entrou, prompt '{label}' oferecido.", this);
 
+        if (!AindaTemFala())
+        {
+            Debug.Log($"[InteractAction] '{name}': jogador entrou, mas o BarkBook ja disse " +
+                      "tudo o que servia agora — prompt nao oferecido.", this);
+            playerInside = true;
+            return;
+        }
+
         playerInside = true;
         InteractButton.Instance?.SetInteraction(this, label, Press, ResolveAnchor());
+    }
+
+    // O E ainda tem para que existir?
+    //
+    // So sabe responder quando a interacao E o BarkBook. Com On Interact preenchido o E
+    // dispara qualquer coisa — abrir porta, girar estatua — e nao ha como este componente
+    // adivinhar se aquilo ja acabou; nesse caso ele continua sendo oferecido, como sempre.
+    private bool AindaTemFala()
+    {
+        if (!sumirQuandoAcabaremAsFalas) return true;
+
+        if (onInteract != null && onInteract.GetPersistentEventCount() > 0) return true;
+
+        BarkBook book = GetComponent<BarkBook>();
+        if (book == null) book = GetComponentInParent<BarkBook>();
+        if (book == null) return true;
+
+        return book.TemAlgoADizer;
     }
 
     // Quem tem arte manda. Um objeto de conversa vazio nao tem, e medir pela arte em que
@@ -215,6 +248,10 @@ public class InteractAction : MonoBehaviour
     private void Rearm()
     {
         if (onceOnly) { InteractButton.Instance?.ClearInteraction(this); return; }
+
+        // Acabou de gastar a ultima fala: o E sai agora, sem esperar o jogador se afastar.
+        if (!AindaTemFala()) { InteractButton.Instance?.ClearInteraction(this); return; }
+
         if (!playerInside) return;
 
         InteractButton.Instance?.SetInteraction(this, label, Press, ResolveAnchor());

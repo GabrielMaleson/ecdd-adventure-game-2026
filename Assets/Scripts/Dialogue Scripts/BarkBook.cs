@@ -73,6 +73,14 @@ public class BarkBook : MonoBehaviour
         // faria o teste de ontem no editor decidir o que o jogador ouve hoje.
         [System.NonSerialized] public int cursor;
         [System.NonSerialized] public bool spent;
+
+        // Quantas falas desta entrada JA SAIRAM, sem teto.
+        //
+        // Separado do cursor de proposito: com repeatLastLine ligado o cursor trava na
+        // ultima linha, entao ele nao sabe dizer se o personagem ja falou tudo ou se esta
+        // repetindo a ultima para sempre. Esta contagem sabe, e e ela que faz o E sumir
+        // quando nao ha mais nada NOVO para ouvir.
+        [System.NonSerialized] public int ditas;
     }
 
     [Header("Quem fala")]
@@ -92,6 +100,38 @@ public class BarkBook : MonoBehaviour
     private static readonly List<BarkBook> allInstances = new List<BarkBook>();
 
     public string SpeakerId => Id;
+
+    // Ainda ha alguma fala que sirva AGORA?
+    //
+    // Falso quando toda entrada elegivel ja se esgotou. E o que permite ao prompt sumir em
+    // vez de continuar oferecendo um E que so repete a ultima frase para sempre — um
+    // personagem que ja disse tudo o que tinha para dizer naquele momento da historia nao
+    // deveria continuar convidando o jogador a falar com ele.
+    //
+    // Depende de repeatLastLine estar DESLIGADO na entrada: ligado, ela nunca se esgota,
+    // que e exatamente o que se quer num objeto de exploracao (o poco) e nao num beat.
+    public bool TemAlgoADizer
+    {
+        get
+        {
+            foreach (Entry e in entries)
+            {
+                if (e.spent) continue;
+                if (e.lines == null || e.lines.Count == 0) continue;
+                if (!ConditionsMet(e)) continue;
+
+                // Entrada cujas falas ja sairam todas nao conta como "tem algo a dizer",
+                // mesmo com repeatLastLine ligado. Repetir a ultima frase para sempre e
+                // util num objeto de exploracao; num personagem, e um E que convida para
+                // uma conversa que ja acabou.
+                if (e.ditas >= e.lines.Count) continue;
+
+                return true;
+            }
+
+            return false;
+        }
+    }
 
     private string Id
     {
@@ -125,7 +165,7 @@ public class BarkBook : MonoBehaviour
     // Volta tudo ao inicio — util num reset de puzzle ou ao recarregar um save.
     public void Rearm()
     {
-        foreach (Entry e in entries) { e.cursor = 0; e.spent = false; }
+        foreach (Entry e in entries) { e.cursor = 0; e.spent = false; e.ditas = 0; }
     }
 
     // Yarn: <<barkbook marcus>> ou <<barkbook marcus mesa>>
@@ -207,6 +247,7 @@ public class BarkBook : MonoBehaviour
 
         onSpoke?.Invoke();
 
+        e.ditas++;
         e.cursor++;
 
         // Acabou a lista: ou trava na ultima, ou a entrada sai de cena e a proxima que

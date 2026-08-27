@@ -262,8 +262,55 @@ public class Cutscener : MonoBehaviour
     // owns this object name.
     public static void TriggerSetActive(string objectName, bool active)
     {
-        Cutscener owner = FindOwner(c => c.HasObject(objectName), "object", objectName);
-        owner?.SetObjectActive(objectName, active);
+        foreach (Cutscener c in allInstances)
+        {
+            NamedObject entry = c.objects.Find(o => o.name == objectName);
+            if (entry != null && entry.target != null)
+            {
+                entry.target.SetActive(active);
+                return;
+            }
+        }
+
+        // Nao registrado, ou registrado com o campo VAZIO: procura na cena pelo nome.
+        //
+        // Isto existe porque a lista do Cutscener e dado de CENA, e dado de cena se perde:
+        // trocar o prefab por outra instancia zera a referencia, e o arquivo da cena e
+        // reescrito toda vez que a Unity salva. Um beat da historia sumir porque um campo
+        // voltou para vazio nao e um risco aceitavel — o comando ja diz o nome do objeto,
+        // entao ele tem tudo o que precisa para se virar sozinho.
+        //
+        // Nome EXATO, e nao pedaco de nome: <<disable ElderAmos>> nao pode pegar
+        // "ElderAmosVisual" junto por acidente.
+        GameObject achado = AcharPorNome(objectName);
+        if (achado != null)
+        {
+            achado.SetActive(active);
+            Debug.Log($"Cutscener: '{objectName}' nao esta ligado em nenhum Cutscener — " +
+                      $"achei pelo nome na cena e {(active ? "liguei" : "desliguei")}.", achado);
+            return;
+        }
+
+        Debug.LogWarning($"Cutscener: nao ha objeto chamado '{objectName}' em nenhum " +
+                         "Cutscener da cena, nem um GameObject com esse nome exato.");
+    }
+
+    // Inclui objetos DESATIVADOS de proposito: <<enable X>> precisa achar justamente o que
+    // esta desligado. Percorre transforms, e nao GameObject.Find, que ignora inativos.
+    private static GameObject AcharPorNome(string objectName)
+    {
+        foreach (Transform t in FindObjectsByType<Transform>(FindObjectsInactive.Include,
+                                                             FindObjectsSortMode.None))
+        {
+            if (t.name != objectName) continue;
+            if (t.parent == null) return t.gameObject;   // raiz de cena ganha
+        }
+
+        foreach (Transform t in FindObjectsByType<Transform>(FindObjectsInactive.Include,
+                                                             FindObjectsSortMode.None))
+            if (t.name == objectName) return t.gameObject;
+
+        return null;
     }
 
     // The external hook for <<face Name Towards>> — sets a named object's facing

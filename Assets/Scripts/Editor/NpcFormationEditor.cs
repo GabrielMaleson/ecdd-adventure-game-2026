@@ -50,14 +50,30 @@ public class NpcFormationEditor : Editor
             Vector3 delta = slot.npc.position - anchor.position;
             slot.offset = new Vector2(delta.x, delta.y);
 
-            // Capture the facing too, so "how they're standing" means the whole pose and
-            // not just the spot. A slot deliberately left on Leave stays on Leave — that
-            // is an instruction ("don't touch this one"), not a missing value.
+            // O LADO tambem, quando da para ler da cena. Um slot em Leave fica em Leave —
+            // isso e uma instrucao ("nao mexa neste"), nao um valor faltando.
+            //
+            // Ler flipX, como estava aqui, nao funciona para NINGUEM neste projeto: o
+            // CharacterFacing zera o flipX de proposito no inicio, para o espelhamento ter
+            // uma fonte so. O resultado era gravar Right sempre e, de quebra, apagar o que
+            // o autor tinha escolhido no dropdown.
             if (slot.facing != NpcFormation.Facing.Leave)
             {
-                SpriteRenderer sprite = slot.npc.GetComponentInChildren<SpriteRenderer>(true);
-                if (sprite != null)
-                    slot.facing = sprite.flipX ? NpcFormation.Facing.Left : NpcFormation.Facing.Right;
+                CharacterFacing cf = slot.npc.GetComponentInChildren<CharacterFacing>(true);
+                if (cf == null) cf = slot.npc.GetComponentInParent<CharacterFacing>();
+
+                // Arte de dois lados (o Marcus): virar e trocar de ESTADO do Animator, nao
+                // espelhar. Fora de Play nao ha nada na cena que diga para que lado ele
+                // olha — nem escala, nem flipX. Entao o dropdown manda, e o Capture nao
+                // encosta nele.
+                if (cf != null && cf.sidesDrawnSeparately) continue;
+
+                // Personagem espelhado (a Erika, o Josh): o lado E o sinal da escala X do
+                // objeto visual. Isso da para ler no editor.
+                Transform visual = cf != null && cf.visual != null ? cf.visual : slot.npc;
+                slot.facing = visual.localScale.x < 0f
+                    ? NpcFormation.Facing.Left
+                    : NpcFormation.Facing.Right;
             }
         }
 

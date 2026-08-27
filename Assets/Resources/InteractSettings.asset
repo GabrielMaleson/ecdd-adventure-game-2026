@@ -15,4 +15,5 @@ MonoBehaviour:
   triggerSize: {x: 2, y: 2}
   applyOnLoad: 0
   createMissingTrigger: 1
+  padronizarTamanho: 0
   interactLabel: E

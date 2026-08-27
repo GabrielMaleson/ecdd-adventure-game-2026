@@ -451,6 +451,23 @@ public class DialogueManager : MonoBehaviour
             }
         }
 
+        // Comecar um dialogo com o runner JA rodando outro interleava dois loops da VM do
+        // Yarn no mesmo objeto Dialogue. Como a chamada abaixo e fire-and-forget (`_ =`),
+        // a excecao que isso gera e descartada: o jogo trava no meio de uma fala e o
+        // Console nao diz uma palavra.
+        //
+        // Recusar e o certo. Quem chamou recebe "nao comecou" pelo IsDialogueRunning do
+        // funil (DialogueStarter.StartAndFreezePlayer), entao um beat recusado nao e
+        // marcado como jogado e continua podendo acontecer depois.
+        if (dialogueRunner.IsDialogueRunning)
+        {
+            Debug.LogWarning($"[DialogueManager] pedido para comecar '{dialogue}' enquanto " +
+                             "outro dialogo ainda esta rodando. RECUSADO — comecar dois no " +
+                             "mesmo runner trava a fala no meio. Confira se algum " +
+                             "DialogueRunner da cena esta com Auto Start ligado.", this);
+            return;
+        }
+
         DisablePlayerControl();
         DisableTeleporters();
 
@@ -499,7 +516,12 @@ public class DialogueManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"Sound not found: {soundName}");
+            // AVISO, e nao erro. Som que ainda nao foi feito e conteudo pendente, nao falha:
+            // o dialogo segue sem ele de qualquer jeito. Como LogError, isso pausava o Play
+            // toda vez em quem estiver com o Error Pause do Console ligado — um beat sem
+            // audio derrubava a sessao inteira.
+            Debug.LogWarning($"[PlaySound] som '{soundName}' nao existe na lista do " +
+                             "DialogueManager. A fala continua sem ele.");
         }
     }
 

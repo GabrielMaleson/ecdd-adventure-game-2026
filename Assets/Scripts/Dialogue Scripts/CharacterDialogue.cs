@@ -74,7 +74,30 @@ public class CharacterDialogue : MonoBehaviour
 
     private Vector3 originalLocalPosition;
     private Color originalColor;
-    private Coroutine displayRoutine;
+    // QUEM esta com fala na tela agora, sem passar por registro nenhum.
+    //
+    // O BarkDirector respondia isso varrendo o dicionario de speakers, que e indexado por
+    // barkId — dois personagens com o mesmo id e so um cabe la. Se quem esta falando for o
+    // outro, a busca nao acha ninguem e o prompt de E continua na tela por cima da fala.
+    // Aqui e o proprio falante que se anuncia, entao nao ha como escapar.
+    private static readonly HashSet<CharacterDialogue> mostrando = new HashSet<CharacterDialogue>();
+
+    public static bool AlgumMostrando => mostrando.Count > 0;
+
+    private Coroutine displayRoutineBacking;
+
+    // Propriedade, e nao campo, de proposito: todas as atribuicoes que ja existiam pelo
+    // arquivo passam a manter o conjunto acima em dia sozinhas.
+    private Coroutine displayRoutine
+    {
+        get => displayRoutineBacking;
+        set
+        {
+            displayRoutineBacking = value;
+            if (value != null) mostrando.Add(this);
+            else mostrando.Remove(this);
+        }
+    }
     private Coroutine randomRoutine;
     private Renderer visibilityRenderer;
 
@@ -187,6 +210,8 @@ public class CharacterDialogue : MonoBehaviour
 
     private void OnDisable()
     {
+        mostrando.Remove(this);
+
         // Without this a character disabled mid-line leaves its text hanging on screen.
         BarkDirector.Unregister(this);
         StopRandomDialogue();

@@ -14,6 +14,11 @@ public class TeleporterScript : MonoBehaviour
     [Tooltip("Only used when Teleport On Trigger is off — shown on the Interact Button while in range; press E to teleport.")]
     public string interactLabel = "E";
 
+    [Tooltip("So deixa passar com este progresso gravado (SaveManager). Vazio = sempre " +
+             "liberado. E o que prende uma porta ate o beat que a justifica ter acontecido: " +
+             "a casa do Elder so abre depois da cutscene da entrada.")]
+    public string requiresProgress = "";
+
     [Header("Camera Switch")]
     [Tooltip("Enabled after the transition — the camera for the destination area.")]
     public GameObject Camera;
@@ -46,9 +51,26 @@ public class TeleporterScript : MonoBehaviour
     private float cooldownTimer;
     private bool playerInRange;
     private GameObject player;
+    private bool ultimoLiberado = true;
+
+    // O progresso pode chegar com o jogador JA parado na porta — a cutscene termina
+    // exatamente ali. OnTriggerEnter nao dispara de novo nesse caso, entao sem esta
+    // conferencia o E so apareceria se ele se afastasse e voltasse.
+    private bool Liberado()
+    {
+        if (string.IsNullOrEmpty(requiresProgress)) return true;
+        return SaveManager.Instance != null && SaveManager.Instance.HasProgress(requiresProgress);
+    }
 
     private void Update()
     {
+        bool liberado = Liberado();
+        if (liberado != ultimoLiberado)
+        {
+            ultimoLiberado = liberado;
+            if (playerInRange) RefreshPrompt();
+        }
+
         if (!isOnCooldown)
             return;
 
@@ -68,7 +90,7 @@ public class TeleporterScript : MonoBehaviour
         player = collision.gameObject;
         playerInRange = true;
 
-        if (teleportOnTrigger && !isOnCooldown && !suppressedUntilExit)
+        if (teleportOnTrigger && !isOnCooldown && !suppressedUntilExit && Liberado())
             Teleport();
         else
             RefreshPrompt();
@@ -89,6 +111,7 @@ public class TeleporterScript : MonoBehaviour
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (!teleportOnTrigger || isOnCooldown || suppressedUntilExit) return;
+        if (!Liberado()) return;
         if (!collision.CompareTag("Player")) return;
 
         player = collision.gameObject;
@@ -107,7 +130,7 @@ public class TeleporterScript : MonoBehaviour
         if (teleportOnTrigger)
             return;
 
-        if (playerInRange && !isOnCooldown && !suppressedUntilExit)
+        if (playerInRange && !isOnCooldown && !suppressedUntilExit && Liberado())
             InteractButton.Instance?.SetInteraction(this, interactLabel, Teleport);
         else
             InteractButton.Instance?.ClearInteraction(this);

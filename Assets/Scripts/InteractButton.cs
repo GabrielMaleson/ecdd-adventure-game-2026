@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
@@ -51,6 +52,70 @@ public class InteractButton : MonoBehaviour
     // Used only for identity checks in ClearInteraction, never dereferenced.
     private object owner;
     private System.Action onPress;
+
+    // TODOS os interagiveis com o jogador dentro do alcance agora, e nao so o dono do
+    // prompt.
+    //
+    // O prompt e um so, mas os alcances se sobrepoem o tempo todo: o poco fica dentro do
+    // alcance do Amos, que fica dentro do alcance dos amigos. Cada um deles se registra ao
+    // ENTRAR no proprio trigger — e ninguem entra duas vezes.
+    //
+    // Sem esta lista, quem chegou por ultimo tomava o prompt e, ao ir embora, devolvia para
+    // NINGUEM: o poco continuava com o jogador parado em cima dele e sem E, ate ele sair do
+    // collider e voltar. Era permanente na pratica, porque nada obriga o jogador a sair.
+    //
+    // Com a lista, sair de um alcance PROMOVE quem continua ao alcance. O mais recente
+    // ganha, que e o que corresponde a "o que eu acabei de chegar perto".
+    private class Candidato
+    {
+        public object dono;
+        public string rotulo;
+        public System.Action acao;
+        public Transform ancora;
+    }
+
+    private readonly List<Candidato> candidatos = new List<Candidato>();
+
+    private int IndiceDe(object caller)
+    {
+        for (int i = 0; i < candidatos.Count; i++)
+            if (ReferenceEquals(candidatos[i].dono, caller)) return i;
+        return -1;
+    }
+
+    // Um candidato so vale enquanto o objeto dele existir e estiver ligado. Sem esta poda,
+    // desligar um NPC com o jogador ao lado deixaria um fantasma na fila, pronto para ser
+    // promovido e oferecer um E que nao faz nada.
+    private static bool Vivo(Candidato c)
+    {
+        if (c == null || c.acao == null) return false;
+
+        // isActiveAndEnabled e de Behaviour, nao de Component: um Collider2D nao tem.
+        // Por isso as duas checagens — o componente desligado no Inspector nao vale, e o
+        // objeto desligado na cena tambem nao.
+        if (c.dono is Behaviour b) return b != null && b.isActiveAndEnabled;
+        if (c.dono is Component comp) return comp != null && comp.gameObject.activeInHierarchy;
+        return c.dono != null;
+    }
+
+    // Assume o candidato mais recente que ainda estiver de pe.
+    private void PromoverOutro()
+    {
+        for (int i = candidatos.Count - 1; i >= 0; i--)
+        {
+            if (!Vivo(candidatos[i])) { candidatos.RemoveAt(i); continue; }
+
+            Candidato c = candidatos[i];
+            Adotar(c.dono, c.rotulo, c.acao, c.ancora);
+            return;
+        }
+
+        owner = null;
+        onPress = null;
+        anchor = null;
+        anchorOverride = null;
+        Hide();
+    }
 
     // Resolved once per registration. The per-object override is re-asked every frame
     // instead, because "nearest of these two" changes as the player walks.
@@ -125,11 +190,9 @@ public class InteractButton : MonoBehaviour
         // runs, so without this the prompt would hang in the air over nobody, still armed.
         if (target == null || !target.gameObject.activeInHierarchy)
         {
-            owner = null;
-            onPress = null;
-            anchor = null;
-            anchorOverride = null;
-            Hide();
+            int i = IndiceDe(owner);
+            if (i >= 0) candidatos.RemoveAt(i);
+            PromoverOutro();
             return;
         }
 
@@ -146,6 +209,19 @@ public class InteractButton : MonoBehaviour
     // the object itself leaves it out and gets the right answer for free. An
     // InteractPromptAnchor component on the object beats both.
     public void SetInteraction(object caller, string labelText, System.Action action, Transform promptAnchor = null)
+    {
+        int ja = IndiceDe(caller);
+        if (ja >= 0) candidatos.RemoveAt(ja);
+        candidatos.Add(new Candidato
+        {
+            dono = caller, rotulo = labelText, acao = action, ancora = promptAnchor
+        });
+
+        Adotar(caller, labelText, action, promptAnchor);
+    }
+
+    // O registro em si, sem mexer na fila de candidatos — para a promocao poder reutiliza-lo.
+    private void Adotar(object caller, string labelText, System.Action action, Transform promptAnchor)
     {
         owner = caller;
         onPress = action;
@@ -165,6 +241,19 @@ public class InteractButton : MonoBehaviour
         {
             Transform target = CurrentTarget();
             if (target != null) PlaceOver(target);
+
+            // Sem isto, "o E aparece no lugar errado" nao tem como ser diagnosticado: quem
+            // decide a posicao sao TRES coisas em lugares diferentes (o registrante, o
+            // promptAnchor que ele passou, e um InteractPromptAnchor que pode estar em
+            // qualquer ancestral dele), e do lado de fora as tres sao indistinguiveis.
+            Debug.Log($"[InteractButton] registrou '{labelText}' de " +
+                      $"{(callerComponent != null ? callerComponent.GetType().Name : "?")} " +
+                      $"em '{(callerComponent != null ? callerComponent.name : "?")}' | " +
+                      $"promptAnchor={(promptAnchor != null ? promptAnchor.name : "-")} | " +
+                      $"InteractPromptAnchor={(anchorOverride != null ? anchorOverride.name : "NENHUM")} | " +
+                      $"ancora final='{(target != null ? target.name : "-")}' em " +
+                      $"{(target != null ? target.position.ToString() : "-")}",
+                      callerComponent);
         }
     }
 
@@ -173,14 +262,15 @@ public class InteractButton : MonoBehaviour
     // prompt) must not blank out someone else's active prompt.
     public void ClearInteraction(object caller)
     {
-        if (owner != caller)
-            return;
+        int i = IndiceDe(caller);
+        if (i >= 0) candidatos.RemoveAt(i);
 
-        owner = null;
-        onPress = null;
-        anchor = null;
-        anchorOverride = null;
-        Hide();
+        // Saida atrasada de um registro velho — o trigger dele dispara DEPOIS de outro ja
+        // ter tomado o prompt. Tirar da fila basta; apagar o prompt de quem esta valendo
+        // agora seria errado.
+        if (owner != caller) return;
+
+        PromoverOutro();
     }
 
     private Transform CurrentTarget()
@@ -276,6 +366,13 @@ public class InteractButton : MonoBehaviour
         // calling SetInteraction again once it's ready to be interacted with again
         // (e.g. once dialogue ends and the player is still in range).
         System.Action action = onPress;
+
+        // Sai da fila junto: senao a promocao logo abaixo devolveria o E para ele mesmo no
+        // mesmo quadro, e o anti-repeticao de segurar o E deixaria de existir. Quem quiser
+        // o E de volta chama SetInteraction de novo — que e o contrato que ja existia.
+        int i = IndiceDe(owner);
+        if (i >= 0) candidatos.RemoveAt(i);
+
         owner = null;
         onPress = null;
         anchor = null;
@@ -284,5 +381,14 @@ public class InteractButton : MonoBehaviour
 
         action?.Invoke();
         OnPressed?.Invoke();
+
+        // Ninguem reassumiu o prompt: passa para quem ainda estiver ao alcance.
+        //
+        // A acao acima MUITAS vezes se re-registra sozinha (o poco, para poder passar as
+        // linhas em sequencia), e nesse caso onPress ja nao e nulo e nao ha nada a fazer.
+        // Mas uma interacao de uma vez so — o Amos, os amigos — nunca volta, e sem esta
+        // promocao o E some da tela e nao volta mais: o poco continua na fila, com o
+        // jogador parado em cima dele, e sem dono. Era exatamente esse o sintoma.
+        if (onPress == null) PromoverOutro();
     }
 }

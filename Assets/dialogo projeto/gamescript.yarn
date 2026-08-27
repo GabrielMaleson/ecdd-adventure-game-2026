@@ -70,7 +70,7 @@ title: home_outside_noise
 // recarregue (o OnceTime do DialogueStarter e por instancia, morre no reload).
 <<if not hasprogress("HeardNoise") and not hasprogress("MetHaze")>>
 <<playsound NoiseOnTheRoad>>
-Josh: Hm...? What's that noise?
+Josh: Hm? What's that noise?
 <<progress HeardNoise>>
 <<endif>>
 ===
@@ -155,9 +155,9 @@ Josh: Nowhere to go, I guess.
 ?: A TV! What are you watching?
 Josh: I <i>was</i> going to watch some National Geographic before you came in.
 ?: National Geographic?
-Josh: It's a channel that shows anima—.
+Josh: It's a channel that shows anima—
 ?: Boooring.
-Josh: ... I guess, yeah.
+Josh: ... Yeah, it is.
 // Vira pro Josh, anda ate ele, e so entao fala. Mesmo destino do HazeHouse, entao ele
 // para exatamente onde estava quando entrou.
 <<face HazeTwo Josh>>
@@ -169,19 +169,18 @@ Josh: I'm weird? Says the orange floating thing that appeared out of nowhere. Lo
 ?: As I said, I don't know!
 Josh: I'm guessing you don't have a name, also.
 ?: Not that I can remember, no.
-Josh: Okay then. I'll call you Haze for now. Call me Josh.
-Haze: ...Ok.
+Josh: Ok then. I'll call you Haze for now. Call me Josh.
+Haze: ... Ok.
 Josh: So, you really have no idea how you wound up here?
 Haze: Nuh-uh. I feel like I just woke up from a really long nap. Like, reeeeally long.
 Josh: Like, how long?
 Haze: Feels like it's been forever since I fell asleep, honestly.
-Josh: And you just suddenly fell asleep like that? For like, what, ages?
-Haze: I'm trying to remember, but it's all too messy in my hea—
+Haze: I'm trying to remember, but it's all too messy in my hea—(noise outside)
 Josh: Now what?
 Haze: Ugh!
-Josh: What?
-Haze: I don't know, felt... weird for a second. But it's gone now.
-Josh: Good. I'm gonna watch some TV then.
+Josh: Are you ok?
+Haze: I don't know, I felt weird for a second...but it's gone now.
+Josh: Good. I'm gonna watch some TV.
 Haze: I'm gonna go for a walk!
 // Um movimento so, direto pra porta — sai na diagonal, do mesmo jeito que entrou.
 <<movement HazeExit freeze>>
@@ -236,7 +235,7 @@ Josh: What? Stop this nonsense dude. Come back to my house and stay there.
 <<movement VillagerEnter freeze>>
 Villager: Josh! What are you doing just standing here?
 Josh: Uhm... nothing really, I was just... taking a walk. Yes, a walk.
-Villager: Taking a walk? Are you insane? Can't you hear the noise coming from elder Amos' house?
+Villager: Taking a walk? Are you insane? Can't you hear the noise coming from Elder Amos' house?
 Josh: Oh, yeah. So that's where all the ruckus' coming from.
 Villager: Yeah. Anyway, meet everyone there then, after you finish your... walk or whatever. Hurry!
 // Entra pela DIREITA andando pra esquerda e sai de volta pela direita, ate fora da
@@ -249,7 +248,7 @@ Haze: Trust me now?
 Josh: For this very specific topic, yes.
 Haze: Can I go with you, then?
 <<disable Villager>>
-Josh: ...Okay.
+Josh: ... Ok.
 // Troca sem teleporte, sem depender de marcador nenhum:
 // 1. o TrueHaze e colocado EXATAMENTE onde o Haze da cutscene esta (mesma posicao,
 //    mesmo lado), entao ligar ele nao muda nada na tela;
@@ -287,23 +286,23 @@ Haze: <i>Josh, I feel like we should go in.</i>
 Josh: <i>Are you really inside my mind, man?</i>
 Haze: <i>Yup.</i>
 Josh: <i>Jesus Christ dude, I just wanted to watch some TV...</i>
-Josh: </i>Ugh, ok, why should we go in?</i>
+Josh: </i>Ugh, ok...fine. Why should we go in?</i>
 Haze: <i>Just trust me on this one.</i>
-Josh: <i>Fine, whatever.</i>
+Josh: <i>Whatever.</i>
 Josh: Ok, I guess I'm going to check his place.
 Erika: What, why?
 Marcus: What could be inside there?
 Josh: I don't know, man. You two have something better to do?
 Erika: Why are you so proactive out of nowhere?
 Marcus: Who are you and where is our friend Josh?
-Haze: <i>Ha!</i>
 Josh: Funny. 'Kay, I'm going in.
-Erika: I'm going in then, also.
+Erika: I'm also going in, then.
 Marcus: Yeah, me too.
 Haze: <i>Wouldn't it be better if we went by ourselves?</i>
 Josh: <i>Why? It doesn't matter anyway. I'm not stopping them.</i>
 Haze: <i>...Okay.</i>
 Josh: Let's go, then.
+<<progress ElderHouseCutsceneDone>>
 ===
 
 title: elders_house_inside_explore
@@ -338,12 +337,13 @@ title: elders_house_writing_table
 ---
 Haze: What are these? Notes?
 Josh: Let's see...
-Elder Amos: It's been calling to me, calling to me for some time now, calling to me... WHAT SHOULD I DO WHAT SHOULD I DO HELP HELP HELP I NEED TO GO THERE, I NEED TO FIND IT, I NEED TO GET IT IT'S THE ONLY WAY ONLY I CAN DO IT... only I know about it.
+Elder Amos: It's been calling to me, calling to me for some time now, calling to me... 
+Elder Amos: WHAT SHOULD I DO WHAT SHOULD I DO HELP HELP HELP I NEED TO GO THERE, I NEED TO FIND IT, I NEED TO GET IT IT'S THE ONLY WAY ONLY I CAN DO IT... only I know about it.
 Josh: Damn, he was really losing it. What is he talking about?
 Haze: There's more down there.
 Josh: It's a poem... I can barely read it, must be ages old.
 Josh: "North you must go / To get what you need / Through the dark forest path / A new site you shall see"
-Josh: "Solve the riddles therein / Before time runs out / Or else for the land / Ruin will befall"
+Josh: "Solve the enigmas therein / Before time runs out / Or else for the land / Ruin will befall"
 Josh: Huh... Riddles? What is this, a game? Why was this geezer fooling around with this?
 Haze: I guess we need to go North and find out, no?
 Josh: Do I really need to find anything out? As far as I know a senile old man got lost in the woods. The only really weird thing here is still you.
@@ -399,7 +399,7 @@ Josh: Nope. I know as much as them.
 title: puzzle_entrance
 ---
 Erika: What the hell is this?
-Josh: Probably one of the riddles the old man's poem mentioned.
+Josh: Probably one of the "enigmas" the old man's poem mentioned.
 Marcus: What are those glowing things?
 Erika: I kinda want to jump on it.
 Marcus: I dare you. You don't have the balls, Eri!
@@ -457,6 +457,11 @@ Raven: ...
 <<progress KeyGrabbed>>
 ===
 
+title: square_signpost
+---
+Sign: Josh's house: Southwest<br>Elder Amos' house: North
+===
+
 // PLACEHOLDER — troca o texto do Haze pela fala que voce quiser.
 // Disparado por StatueSwitch > On Refused First Time (so na PRIMEIRA vez
 // que a estatua e recusada). As recusas seguintes so piscam o bloqueador.
@@ -465,4 +470,65 @@ title: statue_blocked_first
 Haze: It won't budge. Something's in its way.
 Josh: ...the crate?
 Haze: Move it and try again.
+===
+// A conversa final da cripta. Disparada ao PISAR na frente da estatua grande da sala
+// do fundo (CryptFinalTalk), nao por E — o beat acontece por chegar la, e nao por
+// escolher interagir.
+//
+// O mapa entra perto do fim, quando eles acham algo atras da estatua: <<sprite>> mostra,
+// <<removesprite>> tira. As duas usam a posicao "map", que e um retangulo grande e
+// centralizado na cena (MapOverlay > MapSeat).
+title: crypt_final
+---
+Josh: I see something written.
+Josh: "The mist is not your friend. It may seem calm and still, but through it malice yearns to grow."
+Marcus: What does it mean "it's not your friend?" How can a natural phenomenon be an enemy?
+Haze: Agh!
+Erika: !
+Marcus: !
+Josh: What happened?!
+Haze: Ugh… I felt weird again.
+Erika: Josh, what is that?
+Marcus: Yeah Joshy, what the hell is that?
+Josh: Guys, Uhm... meet Haze. I don't know what he is.
+Erika: …
+Marcus: …
+Haze: Hi.
+Erika: So? That's all you're gonna say about the talking smoke?!
+Josh: Huh… yeah, right. So, I found him by my house, I brought him in, and we ended up going together to Amos'. He's the one who helped me with the puzzles.
+Marcus: So that's how you did it.
+Erika: That explains a lot, but, why are they—I mean, why are <i>you</i> here, Haze? You clearly have something to do with what's going on.
+Haze: Honestly…I don't know much. I woke up outside Josh's house, and can't remember anything before that. 
+Marcus: Wow…
+Marcus: Haze is a good name.
+Josh: Right?
+Marcus: Crazy stuff happening in our little village!
+Erika: I don't know if you should be that excited about it.
+Josh: Okay guys, there's more, wait a second.
+Josh: "Many have been lost to seal that which now lies below this soil. Its power was just too vast, too incomprehensible. If you were able to solve the challenges and enter this chamber, you hold some of that ancient power in your hands."
+Marcus: Ancient power, is he talking about Haze here?
+Haze: I don't feel like ancient power.
+Marcus: Well, you did that magic back there.
+Josh: "That means it is active again, and time is running out. There are two sites within this land where the keys to saving yourself, and everyone you love, are hidden and protected the same way this chamber is.
+Josh: "I could not leave them lying around here, for this force is too great to be left unprotected. In the wrong hands, its capacity for harm is beyond measure. I do not know your intentions, I have to be safe. I bid you good luck."
+Marcus: Uhm, guys… I'm not finding this <i>that</i> fun anymore.
+Erika: Josh… I don't know. Any other day I would laugh at all this, but Amos disappearing? The mist? Talking smoke? I think we need to go after those keys.
+Josh: Yeah, I agree.
+Marcus: Okay, so now that that's settled, I think some proper introductions are in order. 
+Marcus: Hi Haze, I am Marcus, and the beautiful blondie here is Erika. Nice to meet you.
+Erika: What's up.
+Haze: Nice to meet you guys!
+Erika: It seems like you are our key to getting out of this situation.
+Haze: Seems like it.
+Erika: I just hope you are really on our side.
+Marcus: Ah, come on Erika, don't do that. Sorry Haze, she's been like this since kindergarten.
+Haze: It's ok, I would also be suspicious of myself. I think. I'm talking smoke, after all.
+Josh: Guys, can we talk on the way outta here?
+Marcus: Sure, but where do we go?
+Haze: There's something more down there!
+Josh: Good eye. Let me check.
+<<sprite map map>>
+Josh: It's a map. Seems like we know where to go now.
+<<removesprite map>>
+<<progress CryptFinalTalkDone>>
 ===

@@ -72,6 +72,11 @@ public class BarkDirector : MonoBehaviour
     {
         get
         {
+            // Pergunta primeiro a quem esta falando. O dicionario de speakers e indexado
+            // por barkId e por isso perde um falante quando dois compartilham o id — era
+            // assim que o E sobrevivia por cima de um bark.
+            if (CharacterDialogue.AlgumMostrando) return true;
+
             if (instance == null) return false;
 
             foreach (var pair in instance.speakers)

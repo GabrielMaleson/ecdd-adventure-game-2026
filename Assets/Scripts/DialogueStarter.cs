@@ -22,7 +22,32 @@ public class DialogueStarter : MonoBehaviour
     public bool ConditionsCancel;
     public List<DialogueCondition> Conditions;
 
-    private bool hasPlayed = false;
+    private bool hasPlayedThisScene = false;
+
+    // "Ja rodou?" tem de sobreviver a TROCAR DE CENA.
+    //
+    // hasPlayed era um bool privado e so isso: entrar na casa do Elder e voltar recarrega a
+    // cena, o objeto nasce de novo com o campo zerado, e um dialogo Once Time voltava a ser
+    // oferecido como se nunca tivesse acontecido. Do lado de quem joga, "ja falei com eles"
+    // simplesmente nao era lembrado.
+    //
+    // O SaveManager e DontDestroyOnLoad, entao e ele quem lembra. A marca e derivada do NOME
+    // DO NO, e nao do objeto: o mesmo no disparado por dois gatilhos conta como um so, que e
+    // o que se quer quando um beat tem gatilho no chao e um E redundante.
+    private string MarcaDeJogado =>
+        string.IsNullOrEmpty(Dialogue) ? null : "played_" + Dialogue;
+
+    private bool hasPlayed
+    {
+        get
+        {
+            if (hasPlayedThisScene) return true;
+
+            string marca = MarcaDeJogado;
+            return marca != null && SaveManager.Instance != null
+                   && SaveManager.Instance.HasProgress(marca);
+        }
+    }
     private bool playerInRange = false;
 
     // The trigger is a collider on THIS object, so "where the cutscene starts" used to
@@ -230,9 +255,13 @@ public class DialogueStarter : MonoBehaviour
     // Call this method when dialogue actually starts to mark it as played
     public void MarkAsPlayed()
     {
-        if (OnceTime)
-        {
-            hasPlayed = true;
-        }
+        if (!OnceTime) return;
+
+        hasPlayedThisScene = true;
+
+        // Gravado tambem no SaveManager, senao a marca morre na proxima troca de cena.
+        string marca = MarcaDeJogado;
+        if (marca != null && SaveManager.Instance != null)
+            SaveManager.Instance.AddProgress(marca);
     }
 }

@@ -85,6 +85,15 @@ public static class YSortWorld
 
         public float lastAnchor = float.NaN;
         public int lastOrder = int.MinValue;
+
+        // A CAMADA ja foi imposta a estes renderers?
+        //
+        // Separada da ordem de proposito. A camada so era escrita DEPOIS dos dois early-outs
+        // — o de ancora parada e o de ordem igual — entao um objeto que nunca mudasse de
+        // ordem ficava na camada com que nasceu. Nascendo em Default, ele afunda debaixo de
+        // TODO objeto em Objects, em toda casa, sempre: nao e um erro de alguns pixels na
+        // linha do chao, e o objeto inteiro atras de tudo.
+        public bool layerApplied;
     }
 
     private static readonly Dictionary<Transform, Entry> byRoot = new Dictionary<Transform, Entry>();
@@ -316,6 +325,23 @@ public static class YSortWorld
             }
 
             float anchor = e.root.position.y + e.anchorOffsetY;
+
+            // A camada e imposta UMA vez por Entry, antes de qualquer early-out. Sorting
+            // Layer manda mais que Sorting Order: estar na camada errada nao e ficar alguns
+            // lugares atras, e desaparecer atras de tudo que esta na camada de cima.
+            //
+            // Continua barato: um bool por objeto por quadro depois da primeira vez.
+            if (forceLayer && !e.layerApplied)
+            {
+                for (int i = 0; i < e.renderers.Length; i++)
+                {
+                    SpriteRenderer r = e.renderers[i];
+                    if (r == null) continue;
+                    if (r.sortingLayerID != layerId) r.sortingLayerID = layerId;
+                }
+
+                e.layerApplied = true;
+            }
 
             // Nada se mexeu: sair antes de escrever. E isto que faz 325 objetos parados
             // custarem uma comparacao de float cada por quadro, e nada mais.

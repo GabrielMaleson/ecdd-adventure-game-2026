@@ -26,6 +26,12 @@ public class InteractSettings : ScriptableObject
              "dispara, entao nao ha nada a preservar em deixar assim.")]
     public bool createMissingTrigger = true;
 
+    [Tooltip("DESLIGADO (padrao): o tamanho que voce desenhar na mao em cada trigger fica " +
+             "como voce deixou, para sempre. Ligado: todo trigger de interagivel volta a ser " +
+             "reescrito para o Trigger Size acima sempre que este asset e editado — o que " +
+             "desfaz, sem avisar, qualquer ajuste feito num objeto especifico.")]
+    public bool padronizarTamanho;
+
     [Tooltip("Texto do prompt. Vazio = cada objeto mantem o proprio. Preenchido, TODO " +
              "interagivel usa este — e o prompt para de ser uma frase escrita a mao em um " +
              "objeto e um E em outro.")]
@@ -110,14 +116,20 @@ public class InteractSettings : ScriptableObject
                 // would change what the player can walk through.
                 if (!box.isTrigger) continue;
 
-                if (group)
+                // O tamanho so e reescrito com padronizarTamanho LIGADO. Desligado, o
+                // sistema ainda serve para criar o trigger que falta e padronizar o rotulo
+                // — mas nao desfaz mais um alcance desenhado na mao.
+                if (padronizarTamanho)
                 {
-                    box.offset = groupOffset;
-                    box.size = groupSize;
-                }
-                else
-                {
-                    box.size = triggerSize;
+                    if (group)
+                    {
+                        box.offset = groupOffset;
+                        box.size = groupSize;
+                    }
+                    else
+                    {
+                        box.size = triggerSize;
+                    }
                 }
                 found = true;
             }
