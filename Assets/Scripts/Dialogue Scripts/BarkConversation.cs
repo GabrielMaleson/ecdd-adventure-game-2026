@@ -49,6 +49,14 @@ public class BarkConversation : MonoBehaviour
         [Tooltip("Pausa DEPOIS desta fala, alem do tempo que ela fica na tela. Use para " +
                  "dar peso a um silencio — o '...' do Haze pede um respiro maior.")]
         public float gapAfter = 0.35f;
+
+        [Tooltip("Sai AO MESMO TEMPO que a linha de cima, em vez de esperar ela terminar.\n\n" +
+                 "Serve para reacao coletiva: dois personagens vendo a mesma coisa e " +
+                 "falando por cima um do outro. Em sequencia isso vira revezamento educado " +
+                 "e perde o susto.\n\n" +
+                 "O grupo inteiro conta como uma fala so: a proxima linha que NAO tem isto " +
+                 "marcado espera a mais longa do grupo terminar.")]
+        public bool aoMesmoTempoQueAnterior;
     }
 
     [Header("A conversa")]
@@ -66,6 +74,16 @@ public class BarkConversation : MonoBehaviour
     [Tooltip("Espera antes da primeira fala. Um beat curto depois do gatilho evita que a " +
              "conversa comece em cima de outra coisa que acabou de acontecer.")]
     public float startDelay = 0.4f;
+
+    [Tooltip("Segura a conversa enquanto QUALQUER outra fala estiver na tela, e comeca no " +
+             "instante em que o ar fica livre.\n\n" +
+             "O Start Delay sozinho nao resolve isso: ele e um tempo fixo, e nao tem como " +
+             "adivinhar quanto falta da fala que ja esta rolando. Sem esta espera, uma " +
+             "conversa disparada por gatilho de passagem sai por cima de quem estava " +
+             "falando, e o jogador perde as duas.\n\n" +
+             "Ela nao adia para sempre: assim que o ultimo balao sai da tela, a conversa " +
+             "comeca. Se nada estiver acontecendo, comeca na hora.")]
+    public bool esperarFalaEmAndamento = true;
 
     [Header("Condicoes")]
     [Tooltip("So roda com este progresso gravado (SaveManager). Vazio = sem condicao.")]
@@ -118,6 +136,40 @@ public class BarkConversation : MonoBehaviour
     private void Start()
     {
         if (startMode == StartMode.OnStart) Play();
+    }
+
+    // O caso de este objeto ser LIGADO com o jogador ja parado dentro do alcance.
+    //
+    // OnTriggerEnter2D so dispara na ENTRADA. Mas o uso normal deste componente no modo
+    // PressesE e justamente nascer desligado e ser aceso por outra coisa — a chegada dos
+    // NPCs num waypoint, o fim de uma caminhada, um puzzle resolvido. Nessa hora o Josh ja
+    // esta parado no lugar: ele nunca "entra", porque ja estava dentro quando o gatilho
+    // nasceu, e o E simplesmente nao aparece.
+    //
+    // O InteractAction ja tratava isso no proprio OnEnable, e pelo mesmo motivo. Aqui a
+    // chegada e conferida na mao, do mesmo jeito.
+    private void OnEnable()
+    {
+        if (startMode != StartMode.PlayerPressesE) return;
+
+        Collider2D col = GetComponent<Collider2D>();
+        if (col == null)
+        {
+            Debug.LogWarning($"[BarkConversation] '{name}': modo Player Presses E sem " +
+                             "Collider2D — nao ha alcance, o E nunca vai aparecer.", this);
+            return;
+        }
+
+        GameObject p = GameObject.FindGameObjectWithTag(playerTag);
+        if (p == null) return;
+
+        Collider2D pc = p.GetComponent<Collider2D>();
+        bool dentro = pc != null ? col.bounds.Intersects(pc.bounds)
+                                 : col.bounds.Contains(p.transform.position);
+        if (!dentro) return;
+
+        playerInside = true;
+        Offer();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -199,13 +251,43 @@ public class BarkConversation : MonoBehaviour
     // Permite repetir um beat que ja rodou — reset de puzzle, recarregar save.
     public void Rearm() => played = false;
 
+    // Outra conversa rodando — esta nao conta, senao ela esperaria por si mesma para sempre.
+    private bool OutraConversaRodando()
+    {
+        for (int i = runningNow.Count - 1; i >= 0; i--)
+        {
+            BarkConversation c = runningNow[i];
+            if (c == null) { runningNow.RemoveAt(i); continue; }
+            if (c != this) return true;
+        }
+        return false;
+    }
+
     private IEnumerator Run()
     {
+        // Esperar o ar ficar livre ANTES do startDelay, e nao depois: o delay e o respiro
+        // desta cena, e ele so faz sentido contado a partir do silencio.
+        if (esperarFalaEmAndamento)
+            while (BarkDirector.AnyBarkShowing || OutraConversaRodando())
+                yield return null;
+
         if (startDelay > 0f) yield return new WaitForSeconds(startDelay);
+
+        // O quanto falta esperar por causa das falas ja disparadas. Nao e aplicado na hora:
+        // fica pendente ate aparecer uma linha que precise do palco limpo. E isso que
+        // permite um grupo de falas simultaneas contar como uma fala so.
+        float esperaPendente = 0f;
 
         foreach (Line line in lines)
         {
             if (line == null || string.IsNullOrEmpty(line.text)) continue;
+
+            // Linha normal: paga o que ficou pendente do grupo anterior antes de abrir a boca.
+            if (!line.aoMesmoTempoQueAnterior && esperaPendente > 0f)
+            {
+                yield return new WaitForSeconds(esperaPendente);
+                esperaPendente = 0f;
+            }
 
             float duration = BarkDirector.Bark(line.speakerId, line.text, BarkPriority.Scripted);
 
@@ -214,8 +296,12 @@ public class BarkConversation : MonoBehaviour
             // BarkDirector ja gritou no Console dizendo qual foi, entao aqui e so seguir.
             if (duration <= 0f) continue;
 
-            yield return new WaitForSeconds(duration + Mathf.Max(0f, line.gapAfter));
+            // O grupo simultaneo termina quando a fala MAIS LONGA dele termina. Somar
+            // deixaria o silencio depois de duas falas curtas parecer o dobro do que se ve.
+            esperaPendente = Mathf.Max(esperaPendente, duration + Mathf.Max(0f, line.gapAfter));
         }
+
+        if (esperaPendente > 0f) yield return new WaitForSeconds(esperaPendente);
 
         running = null;
         runningNow.Remove(this);

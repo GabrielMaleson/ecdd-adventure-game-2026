@@ -88,6 +88,25 @@ public class NpcFollow : MonoBehaviour
              "todo passo ja conta como chegada e a animacao pisca entre andar e parar.")]
     public float arriveThreshold = 0.02f;
 
+    [Tooltip("Velocidade com que ele ANDA ate a vaga dele quando a fila se forma (no " +
+             "<<follow>>). So vale nessa entrada; depois dela ele passa a andar o passo " +
+             "exato do lider.\n\n" +
+             "Precisa ser um pouco MAIOR que a caminhada do Josh (~3), senao ele nunca " +
+             "alcanca a vaga enquanto o Josh estiver andando — persegue para sempre a " +
+             "mesma distancia.")]
+    public float catchUpSpeed = 3.6f;
+
+    [Header("Teleporte")]
+    [Tooltip("Distancia do lider a partir da qual a fila e REMONTADA em vez de andada.\n\n" +
+             "Existe por causa do teleporte de porta. Todo mundo anda o passo EXATO do " +
+             "lider, e nada corrige depois — entao um buraco aberto de uma vez so nunca " +
+             "fecha sozinho, por definicao. Sem isto o de tras segue o resto do jogo com o " +
+             "mesmo atraso, andando a caminho de um lugar que ficou para tras.\n\n" +
+             "Tem de ser MAIOR que qualquer espacamento legitimo (Follow Distance vezes o " +
+             "tamanho da fila) e MENOR que um pulo de teleporte. 6 cobre os dois com folga. " +
+             "0 desliga.")]
+    public float reseatIfFartherThan = 6f;
+
     [Header("Animation")]
     [Tooltip("Vazio = usa o Animator deste objeto ou dos filhos.")]
     public Animator animator;
@@ -97,6 +116,11 @@ public class NpcFollow : MonoBehaviour
 
     private Rigidbody2D body;
     private CharacterFacing facing;
+
+    // Fase de ENTRADA na fila: ele anda por conta propria ate a vaga. Acaba sozinha, no
+    // quadro em que o espacamento fica certo, e nao volta mais — a nao ser que a fila seja
+    // montada de novo por um <<follow>>.
+    private bool catchingUp;
 
     // Animation follows the step actually taken, not "am I near the goal": the goal moves
     // in small hops as the leader walks, so distance-to-goal flickers across any threshold
@@ -146,7 +170,16 @@ public class NpcFollow : MonoBehaviour
             // Re-seeded on the way back in, not on the way out: while it was off the leader
             // walked somewhere else entirely, and a stale trail would send the character
             // retracing a route that no longer starts where he is standing.
-            if (on && !f.enabled) f.Reseed();
+            if (on && !f.enabled)
+            {
+                f.Reseed();
+
+                // A fila se monta ANDANDO, toda vez que ela se monta — nao so na primeira.
+                // O Start() so roda no primeiro enable, entao um <<unfollow>> seguido de
+                // <<follow>> mais tarde nao passaria por ele e o personagem entraria na
+                // vaga de uma vez.
+                f.catchingUp = true;
+            }
 
             f.enabled = on;
         }
@@ -175,9 +208,17 @@ public class NpcFollow : MonoBehaviour
         targetVisual = targetAnimator != null ? targetAnimator.transform : target;
     }
 
+    // Desligar o componente e o que "parar de seguir" significa neste projeto — e o que o
+    // <<unfollow>>, o NpcEntrance e o NpcGather fazem. Entao e aqui que a colisao volta.
+    private void OnDisable()
+    {
+        RestoreCollisions();
+    }
+
     private void OnDestroy()
     {
         allInstances.Remove(this);
+        RestoreCollisions();
     }
 
     // Throws the old trail away and starts a fresh one from where these two are standing
@@ -211,20 +252,20 @@ public class NpcFollow : MonoBehaviour
 
         ResolveTargetVisual();
 
-        // Placed at its slot NOW, on the line it already sits on. Everyone advances by the
-        // leader's exact step from here on, so whatever spacing exists at this moment is
-        // the spacing for the rest of the game — it has to be right before the first step,
-        // because nothing corrects it later. That is the price of moving at one speed, and
-        // it is the point.
-        if (target != null)
-        {
-            Vector2 fromLeader = (Vector2)transform.position - (Vector2)target.position;
-            if (fromLeader.sqrMagnitude < 0.0001f) fromLeader = Vector2.down;
-            transform.position = (Vector2)target.position + fromLeader.normalized * followDistance;
-
-            Rigidbody2D rb = GetComponent<Rigidbody2D>();
-            if (rb != null) rb.position = transform.position;
-        }
+        // ANDA ate a vaga, nao aparece nela.
+        //
+        // Aqui o personagem era reposicionado na vaga de uma vez. No carregamento da cena
+        // isso nao se ve, e era esse o caso para o qual foi escrito. Mas o componente nasce
+        // DESLIGADO neste projeto e quem acende e o <<follow>> do .yarn — e a Unity so roda
+        // o Start() no primeiro enable. Ou seja: o reposicionamento, escrito para acontecer
+        // enquanto ninguem olha, passou a acontecer no meio de uma cena, com a camera em
+        // cima. Os dois surgiam ao lado do Josh.
+        //
+        // Entao a montagem da fila virou uma caminhada, com velocidade propria, e ela dura
+        // ate o espacamento estar certo. Dali em diante vale a regra de sempre — passo
+        // exato do lider, sem correcao — e o invariante continua inteiro, porque a fase de
+        // entrada termina EXATAMENTE quando o espacamento fica correto.
+        catchingUp = target != null;
 
         // Seeded so the first frames have a real path to walk instead of the leader's
         // single starting point, which would make everyone converge on one spot.
@@ -258,6 +299,8 @@ public class NpcFollow : MonoBehaviour
     {
         if (target == null) return;
 
+        if (ReseatAfterJump()) return;
+
         MeasureLeaderSpeed();
         RecordLeaderStep();
 
@@ -283,7 +326,13 @@ public class NpcFollow : MonoBehaviour
         // is the whole complaint. Everyone in the line advances the same distance in the
         // same frame, so the spacing set at the start is the spacing forever and all three
         // walk cycles stay in step.
-        float allowance = leaderMoving ? leaderSpeed * Time.fixedDeltaTime : 0f;
+        // Durante a ENTRADA na fila a permissao e propria e nao depende do lider: ele tem
+        // de fechar uma distancia, e ninguem fecha distancia andando o passo de quem esta
+        // na frente. E tambem nao passa pelo porteiro do "o lider esta parado" — a cena
+        // normal e justamente o Josh esperando enquanto os dois vem.
+        float allowance = catchingUp
+            ? catchUpSpeed * Time.fixedDeltaTime
+            : (leaderMoving ? leaderSpeed * Time.fixedDeltaTime : 0f);
 
         Vector2 step = allowance > 0f && distance > arriveThreshold
             ? Vector2.MoveTowards(here, goal, allowance)
@@ -295,15 +344,90 @@ public class NpcFollow : MonoBehaviour
             else transform.position = step;
         }
 
+        // Chegou na vaga: acabou a entrada, e dali em diante vale o passo do lider.
+        if (catchingUp && distance <= arriveThreshold) catchingUp = false;
+
         // What the MC was doing WHERE THIS CHARACTER IS, not where he is now. He turns the
         // corner first; they turn it when they get there.
-        Animate(dirHere, leftHere, leaderMoving);
+        Animate(dirHere, leftHere, leaderMoving, step - here);
+    }
+
+    // A porta que teleporta o jogador abre um buraco que a trilha NAO consegue fechar, e
+    // vale a pena entender por que, porque nao e um descuido — e o preco do desenho.
+    //
+    // Todo mundo anda o passo exato do lider, e "o lider" para efeito de VELOCIDADE e
+    // sempre a CABECA da fila (o Josh), para todos. No quadro do teleporte a velocidade
+    // dele e enorme, e quem le a posicao dele direto — o primeiro da fila — atravessa
+    // junto e chega.
+    //
+    // O segundo da fila nao segue o Josh: segue o primeiro. E o primeiro se move por
+    // MovePosition, que so vale no proximo passo de fisica. Entao no quadro do pulo ele
+    // ainda le a posicao ANTIGA do da frente, e perde a unica janela em que a permissao de
+    // passo era grande o bastante. No quadro seguinte a permissao ja voltou a ser a
+    // velocidade de caminhada do Josh — e como ninguem anda mais que o lider, aquele
+    // buraco fica aberto para sempre. Nao e atraso que se recupera: e a distancia nova da
+    // fila, pelo resto do jogo.
+    //
+    // Isso e determinístico e nao depende de ordem de execucao de script — o que explica
+    // por que era SEMPRE o ultimo da fila, e sempre o mesmo personagem.
+    //
+    // A saida e remontar em vez de andar, e SO nesse caso: acima de um buraco que nenhuma
+    // caminhada legitima produz, o personagem e reassentado na vaga dele e a trilha e
+    // semeada de novo, igual ao Start(). Numa fila de dois isso se propaga em dois quadros
+    // e nao aparece na tela. Abaixo do limite nada muda — a regra de "o espacamento do
+    // inicio e o espacamento para sempre" continua valendo inteira, que e o que mantem os
+    // ciclos de caminhada em sincronia.
+    private bool ReseatAfterJump()
+    {
+        if (reseatIfFartherThan <= 0f) return false;
+
+        Vector2 here = body != null ? body.position : (Vector2)transform.position;
+        Vector2 leader = target.position;
+
+        if (Vector2.Distance(here, leader) <= reseatIfFartherThan) return false;
+
+        // Mesma conta do Start(), de proposito: a vaga e atras do lider, no lado em que
+        // este personagem ja estava. Ter duas formulas para "onde e a minha vaga" seria
+        // duas respostas diferentes para a mesma pergunta.
+        Vector2 fromLeader = here - leader;
+        if (fromLeader.sqrMagnitude < 0.0001f) fromLeader = Vector2.down;
+
+        Vector2 seat = leader + fromLeader.normalized * followDistance;
+
+        transform.position = seat;
+        if (body != null) body.position = seat;
+
+        Reseed();
+        if (facing != null) facing.SetIdle();
+
+        return true;
     }
 
     // A follower walks INTO whoever it is chasing by design — that is what following is.
     // With both bodies Dynamic and the same tiny mass, the contact shoved the player around,
     // which reads as the character walking off on his own. Walls still stop them.
-    private void IgnoreCollisionWith(Transform other)
+    // Devolve a colisao com o jogador e com os outros seguidores.
+    //
+    // Physics2D.IgnoreCollision e PERMANENTE: ligado uma vez, vale o resto da sessao. Como
+    // o Start() so roda no primeiro <<follow>>, o efeito colateral era invisivel ate o
+    // roteiro ganhar aquele comando — dali em diante o Josh atravessava Marcus e Erika em
+    // TODA cena seguinte, inclusive paradas, inclusive depois de <<unfollow>>. Na casa do
+    // Elder eles ainda tinham corpo porque o follow nunca tinha sido ligado.
+    //
+    // O ignore existe para o seguidor nao EMPURRAR quem ele persegue enquanto anda atras.
+    // Fora do follow ele nao persegue ninguem, e nao ha nada para ignorar.
+    private void RestoreCollisions()
+    {
+        SetCollisionIgnored(target, false);
+        SetCollisionIgnored(GameObject.FindGameObjectWithTag("Player")?.transform, false);
+
+        foreach (NpcFollow other in FindObjectsByType<NpcFollow>(FindObjectsSortMode.None))
+            if (other != this) SetCollisionIgnored(other.transform, false);
+    }
+
+    private void IgnoreCollisionWith(Transform other) => SetCollisionIgnored(other, true);
+
+    private void SetCollisionIgnored(Transform other, bool ignore)
     {
         if (other == null) return;
 
@@ -314,13 +438,36 @@ public class NpcFollow : MonoBehaviour
             foreach (Collider2D theirs in other.GetComponentsInChildren<Collider2D>())
             {
                 if (theirs.isTrigger || theirs == mine) continue;
-                Physics2D.IgnoreCollision(mine, theirs, true);
+                Physics2D.IgnoreCollision(mine, theirs, ignore);
             }
         }
     }
 
-    private void Animate(int dirHere, bool leftHere, bool leaderMoving)
+    private void Animate(int dirHere, bool leftHere, bool leaderMoving, Vector2 actualStep)
     {
+        // SE ELE ANDOU, ELE ANDA NA TELA. Isto tem de vir antes de qualquer outra regra.
+        //
+        // A pose gravada na trilha (dirHere) so existe depois que a trilha acumulou passos
+        // de verdade. Numa trilha recem-semeada — Reseed() — os dois pontos entram com
+        // direcao 0, e 0 cai no "parado" logo abaixo. Resultado: o personagem atravessava a
+        // tela deslizando em pose de parado ate a trilha encher. Era esse o tempo em que a
+        // Erika andava sem animacao depois de um teleporte, e a mesma coisa valeria para a
+        // caminhada de entrada na fila.
+        //
+        // A leitura de tras para frente tambem e a certa: a trilha diz o que o lider fazia
+        // ALI, mas o passo que este personagem acabou de dar e um fato sobre ele mesmo.
+        // As DUAS condicoes importam. `dirHere <= 0` e a trilha recem-semeada; `!leaderMoving`
+        // e a caminhada de entrada na fila, em que o Josh esta PARADO esperando — sem esta
+        // metade, o porteiro logo abaixo poria em pose de parado quem esta atravessando a
+        // sala.
+        bool moved = actualStep.sqrMagnitude > 0.000001f;
+
+        if (moved && (dirHere <= 0 || !leaderMoving))
+        {
+            facing.Set(actualStep);
+            return;
+        }
+
         if (!leaderMoving || dirHere <= 0)
         {
             facing.SetIdle();

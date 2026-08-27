@@ -1,103 +1,103 @@
 fileFormatVersion: 2
-guid: 398fa7c24fbc5584b81e7b39ef04e981
+guid: c62e03e7a48286c40bce6719008925a4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2112968277116804065
-    second: erika_spritesheet_test_0
+      213: -8062963999979382727
+    second: erica_spriteSheettrue_0
   - first:
-      213: 2561020876513753624
-    second: erika_spritesheet_test_1
+      213: 4525821046148492650
+    second: erica_spriteSheettrue_1
   - first:
-      213: -3664598542432306232
-    second: erika_spritesheet_test_2
+      213: -7665909400975556738
+    second: erica_spriteSheettrue_2
   - first:
-      213: -3625339239421622341
-    second: erika_spritesheet_test_3
+      213: -6875736042434576074
+    second: erica_spriteSheettrue_3
   - first:
-      213: -1821405709726592445
-    second: erika_spritesheet_test_4
+      213: -1795782509896519696
+    second: erica_spriteSheettrue_4
   - first:
-      213: 5679879666379272193
-    second: erika_spritesheet_test_5
+      213: -6992783015079671422
+    second: erica_spriteSheettrue_5
   - first:
-      213: -6313483528153045734
-    second: erika_spritesheet_test_6
+      213: 114443568296110705
+    second: erica_spriteSheettrue_6
   - first:
-      213: 3254043067668887750
-    second: erika_spritesheet_test_7
+      213: 5254328726466056146
+    second: erica_spriteSheettrue_7
   - first:
-      213: -5530942079734571639
-    second: erika_spritesheet_test_8
+      213: -3928859307584066897
+    second: erica_spriteSheettrue_8
   - first:
-      213: 931928617469865972
-    second: erika_spritesheet_test_9
+      213: -8129595325144011029
+    second: erica_spriteSheettrue_9
   - first:
-      213: 1108423406600955858
-    second: erika_spritesheet_test_10
+      213: -5953383626844513337
+    second: erica_spriteSheettrue_10
   - first:
-      213: 875248688788947539
-    second: erika_spritesheet_test_11
+      213: -6700473607229513652
+    second: erica_spriteSheettrue_11
   - first:
-      213: 8231464358638875402
-    second: erika_spritesheet_test_12
+      213: 3472846539994745541
+    second: erica_spriteSheettrue_12
   - first:
-      213: 162432434189929319
-    second: erika_spritesheet_test_13
+      213: -9002344273730704851
+    second: erica_spriteSheettrue_13
   - first:
-      213: 8614361733343236801
-    second: erika_spritesheet_test_14
+      213: -4007773999036282149
+    second: erica_spriteSheettrue_14
   - first:
-      213: 3612704665361644961
-    second: erika_spritesheet_test_15
+      213: 1069439559307695947
+    second: erica_spriteSheettrue_15
   - first:
-      213: -2329897327431781245
-    second: erika_spritesheet_test_16
+      213: 2711002798065459583
+    second: erica_spriteSheettrue_16
   - first:
-      213: 8366273679628335734
-    second: erika_spritesheet_test_17
+      213: 4900757261913441591
+    second: erica_spriteSheettrue_17
   - first:
-      213: 801386984446632202
-    second: erika_spritesheet_test_18
+      213: 5650583898682529703
+    second: erica_spriteSheettrue_18
   - first:
-      213: -7962669804784868244
-    second: erika_spritesheet_test_19
+      213: -5962461407695727762
+    second: erica_spriteSheettrue_19
   - first:
-      213: 5233302735696639144
-    second: erika_spritesheet_test_20
+      213: -8577540111855448411
+    second: erica_spriteSheettrue_20
   - first:
-      213: 3232591367284889002
-    second: erika_spritesheet_test_21
+      213: -860487231715759590
+    second: erica_spriteSheettrue_21
   - first:
-      213: 6475299983199771772
-    second: erika_spritesheet_test_22
+      213: -5704117570317573400
+    second: erica_spriteSheettrue_22
   - first:
-      213: -5326818874985285188
-    second: erika_spritesheet_test_23
+      213: -3226700692439355172
+    second: erica_spriteSheettrue_23
   - first:
-      213: -1853024924244644996
-    second: erika_spritesheet_test_24
+      213: -5330170369929470343
+    second: erica_spriteSheettrue_24
   - first:
-      213: -1862706651277318060
-    second: erika_spritesheet_test_25
+      213: 3429928349881324801
+    second: erica_spriteSheettrue_25
   - first:
-      213: 3695098888515351891
-    second: erika_spritesheet_test_26
+      213: 8897421477618445090
+    second: erica_spriteSheettrue_26
   - first:
-      213: -8032581071013430179
-    second: erika_spritesheet_test_27
+      213: 7072531151134174951
+    second: erica_spriteSheettrue_27
   - first:
-      213: 4999657219776687336
-    second: erika_spritesheet_test_28
+      213: 6488397442652598111
+    second: erica_spriteSheettrue_28
   - first:
-      213: -8359936529052011808
-    second: erika_spritesheet_test_29
+      213: 8615004148009206502
+    second: erica_spriteSheettrue_29
   - first:
-      213: 912793514632788469
-    second: erika_spritesheet_test_30
+      213: 2103136887235779297
+    second: erica_spriteSheettrue_30
   - first:
-      213: 8201125961263820053
-    second: erika_spritesheet_test_31
+      213: -4431947623250107306
+    second: erica_spriteSheettrue_31
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -167,8 +167,8 @@ TextureImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: 4
-    textureCompression: 1
+    textureFormat: -1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -193,705 +193,705 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: erika_spritesheet_test_0
+      name: erica_spriteSheettrue_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 192
-        width: 64
-        height: 64
+        x: 22
+        y: 206
+        width: 18
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f14a8c40c8a3da2e0800000000000000
-      internalID: -2112968277116804065
+      spriteID: 938577026f89a1090800000000000000
+      internalID: -8062963999979382727
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_1
+      name: erica_spriteSheettrue_1
       rect:
         serializedVersion: 2
-        x: 64
-        y: 192
-        width: 64
-        height: 64
+        x: 87
+        y: 206
+        width: 16
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 81a36f61be29a8320800000000000000
-      internalID: 2561020876513753624
+      spriteID: a6deaac3342fece30800000000000000
+      internalID: 4525821046148492650
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_2
+      name: erica_spriteSheettrue_2
       rect:
         serializedVersion: 2
-        x: 128
-        y: 192
-        width: 64
-        height: 64
+        x: 150
+        y: 206
+        width: 17
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8cb78e1aa0bb42dc0800000000000000
-      internalID: -3664598542432306232
+      spriteID: e7f368af3083d9590800000000000000
+      internalID: -7665909400975556738
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_3
+      name: erica_spriteSheettrue_3
       rect:
         serializedVersion: 2
-        x: 192
-        y: 192
-        width: 64
-        height: 64
+        x: 214
+        y: 206
+        width: 17
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bb74dfb6b2530bdc0800000000000000
-      internalID: -3625339239421622341
+      spriteID: 6314655af7a7490a0800000000000000
+      internalID: -6875736042434576074
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_4
+      name: erica_spriteSheettrue_4
       rect:
         serializedVersion: 2
-        x: 256
-        y: 192
-        width: 64
-        height: 64
+        x: 278
+        y: 206
+        width: 18
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 342d0ef382119b6e0800000000000000
-      internalID: -1821405709726592445
+      spriteID: 0ff22cb52591417e0800000000000000
+      internalID: -1795782509896519696
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_5
+      name: erica_spriteSheettrue_5
       rect:
         serializedVersion: 2
-        x: 320
-        y: 192
-        width: 64
-        height: 64
+        x: 342
+        y: 206
+        width: 18
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1003089967cf2de40800000000000000
-      internalID: 5679879666379272193
+      spriteID: 2898acaa5e4a4fe90800000000000000
+      internalID: -6992783015079671422
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_6
+      name: erica_spriteSheettrue_6
       rect:
         serializedVersion: 2
-        x: 384
-        y: 192
-        width: 64
-        height: 64
+        x: 406
+        y: 206
+        width: 18
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a1568217e200268a0800000000000000
-      internalID: -6313483528153045734
+      spriteID: 17a2e1ba1d5969100800000000000000
+      internalID: 114443568296110705
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_7
+      name: erica_spriteSheettrue_7
       rect:
         serializedVersion: 2
-        x: 448
-        y: 192
-        width: 64
-        height: 64
+        x: 470
+        y: 206
+        width: 18
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6c8f93cedeea82d20800000000000000
-      internalID: 3254043067668887750
+      spriteID: 2dfc32a53202be840800000000000000
+      internalID: 5254328726466056146
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_8
+      name: erica_spriteSheettrue_8
       rect:
         serializedVersion: 2
-        x: 0
-        y: 128
-        width: 64
-        height: 64
+        x: 23
+        y: 142
+        width: 19
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 98d19209b752e33b0800000000000000
-      internalID: -5530942079734571639
+      spriteID: faae6f69643e979c0800000000000000
+      internalID: -3928859307584066897
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_9
+      name: erica_spriteSheettrue_9
       rect:
         serializedVersion: 2
-        x: 64
-        y: 128
-        width: 64
-        height: 64
+        x: 89
+        y: 142
+        width: 17
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4ffef48d320eeec00800000000000000
-      internalID: 931928617469865972
+      spriteID: bee6d1dcf10ed2f80800000000000000
+      internalID: -8129595325144011029
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_10
+      name: erica_spriteSheettrue_10
       rect:
         serializedVersion: 2
-        x: 128
-        y: 128
-        width: 64
-        height: 64
+        x: 155
+        y: 142
+        width: 13
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2d7ad233739e16f00800000000000000
-      internalID: 1108423406600955858
+      spriteID: 7cb5e4e3225516da0800000000000000
+      internalID: -5953383626844513337
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_11
+      name: erica_spriteSheettrue_11
       rect:
         serializedVersion: 2
-        x: 192
-        y: 128
-        width: 64
-        height: 64
+        x: 219
+        y: 142
+        width: 13
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 35244619b02852c00800000000000000
-      internalID: 875248688788947539
+      spriteID: c40643e31c22303a0800000000000000
+      internalID: -6700473607229513652
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_12
+      name: erica_spriteSheettrue_12
       rect:
         serializedVersion: 2
-        x: 256
-        y: 128
-        width: 64
-        height: 64
+        x: 281
+        y: 142
+        width: 17
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a0375f5d8390c3270800000000000000
-      internalID: 8231464358638875402
+      spriteID: 5cac4d73787023030800000000000000
+      internalID: 3472846539994745541
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_13
+      name: erica_spriteSheettrue_13
       rect:
         serializedVersion: 2
-        x: 320
-        y: 128
-        width: 64
-        height: 64
+        x: 343
+        y: 144
+        width: 18
+        height: 36
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 76b84e33073114200800000000000000
-      internalID: 162432434189929319
+      spriteID: d2a628a549f311380800000000000000
+      internalID: -9002344273730704851
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_14
+      name: erica_spriteSheettrue_14
       rect:
         serializedVersion: 2
-        x: 384
-        y: 128
-        width: 64
-        height: 64
+        x: 410
+        y: 142
+        width: 14
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1c254aa0b5c5c8770800000000000000
-      internalID: 8614361733343236801
+      spriteID: bda456f28c68168c0800000000000000
+      internalID: -4007773999036282149
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_15
+      name: erica_spriteSheettrue_15
       rect:
         serializedVersion: 2
-        x: 448
-        y: 128
-        width: 64
-        height: 64
+        x: 473
+        y: 142
+        width: 16
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1adf64190c7e22230800000000000000
-      internalID: 3612704665361644961
+      spriteID: b471941fc9967de00800000000000000
+      internalID: 1069439559307695947
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_16
+      name: erica_spriteSheettrue_16
       rect:
         serializedVersion: 2
-        x: 0
-        y: 64
-        width: 64
-        height: 64
+        x: 24
+        y: 78
+        width: 15
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 384fb4b99ba8aafd0800000000000000
-      internalID: -2329897327431781245
+      spriteID: f7128cb6eaa6f9520800000000000000
+      internalID: 2711002798065459583
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_17
+      name: erica_spriteSheettrue_17
       rect:
         serializedVersion: 2
-        x: 64
-        y: 64
-        width: 64
-        height: 64
+        x: 88
+        y: 78
+        width: 16
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 67a72ffc599fa1470800000000000000
-      internalID: 8366273679628335734
+      spriteID: 73544cea3ccf20440800000000000000
+      internalID: 4900757261913441591
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_18
+      name: erica_spriteSheettrue_18
       rect:
         serializedVersion: 2
-        x: 128
-        y: 64
-        width: 64
-        height: 64
+        x: 153
+        y: 79
+        width: 14
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a01209767391f1b00800000000000000
-      internalID: 801386984446632202
+      spriteID: 7a793862e18ea6e40800000000000000
+      internalID: 5650583898682529703
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_19
+      name: erica_spriteSheettrue_19
       rect:
         serializedVersion: 2
-        x: 192
-        y: 64
-        width: 64
-        height: 64
+        x: 217
+        y: 79
+        width: 14
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c64a116200aee7190800000000000000
-      internalID: -7962669804784868244
+      spriteID: e63125fa0f4114da0800000000000000
+      internalID: -5962461407695727762
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_20
+      name: erica_spriteSheettrue_20
       rect:
         serializedVersion: 2
-        x: 256
-        y: 64
-        width: 64
-        height: 64
+        x: 281
+        y: 78
+        width: 15
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8a437436c1d60a840800000000000000
-      internalID: 5233302735696639144
+      spriteID: 5ae013ac6b476f880800000000000000
+      internalID: -8577540111855448411
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_21
+      name: erica_spriteSheettrue_21
       rect:
         serializedVersion: 2
-        x: 320
-        y: 64
-        width: 64
-        height: 64
+        x: 344
+        y: 78
+        width: 16
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: aa59207b8b87cdc20800000000000000
-      internalID: 3232591367284889002
+      spriteID: a1aa2dbfb6fee04f0800000000000000
+      internalID: -860487231715759590
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_22
+      name: erica_spriteSheettrue_22
       rect:
         serializedVersion: 2
-        x: 384
-        y: 64
-        width: 64
-        height: 64
+        x: 409
+        y: 79
+        width: 14
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c7c17b0f603ecd950800000000000000
-      internalID: 6475299983199771772
+      spriteID: 8e22820aa47e6d0b0800000000000000
+      internalID: -5704117570317573400
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_23
+      name: erica_spriteSheettrue_23
       rect:
         serializedVersion: 2
-        x: 448
-        y: 64
-        width: 64
-        height: 64
+        x: 473
+        y: 79
+        width: 14
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cb9f7a5b4765316b0800000000000000
-      internalID: -5326818874985285188
+      spriteID: cd035a6e0d47833d0800000000000000
+      internalID: -3226700692439355172
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_24
+      name: erica_spriteSheettrue_24
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 64
-        height: 64
+        x: 24
+        y: 14
+        width: 16
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c7be37e26abb846e0800000000000000
-      internalID: -1853024924244644996
+      spriteID: 97e9a0cf94e6706b0800000000000000
+      internalID: -5330170369929470343
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_25
+      name: erica_spriteSheettrue_25
       rect:
         serializedVersion: 2
-        x: 64
-        y: 0
-        width: 64
-        height: 64
+        x: 89
+        y: 14
+        width: 17
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 458abd17b265626e0800000000000000
-      internalID: -1862706651277318060
+      spriteID: 105d7b369ad899f20800000000000000
+      internalID: 3429928349881324801
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_26
+      name: erica_spriteSheettrue_26
       rect:
         serializedVersion: 2
-        x: 128
-        y: 0
-        width: 64
-        height: 64
+        x: 153
+        y: 14
+        width: 16
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 355f5e39cd0a74330800000000000000
-      internalID: 3695098888515351891
+      spriteID: 22be06e71bdf97b70800000000000000
+      internalID: 8897421477618445090
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_27
+      name: erica_spriteSheettrue_27
       rect:
         serializedVersion: 2
-        x: 192
-        y: 0
-        width: 64
-        height: 64
+        x: 217
+        y: 14
+        width: 14
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d5cb7b8031a868090800000000000000
-      internalID: -8032581071013430179
+      spriteID: 7eeac3e2c9da62260800000000000000
+      internalID: 7072531151134174951
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_28
+      name: erica_spriteSheettrue_28
       rect:
         serializedVersion: 2
-        x: 256
-        y: 0
-        width: 64
-        height: 64
+        x: 280
+        y: 14
+        width: 15
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8eca18780c9526540800000000000000
-      internalID: 4999657219776687336
+      spriteID: f5f6cdad81b6b0a50800000000000000
+      internalID: 6488397442652598111
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_29
+      name: erica_spriteSheettrue_29
       rect:
         serializedVersion: 2
-        x: 320
-        y: 0
-        width: 64
-        height: 64
+        x: 342
+        y: 14
+        width: 18
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0e2fa09050a8bfb80800000000000000
-      internalID: -8359936529052011808
+      spriteID: 6e20b9cd0a4ae8770800000000000000
+      internalID: 8615004148009206502
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_30
+      name: erica_spriteSheettrue_30
       rect:
         serializedVersion: 2
-        x: 384
-        y: 0
-        width: 64
-        height: 64
+        x: 407
+        y: 14
+        width: 16
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5f9b7f88dd4eaac00800000000000000
-      internalID: 912793514632788469
+      spriteID: 1ea95b52bd7df2d10800000000000000
+      internalID: 2103136887235779297
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: erika_spritesheet_test_31
+      name: erica_spriteSheettrue_31
       rect:
         serializedVersion: 2
-        x: 448
-        y: 0
-        width: 64
-        height: 64
+        x: 473
+        y: 14
+        width: 14
+        height: 39
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 51d2d5f3c9040d170800000000000000
-      internalID: 8201125961263820053
+      spriteID: 6546a0d3e1f8e72c0800000000000000
+      internalID: -4431947623250107306
       vertices: []
       indices: 
       edges: []
@@ -900,7 +900,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 1374e97095f0511488e29e262990d60c
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -908,42 +908,40 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      erika_spritesheet_test_0: -2112968277116804065
-      erika_spritesheet_test_1: 2561020876513753624
-      erika_spritesheet_test_10: 1108423406600955858
-      erika_spritesheet_test_11: 875248688788947539
-      erika_spritesheet_test_12: 8231464358638875402
-      erika_spritesheet_test_13: 162432434189929319
-      erika_spritesheet_test_14: 8614361733343236801
-      erika_spritesheet_test_15: 3612704665361644961
-      erika_spritesheet_test_16: -2329897327431781245
-      erika_spritesheet_test_17: 8366273679628335734
-      erika_spritesheet_test_18: 801386984446632202
-      erika_spritesheet_test_19: -7962669804784868244
-      erika_spritesheet_test_2: -3664598542432306232
-      erika_spritesheet_test_20: 5233302735696639144
-      erika_spritesheet_test_21: 3232591367284889002
-      erika_spritesheet_test_22: 6475299983199771772
-      erika_spritesheet_test_23: -5326818874985285188
-      erika_spritesheet_test_24: -1853024924244644996
-      erika_spritesheet_test_25: -1862706651277318060
-      erika_spritesheet_test_26: 3695098888515351891
-      erika_spritesheet_test_27: -8032581071013430179
-      erika_spritesheet_test_28: 4999657219776687336
-      erika_spritesheet_test_29: -8359936529052011808
-      erika_spritesheet_test_3: -3625339239421622341
-      erika_spritesheet_test_30: 912793514632788469
-      erika_spritesheet_test_31: 8201125961263820053
-      erika_spritesheet_test_4: -1821405709726592445
-      erika_spritesheet_test_5: 5679879666379272193
-      erika_spritesheet_test_6: -6313483528153045734
-      erika_spritesheet_test_7: 3254043067668887750
-      erika_spritesheet_test_8: -5530942079734571639
-      erika_spritesheet_test_9: 931928617469865972
+      erica_spriteSheettrue_0: -8062963999979382727
+      erica_spriteSheettrue_1: 4525821046148492650
+      erica_spriteSheettrue_10: -5953383626844513337
+      erica_spriteSheettrue_11: -6700473607229513652
+      erica_spriteSheettrue_12: 3472846539994745541
+      erica_spriteSheettrue_13: -9002344273730704851
+      erica_spriteSheettrue_14: -4007773999036282149
+      erica_spriteSheettrue_15: 1069439559307695947
+      erica_spriteSheettrue_16: 2711002798065459583
+      erica_spriteSheettrue_17: 4900757261913441591
+      erica_spriteSheettrue_18: 5650583898682529703
+      erica_spriteSheettrue_19: -5962461407695727762
+      erica_spriteSheettrue_2: -7665909400975556738
+      erica_spriteSheettrue_20: -8577540111855448411
+      erica_spriteSheettrue_21: -860487231715759590
+      erica_spriteSheettrue_22: -5704117570317573400
+      erica_spriteSheettrue_23: -3226700692439355172
+      erica_spriteSheettrue_24: -5330170369929470343
+      erica_spriteSheettrue_25: 3429928349881324801
+      erica_spriteSheettrue_26: 8897421477618445090
+      erica_spriteSheettrue_27: 7072531151134174951
+      erica_spriteSheettrue_28: 6488397442652598111
+      erica_spriteSheettrue_29: 8615004148009206502
+      erica_spriteSheettrue_3: -6875736042434576074
+      erica_spriteSheettrue_30: 2103136887235779297
+      erica_spriteSheettrue_31: -4431947623250107306
+      erica_spriteSheettrue_4: -1795782509896519696
+      erica_spriteSheettrue_5: -6992783015079671422
+      erica_spriteSheettrue_6: 114443568296110705
+      erica_spriteSheettrue_7: 5254328726466056146
+      erica_spriteSheettrue_8: -3928859307584066897
+      erica_spriteSheettrue_9: -8129595325144011029
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

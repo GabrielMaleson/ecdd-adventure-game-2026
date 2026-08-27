@@ -42,8 +42,31 @@ public class StatueSwitch : MonoBehaviour
     [Tooltip("Fires only the FIRST time this statue is refused. Hook Haze's explanatory line here: the first refusal teaches the rule, and repeating the line on every later bump would just be noise.")]
     public UnityEvent onRefusedFirstTime;
 
+    [Tooltip("No do .yarn tocado na PRIMEIRA recusa. Vazio = nao toca nada.\n\n" +
+             "Existe ao lado do evento acima, e nao no lugar dele, pelo mesmo motivo que o " +
+             "NpcWalkTo tem a lista 'Ativar Ao Chegar' junto do On Arrived: UnityEvent NAO " +
+             "sobrevive a edicao do arquivo da cena fora do editor, e neste projeto a cena " +
+             "e editada por YAML. Um campo de texto sobrevive.\n\n" +
+             "Os dois convivem — o evento continua servindo para som e tremida, arrastados " +
+             "no Inspector; este campo cobre a fala, que e o que se quer ligar de fora.")]
+    public string noAoRecusarPrimeiraVez = "";
+
     [Tooltip("Flash whatever is in the way when a turn is refused. Needs nothing on the crates — see BlockedFlash.")]
     [SerializeField] bool flashBlocker = true;
+
+    [Tooltip("Dica mostrada na faixa do topo quando a Haze chega perto desta estatua. " +
+             "Vazio = nao mostra nada. " +
+             "Fica aqui, e nao num gatilho separado, porque quem sabe que a Haze esta ao " +
+             "alcance e este componente — e um segundo trigger com a mesma area seria uma " +
+             "segunda verdade para manter em sincronia.")]
+    public string dicaQuandoPerto = "";
+
+    // Quantas vezes QUALQUER estatua foi usada com sucesso na sessao.
+    //
+    // Existe para o tutorial saber que "o puzzle se mexeu pela primeira vez" sem precisar
+    // de referencia a uma estatua especifica: o <<ghosttutorial>> anota o valor ao comecar
+    // e espera ele mudar. Assim o mesmo tutorial serve para qualquer estatua do jogo.
+    public static int AtivacoesTotais { get; private set; }
 
     bool ghostInRange;
     bool refusedBefore;
@@ -58,6 +81,8 @@ public class StatueSwitch : MonoBehaviour
 
         ghostInRange = true;
         RefreshPrompt();
+
+        if (!string.IsNullOrEmpty(dicaQuandoPerto)) TutorialHint.Mostrar(dicaQuandoPerto);
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -66,6 +91,8 @@ public class StatueSwitch : MonoBehaviour
 
         ghostInRange = false;
         RefreshPrompt();
+
+        if (!string.IsNullOrEmpty(dicaQuandoPerto)) TutorialHint.Esconder();
     }
 
     // The ghost sitting inside the trigger while the statue is disabled or the
@@ -152,6 +179,7 @@ public class StatueSwitch : MonoBehaviour
         // atrás nela é usar a estátua de novo, não apertar Z.
         foreach (var entry in groups) if (!entry.group.IsCleared) entry.group.TryRotate(DirectionFor(entry));
         foreach (var c in cycles) if (!c.IsCleared) c.TryStep();
+        AtivacoesTotais++;
         onActivated?.Invoke();
     }
 
@@ -172,6 +200,11 @@ public class StatueSwitch : MonoBehaviour
         {
             refusedBefore = true;
             onRefusedFirstTime?.Invoke();
+
+            // Pelo mesmo funil que todo dialogo do jogo usa, e nao pelo DialogueManager na
+            // mao: e ele que trava o jogador enquanto a fala roda e o destrava no fim.
+            if (!string.IsNullOrEmpty(noAoRecusarPrimeiraVez))
+                DialogueStarter.EvaluateConditionsAndStart(noAoRecusarPrimeiraVez, false, null, false);
         }
     }
 

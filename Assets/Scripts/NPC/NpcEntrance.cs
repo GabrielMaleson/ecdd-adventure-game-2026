@@ -132,6 +132,21 @@ public class NpcEntrance : MonoBehaviour
         // precisa ter achado o Rigidbody e o CharacterFacing antes do primeiro passo.
         if (!go.activeSelf) go.SetActive(true);
 
+        // Quem esta SEGUINDO nao pode ao mesmo tempo ir para uma marca.
+        //
+        // O NpcFollow puxa o personagem para a trilha do Josh e o NpcWalkTo puxa para o
+        // ponto: os dois escrevem na mesma posicao a cada passo de fisica e o NPC treme
+        // entre eles, sem chegar em lugar nenhum. Isso passou a importar quando o roteiro
+        // ganhou <<follow Marcus>> e <<follow Erika>> no fim da casa do Elder — dali em
+        // diante os dois chegam a QUALQUER entrada ja seguindo.
+        //
+        // Desligar aqui e nao pedir um <<unfollow>> no .yarn e deliberado: assim a entrada
+        // funciona sozinha, e nao depende de alguem lembrar de escrever duas linhas no
+        // roteiro toda vez que criar uma. O NpcGather resolve do mesmo jeito, pelo mesmo
+        // motivo. Para voltar a seguir depois, um <<follow>> no fim do beat.
+        NpcFollow follow = go.GetComponent<NpcFollow>();
+        if (follow != null && follow.enabled) follow.enabled = false;
+
         if (e.entrance != null)
         {
             // Rigidbody2D.position e nao transform.position: com corpo Dynamic, escrever no

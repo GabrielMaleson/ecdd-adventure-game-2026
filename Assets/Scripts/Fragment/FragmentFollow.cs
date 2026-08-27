@@ -17,6 +17,7 @@ public class FragmentFollow : MonoBehaviour
     [Tooltip("Cap on how fast the ghost moves while following (world units/sec). Stops it from zipping/teleporting back when it re-attaches from far away (e.g. after being parked at a statue) — it walks back instead. Keep it a bit above the MC's speed so normal following never lags. Set very high to disable the cap.")]
     [SerializeField] float     maxFollowSpeed = 4f;
 
+
     SpriteRenderer spriteRenderer;
     Vector2        lastPlayerPos;
     Vector2        activeOffset;

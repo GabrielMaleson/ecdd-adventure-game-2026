@@ -82,7 +82,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: -206
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2112968277116804065, guid: 398fa7c24fbc5584b81e7b39ef04e981, type: 3}
+  m_Sprite: {fileID: -8062963999979382727, guid: c62e03e7a48286c40bce6719008925a4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -141,14 +141,14 @@ RectTransform:
   m_GameObject: {fileID: 7200000000000000002}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1130688170278055790}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0.03999996, y: -1.1599998}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &7200000000000000003
@@ -176,7 +176,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -7517285544160936963, guid: dd27499be1bbe464f8b09b19deeb684b, type: 2}
+  - {fileID: 1481518462141281554, guid: 083a70f60cfa6664cbc93e9eb731412d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -222,8 +222,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: dd27499be1bbe464f8b09b19deeb684b, type: 2}
-  m_sharedMaterial: {fileID: -7517285544160936963, guid: dd27499be1bbe464f8b09b19deeb684b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 083a70f60cfa6664cbc93e9eb731412d, type: 2}
+  m_sharedMaterial: {fileID: 1481518462141281554, guid: 083a70f60cfa6664cbc93e9eb731412d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -247,8 +247,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 3
-  m_fontSizeBase: 3
+  m_fontSize: 2.5
+  m_fontSizeBase: 2.5
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -264,7 +264,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -309,6 +309,7 @@ GameObject:
   - component: {fileID: 7200000000000000092}
   - component: {fileID: 7200000000000000000}
   - component: {fileID: 6925323459601285038}
+  - component: {fileID: 2756417352692239786}
   m_Layer: 0
   m_Name: Erika
   m_TagString: Untagged
@@ -409,7 +410,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterDialogue
   barkId: Erika
   dialogueText: {fileID: 7200000000000000004}
-  randomLines: []
+  heightOffset: 0
+  useUniversalSettings: 1
+  offsetX: 0
   barkSet: {fileID: 0}
   autoPlayRandomDialogue: 0
   minInterval: 3
@@ -420,8 +423,7 @@ MonoBehaviour:
   scaleDurationWithLength: 1
   secondsPerCharacter: 0.045
   maxHoldDuration: 6
-  floatDistance: 0.6
-  floatFadeDuration: 0.5
+  fadeOutDuration: 0.15
 --- !u!61 &6925323459601285038
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -468,3 +470,33 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.53, y: 0.3310415}
   m_EdgeRadius: 0
+--- !u!114 &2756417352692239786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9029520266342921181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4d81f0c96b3e7429f5c1d8a0b6e3742, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NpcWalkTo
+  walkerName: Erika
+  path:
+  - point: {fileID: 0}
+    waitHere: 2
+  - point: {fileID: 0}
+    waitHere: 0
+  walkOnStart: 0
+  moveSpeed: 2
+  arriveThreshold: 0.06
+  giveUpAfterSeconds: 20
+  arrivalFacing: 1
+  ativarAoChegar:
+  - {fileID: 0}
+  onArrived:
+    m_PersistentCalls:
+      m_Calls: []
+  animator: {fileID: 0}
+  walkBoolParam: 

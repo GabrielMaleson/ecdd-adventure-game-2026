@@ -17,7 +17,7 @@ MonoBehaviour:
   promptColor: {r: 1, g: 1, b: 1, a: 1}
   worldTextColor: {r: 1, g: 1, b: 1, a: 1}
   interactPromptSize: 22
-  worldTextSize: 2.5
+  worldTextSize: 2.6
   worldTextScale: 1
   worldTextOffsetX: 0
   worldTextHeight: -2

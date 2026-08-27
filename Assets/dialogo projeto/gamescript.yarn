@@ -105,11 +105,11 @@ Josh: Have you looked at yourself in the mirror?
 // um `movement`: agora que o JOGADOR anda ate a casa sozinho, o Josh para a esquerda
 // do HazeFloat, e o Haze "andava pro outro lado" no meio da conversa. Ele ja esta cara
 // a cara desde o HazeEnter, entao fica parado falando ate entrar na casa no HazeLeave.
-?: ...I have not.
+?: I have not.
 Josh: Yeah, figures.
 ?: Do i look good?
 Josh: Just go on in man.
-?: Okay!
+?: Oookay!
 // Era HazeRun (ate WalkHome (2), no chao) e SO DEPOIS HazeLeave (ate WalkHome (1), a
 // porta) — dai o "desce e depois sobe". Um movimento so, direto pra porta: o
 // MoveTowards do Cutscener anda em linha reta, entao sai na diagonal.
@@ -150,12 +150,12 @@ Josh: Nowhere to go, I guess.
 // ja deixa ele virado pro lado certo).
 <<movement HazeTV freeze>>
 <<face Josh HazeTwo>>
-?: What's this?
-Josh: That's a TV.
-?: What does it do?
-Josh: It shows moving images.
-?: Isn't that everything already?
-Josh: "Everything" is not engaging enough, I guess.
+?: A TV! What are you watching?
+Josh: I <i>was</i> going to watch some National Geographic before you came in.
+?: National Geographic?
+Josh: It's a channel that shows anima—.
+?: Boooring.
+Josh: ... I guess, yeah.
 // Vira pro Josh, anda ate ele, e so entao fala. Mesmo destino do HazeHouse, entao ele
 // para exatamente onde estava quando entrou.
 <<face HazeTwo Josh>>
@@ -219,7 +219,7 @@ title: square_haze
 // dialogo abre. O lado inicial dele e o estado do OBJETO na cena (SpriteRenderer >
 // Flip X desmarcado = olhando pra direita), nao do script.
 <<face JoshTwo HazeThree>>
-Josh: HEY, wa— huff... huff... wait. Are you insane? Do I have to remind you you're <i>not human</i>?
+Josh: HEY, wa—huff... huff... wait. Are you insane? Do I have to remind you you're <i>not human</i>?
 // O Haze esta de costas pro Josh (olhando pra direita, estrada acima) e so se vira
 // quando comeca a responder.
 <<face HazeThree JoshTwo>>
@@ -329,7 +329,7 @@ Josh: ...
 title: elders_house_wardrobe
 ---
 Haze: Anything there?
-Josh: Nope, it's a mess, couldn't find anything useful if I really wanted to.
+Josh: Nope, it's a mess, can't believe the old man was this disorganized.
 ===
 
 title: elders_house_writing_table
@@ -345,30 +345,39 @@ Josh: "Solve the riddles therein / Before time runs out / Or else for the land /
 Josh: Huh... Riddles? What is this, a game? Why was this geezer fooling around with this?
 Haze: I guess we need to go North and find out, no?
 Josh: Do I really need to find anything out? As far as I know a senile old man got lost in the woods. The only really weird thing here is still you.
-Josh: Which leads me to ask... what have anything to do with all this?
+Josh: Which leads me to ask... what do you have anything to do with all this?
 Haze: ...I'm not sure. I really feel like we need to follow this trail.
 Josh: Ok then, let's check it out. I'll talk to Erika and Marcus.
 Haze: Should you really tell them? They might notice me.
-Josh: Well, they are my best—actually, only, friends. I'd rather be close to them if anything's happening around here. Besides, they would like you, I think.
+Josh: Well, they are my best—actually, only, friends. I'd rather be close to them if anything's happening around here. Besides, they'd like you, I think.
 Haze: Would they? Let's go then!
 Josh: Don't get too excited, an old man just disappeared.
 Haze: Oh, yes, of course. That's so sad, I'm sorry.
 Josh: Naaah I'm just messing with you man.
 Haze: ...
+<<progress ReadElderNotes>>
+===
+
+title: elders_house_first_floor_call
+---
+Josh: Kay guys, I found something out, look.
 ===
 
 title: elders_house_first_floor
 ---
-Josh: Kay guys, I found something, look.
+Marcus: ...
+Erika: ...
 Marcus: Damn, seems like he was really losing it.
 Erika: Holy...
-Erika: Ok, so what, we should head North... isn't that the forest path right behind this house?
+Erika: Ok, so what, we should head North... isn't that the forest right behind this house?
 Josh: Yup.
 Marcus: I didn't think there was a path there.
 Josh: Let's see, maybe we find one.
-Marcus: At least it's something to do!
-Erika: Yeah, if it kills our boredom...
+Marcus: An adventure!
+Erika: That's one way to see it.
 Josh: ...
+<<follow Marcus>>
+<<follow Erika>>
 ===
 
 title: forest_path
@@ -388,9 +397,19 @@ Josh: Nope. I know as much as them.
 title: puzzle_entrance
 ---
 Erika: What the hell is this?
-Josh: Probably one of the riddles the poem mentioned.
+Josh: Probably one of the riddles the old man's poem mentioned.
+Marcus: What are those glowing things?
+Erika: I kinda want to jump on it.
+Marcus: I dare you. You don't have the balls, Eri!
+Erika: 50 bucks and I'll—
+Josh: Guys can we <i>please</i> focus? How do we solve this?
 Marcus: Meh, I suck at puzzles.
 Erika: Same. This one's on you, Josh.
+Josh: Great, you guys are great.
+===
+
+title: puzzle_inside
+---
 Josh: Huh, it's that same statue from Elder's.
 Haze: I feel it calling to me.
 Erika: What? How did you do that?

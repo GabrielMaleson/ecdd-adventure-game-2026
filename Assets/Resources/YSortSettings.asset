@@ -18,5 +18,5 @@ MonoBehaviour:
   forceSortingLayer: 1
   sortingLayerName: Objects
   rescanInterval: 2
-  previewInEditor: 0
+  previewInEditor: 1
   warnOnOverflow: 1

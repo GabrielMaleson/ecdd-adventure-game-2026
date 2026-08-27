@@ -185,12 +185,6 @@ Grid-based crate puzzle. Logic is grid-based; the player moves freely.
 
 **Player movement:** `PlayerController` moves via `Rigidbody2D.MovePosition` in `FixedUpdate` (was writing `transform.position`, which teleported past collision and caused shoving/jitter). Player rigidbody must be **Dynamic** (gravity 0, freeze rotation Z) or MovePosition won't stop on contact.
 
-**Known issues (good-enough for now, revisit later):**
-- Occasional stray crate movement — a crate sometimes slides in an odd/diagonal direction.
-- Occasional stalls — a push sometimes doesn't register / the crate briefly locks up.
-- FIXED (verify in Play): "crate shoved the player" — pushing up jammed the player's collider centre past the crate centre, so a tap back read as a valid opposite push and the kinematic crate slid into the player. `PlayerBehind` now uses the player's feet (transform pivot) + a margin, and `TryPush` refuses to slide onto the player's cell.
-- Approach gap: how close the player stops to a crate is set by the two colliders' sizes (prefab data), not by code. Realistic look needs the crate's solid collider to be a thin strip at its base, not a full box. Alternative (not done): stop the player by cell logic in code instead of physics.
-
 ---
 
 ## Cosmetic Seating ("Encaixe") — statue settling into a portal
@@ -302,3 +296,116 @@ Hoje na MainScene: **311 instâncias entram**, 12 ficam intactas (`portal`, `Fur
 **Cuidado com bounds de objeto desativado.** Renderer e collider de objeto inativo devolvem bounds **zerados**. Medir a âncora nesse momento dava `0 - posiçãoY` — um personagem em Y=137 ganhava âncora 0, como se estivesse na origem do mundo — e a medida ficava cacheada para sempre. Hoje a medida só é aceita se o objeto estiver ativo e os bounds forem reais; enquanto não for, a `Entry` remede a cada quadro.
 
 **Testado em Play e funcionando** na casa do Elder (verificado pelo dump do F3).
+
+---
+
+## Y-Sort em Tilemap / mata densa — tentativa de 2026-08-26 que NÃO funcionou
+
+Registro do que foi tentado, medido e descartado, para a próxima tentativa não repetir o caminho. **Nada disto está no código hoje** — tudo foi revertido; o Y-Sort está como sempre esteve.
+
+### Por que Tilemap não entra no Y-Sort atual
+
+`Sorting Order` é comparado **antes** de qualquer outro critério. Um Tilemap tem UMA ordem para o mapa inteiro, então ele fica todo na frente ou todo atrás dos personagens — nunca intercalado.
+
+`Tilemap Renderer > Mode: Individual` não resolve sozinho: ele ordena os tiles **entre si**, mas todos herdam a ordem do Tilemap, então contra um personagem que o `YSortWorld` pôs em `20000 - Y*100` o bloco inteiro continua indivisível.
+
+### Os dois caminhos reais, e o preço de cada um
+
+**A — tudo passa a ordenar por eixo Y.** `Transparency Sort Mode = Custom Axis` no **`Assets/Settings/Renderer2D.asset`** (em URP é ele que manda, não o Graphics Settings). **O eixo já está certo lá: `m_TransparencySortAxis: {x: 0, y: 1, z: 0}`; só `m_TransparencySortMode` está em `0` (Default) e precisaria virar Custom Axis.** Some com o problema do Tilemap de vez.
+
+O preço é o que fez o `YSortWorld` existir: **grupo**. Cada sprite passaria a ordenar pelo próprio Y, então a copa (Y maior) desenharia ATRÁS do tronco, e o Top do Josh atrás do Bottom. Conserta-se com `SortingGroup` em todo objeto de múltiplos sprites — resposta padrão do Unity, funciona — mas hoje a cena tem **zero** SortingGroups.
+
+E adotar o A significa **aposentar o `YSortWorld`**: enquanto ele escrever ordens diferentes por objeto, o eixo nunca decide nada. Todos teriam que ficar na mesma ordem. É uma simplificação real (inclusive resolveria batching), mas é trocar um sistema que funciona.
+
+**B — um Tilemap por FILEIRA de árvores**, cada um ordenado pela base da sua fileira, e o `YSortWorld` ensinado a aceitar `TilemapRenderer` (hoje só olha `SpriteRenderer`). Granularidade por fileira, o que basta numa mata densa — o jogador não cabe entre duas árvores lado a lado.
+
+Regra de autoria que faz o B funcionar: **a árvore inteira vai no Tilemap da fileira onde fica o PÉ dela**, com a copa invadindo a faixa de cima. Não é pintar célula por célula conforme a altura.
+
+### O bug de espaçamento de ordem (achado real, ainda NÃO corrigido)
+
+Este é o achado mais importante e ele **continua no jogo**. Foi visto no dump do F3 numa mata densa:
+
+```
+order=15577  Stump  (TreeLittle_1_b (26))
+order=15577  Shadow (TreeNormal_4 (9))
+order=15578  Tree   (TreeLittle_1_b (27))
+order=15579  Tree   (TreeNormal_4 (9))
+```
+
+Cada objeto ocupa ordens **consecutivas** (a árvore usa três: sombra, tronco, copa). Mas a base é `orderBase - Y*precision`, então duas árvores com o pé a **0,01 em Y** recebem bases separadas por **1** — e os blocos de três se sobrepõem. O tronco de uma cai no meio da outra e desenha por cima da copa vizinha.
+
+Numa vila esparsa quase nunca acontece; numa mata densa acontece o tempo todo. **É esta a causa de "a ordem da mata está toda zoada", e não o preview, nem o atlas, nem agrupamento.**
+
+A correção seria reservar um BLOCO por objeto (`order = orderBase + round(-Y*precision) * bloco`, com `relative` virando um ranking denso 0..N-1). Isso foi implementado e revertido — não porque estava errado, mas porque o Sorting Order é 16 bits (±32767) e o bloco multiplica o alcance: com bloco 4 o `precision` tem de cair de 100 para ~80 para o mapa (Y de 40 a 140) continuar cabendo. Conferido: com `precision 80` e bloco 4 a faixa fica entre +7200 e −24800, e a granularidade em 0,0125 unidade.
+
+### Custo de performance — o que foi MEDIDO
+
+- **`RendererFader` (`ForestPixelLand/Scripts/Nature/Fader.cs`) vinha nos 23 prefabs de árvore.** 180 `Update()` por quadro sem efeito nenhum, porque ele exige um componente `Character` no jogador que o Josh não tem. **Removido dos prefabs.** Sobraram 6 soltos na cena, em objetos `Tree (1)`..`Tree (6)` que não são instâncias de prefab.
+- **Os prefabs de árvore tinham `Rigidbody2D` Dynamic** (`m_BodyType: 0`) — 180 corpos simulados que nunca se movem. **Passados para Static.** Cuidado: isso significa que **Rigidbody2D não distingue personagem de cenário neste projeto** (Marcus, Erika e Haze são Kinematic; as árvores eram Dynamic). Para identificar personagem, use `PlayerController` / `CharacterFacing` / `FragmentFollow`.
+- **Colliders das árvores são Circle + Capsule** — as primitivas mais baratas. Nunca foram o problema.
+- **Batching:** a sombra vem de `ShadowsSheet.png` e tronco/copa de `TreeAndStoneSprites.png`. Ordenados por Y a sequência alterna sombra→tronco→copa→sombra…, ou seja **troca de material a cada sprite**, e nada agrupa: 540 draw calls para 180 árvores. As três texturas foram adicionadas ao `SpriteAtlas.spriteatlas` para virarem uma só.
+- Overdraw de 540 sprites transparentes sobrepostos é custo inerente e **não** melhora com atlas.
+
+### Duas armadilhas que custaram horas
+
+**`Apply()` tem early-out por âncora** (`if (anchor.Equals(e.lastAnchor)) continue;`). Qualquer coisa que escreva Sorting Order **por fora** precisa zerar `e.lastAnchor`, senão o próximo `Apply()` acha que nada se moveu e nunca reescreve. Foi isso que quebrou a ordem inteira quando um gancho de `sceneSaving` restaurava as ordens autoradas ao salvar: cada `Ctrl+S` congelava a cena nos números crus do prefab (1, 2, 3 iguais em toda árvore).
+
+**Editar `.cs` por script:** um `\n` escrito sem escape dentro de string C# vira quebra de linha de verdade no arquivo e produz `CS1010: Newline in constant`. Aconteceu duas vezes (`FadeZone`, `YSortSettings`), e a segunda travou a compilação inteira — com o assembly velho rodando, nenhuma correção posterior tem efeito e o F3 continua mostrando o comportamento antigo. **Sempre conferir strings quebradas depois de editar `.cs` por script.**
+
+### Diagnóstico
+
+O **F3** foi o que resolveu de fato: ele mostra ordem real, `[Y-SORT]`/`[intacto]` e a raiz de cada sprite. Palpite sobre custo ou sobre causa, sem o dump, errou todas as vezes nesta sessão.
+
+---
+
+## Falas: qual sistema usar — LEIA ANTES DE ESCREVER QUALQUER COMPONENTE NOVO
+
+**A regra que gerou esta seção:** em 2026-08-26 eu quase escrevi um componente para "o E só aparece depois que os NPCs chegam" — coisa que já estava montada e funcionando na casa do Elder desde antes. **Antes de criar qualquer coisa para uma fala, abra a cena e veja como o beat equivalente já foi montado.** `MarcusTalk`, `ErikaTalk`, `FriendsTalkEldersHouse` e `JoshCallsFriends` são os exemplares de referência.
+
+### As duas famílias
+
+**Diálogo bloqueante** — caixa de diálogo, o jogo para. É nó do `.yarn` disparado por um `DialogueStarter` na cena. `Is Click NPC` marcado = aperta E; desmarcado = dispara ao pisar. Todo diálogo passa por `DialogueStarter.EvaluateConditionsAndStart`, que é o único lugar que congela e descongela o jogador — nunca chamar o `DialogueManager` na mão.
+
+**Bark** — popup flutuante, **o jogo continua**. É o "AD" do roteiro. Nada disso vive no `.yarn`: as falas são digitadas no Inspector.
+
+### Os três componentes de bark, e quando usar cada um
+
+| quero | uso |
+|---|---|
+| Chega perto, aperta E, **um personagem** fala | `BarkBook` + `InteractAction` no mesmo objeto |
+| **Dois ou mais** se revezando (Josh→Haze→Josh) | `BarkConversation` |
+| Uma fala solta, ou aleatória de um conjunto | `BarkTrigger` |
+
+**`BarkBook` + `InteractAction` é o padrão do projeto** para personagem falável — é o que `MarcusTalk` e `ErikaTalk` são. Montagem: objeto com `BoxCollider2D` (Is Trigger, ~2.5 x 2.2), `BarkBook` com `Speaker Id` e as `Lines`, e `InteractAction` com `Label` E.
+
+Dois campos que devem ficar **vazios**, e o motivo:
+- `InteractAction > Prompt Anchor` vazio → ele acha o `BarkBook`, pergunta ao `BarkDirector` quem é aquele speaker, e ancora o E **em cima do personagem**, que anda. Preenchido, o E fica boiando na marca parada.
+- `InteractAction > On Interact` vazio → ele fala pelo `BarkBook` do próprio objeto. É o caso normal e não depende de arraste nenhum.
+
+`Speaker Id` tem de bater com o `Bark Id` do `CharacterDialogue` do personagem. Hoje: **`Marcus`**, **`Erika`**. A busca é case-insensitive (`ToLowerInvariant`), então `marcus` também serve.
+
+`BarkConversation.StartMode`: `Manual` (só quando chamam `Play()`), `PlayerEnters` (pisa no trigger), `PlayerPressesE`, `OnStart`. Cada linha espera a anterior terminar — a duração sai do tamanho do texto, ninguém cronometra.
+
+### Como uma fala fica DISPONÍVEL só na hora certa
+
+O objeto da fala nasce **desativado** e alguém o acende. Três jeitos, em ordem de robustez:
+
+1. **`NpcEntrance > Entry > Enable On Arrival`** — lista de objetos, acesa quando **aquele** NPC chega ao ponto dele.
+2. **`NpcWalkTo > Ativar Ao Chegar`** — mesma ideia, na caminhada avulsa.
+3. **`<<enable NomeDoObjeto>>`** no `.yarn` — foi assim que `FriendsTalkEldersHouse` acendeu.
+
+Os dois primeiros são **lista de objetos, não `UnityEvent`**, e isso é deliberado: **UnityEvent não sobrevive à edição do arquivo da cena por fora**. Aparece preenchido na tela e vazio no disco. `On Arrived`, `On All Arrived` e `On Interact` são UnityEvent — só use quando a pessoa for arrastar no Inspector, e nunca tente escrevê-los por YAML.
+
+Quando a fala é **uma só, depois de TODOS chegarem**, aí sim `NpcEntrance > On All Arrived` (arrastado no Inspector) → `SetActive` ou `BarkConversation.Play()`.
+
+### Armadilha: aceso com o jogador já dentro
+
+`OnTriggerEnter2D` só dispara em quem **entra**. Um objeto de fala aceso quando os NPCs chegam nasce com o Josh já parado ali — ele nunca "entra", e o E não aparece. `InteractAction` sempre tratou isso no `OnEnable`; `BarkConversation` no modo E ganhou a mesma checagem em 2026-08-26.
+
+### Seguir x ir para uma marca
+
+`NpcFollow` e `NpcWalkTo` brigam pelo mesmo corpo — um puxa para a trilha do Josh, o outro para o ponto, e o NPC treme sem chegar. Desde que o roteiro ganhou `<<follow>>` no fim da casa do Elder, os dois chegam a qualquer entrada **já seguindo**. Por isso `NpcEntrance` e `NpcGather` **desligam o `NpcFollow` sozinhos** antes de mandar andar — não é preciso `<<unfollow>>` no roteiro. Para voltarem a seguir, `<<follow>>` no fim do beat.
+
+### O yarn não sabe a hora de nada
+
+Um comando como `<<unfollow Marcus>>` roda quando a **linha é lida**; a linha só é lida quando o nó roda; e o nó só roda quando um gatilho da cena o dispara. **Quem sabe a hora é sempre a cena.** Consequência prática: num beat que é bark, o nó nunca roda, e um comando escrito lá dentro nunca dispara.

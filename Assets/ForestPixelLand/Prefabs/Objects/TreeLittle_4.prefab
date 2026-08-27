@@ -80,7 +80,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 372892491111034849}
-  m_BodyType: 0
+  m_BodyType: 2
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -109,7 +109,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6525543751953446190}
   - component: {fileID: 6748334930261427033}
-  - component: {fileID: 5053742499695775976}
   - component: {fileID: 8850642191249790246}
   m_Layer: 8
   m_Name: Tree
@@ -192,18 +191,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
---- !u!114 &5053742499695775976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3585752791914093957}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b22eb97b85f26a439d4ec7284a65b89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!70 &8850642191249790246
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

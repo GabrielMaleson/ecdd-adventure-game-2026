@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -51,7 +52,17 @@ public class InteractAction : MonoBehaviour
     // momento em que o NPC chega ao lugar dele — e nessa hora o jogador ja esta parado do
     // lado. Ele nunca "entra", porque ja estava dentro quando o gatilho nasceu, e o E
     // simplesmente nunca aparecia. Aqui a chegada e conferida na mao.
-    private void OnEnable()
+    private void OnEnable() => StartCoroutine(CheckAlreadyInside());
+
+    // A conferencia espera UM passo de fisica antes de medir, e isso nao e cautela: os
+    // bounds de um collider recem-ativado ainda nao existem no quadro do SetActive. O
+    // motor de fisica so os calcula no proximo FixedUpdate, e ate la col.bounds vem
+    // zerado. Medindo na hora, "o jogador esta dentro?" respondia sempre NAO, e o E so
+    // aparecia quando algo mais tarde reavaliava — sair e voltar, ou um outro trigger.
+    //
+    // Era exatamente o "demora a aparecer depois que o NPC chega": o objeto acende no
+    // instante certo, mas a medida feita nesse instante nao vale nada.
+    private IEnumerator CheckAlreadyInside()
     {
         Collider2D col = GetComponent<Collider2D>();
 
@@ -59,15 +70,19 @@ public class InteractAction : MonoBehaviour
         {
             Debug.LogWarning($"[InteractAction] '{name}': nao tem Collider2D nenhum — nao ha " +
                              "area de alcance, o E nunca vai aparecer.", this);
-            return;
+            yield break;
         }
 
         if (!col.isTrigger)
             Debug.LogWarning($"[InteractAction] '{name}': o Collider2D NAO esta marcado como " +
                              "Is Trigger. Sem isso ele vira parede e nao dispara nada.", this);
 
+        yield return new WaitForFixedUpdate();
+
+        if (this == null || !isActiveAndEnabled) yield break;
+
         GameObject p = GameObject.FindGameObjectWithTag(playerTag);
-        if (p == null) return;
+        if (p == null) yield break;
 
         Collider2D pc = p.GetComponent<Collider2D>();
         bool inside = pc != null ? col.bounds.Intersects(pc.bounds)

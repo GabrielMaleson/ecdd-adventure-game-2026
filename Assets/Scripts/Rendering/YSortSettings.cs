@@ -35,6 +35,7 @@ public class YSortSettings : ScriptableObject
              "A ordem relativa entre os objetos ordenados nao muda.")]
     public int orderBase = 20000;
 
+
     [Tooltip("Altura maxima, em unidades, de uma coisa que conta como UM objeto ordenavel.\n\n" +
              "Existe por causa de um erro real: o chao da casa do Elder e um sprite, e o " +
              "agrupamento subia dos moveis ate ele — tapete, escada, sofa, estante e mesa " +
@@ -125,6 +126,7 @@ public class YSortSettings : ScriptableObject
 
         return order;
     }
+
 
     public static int LayerId
     {

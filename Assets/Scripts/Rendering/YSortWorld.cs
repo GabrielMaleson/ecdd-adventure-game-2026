@@ -398,10 +398,6 @@ public static class YSortWorld
 
         // A ordem que a arte tem HOJE vira a ordem relativa dentro do objeto. O menor vira
         // zero, entao a arvore (1,2,3) e a arvore (11,12,13) viram a mesma coisa.
-        int min = int.MaxValue;
-        foreach (SpriteRenderer r in found)
-            if (r.sortingOrder < min) min = r.sortingOrder;
-
         var e = new Entry
         {
             root = root,
@@ -410,6 +406,10 @@ public static class YSortWorld
             relative = new int[found.Count],
             anchorOffsetY = AnchorOffsetFor(root, tuning)
         };
+
+        int min = int.MaxValue;
+        foreach (SpriteRenderer r in found)
+            if (r.sortingOrder < min) min = r.sortingOrder;
 
         for (int i = 0; i < found.Count; i++)
             e.relative[i] = found[i].sortingOrder - min;
