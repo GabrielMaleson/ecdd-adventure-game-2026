@@ -1,8 +1,10 @@
 ﻿title: gamescript
 ---
 <<declare $YarnTalkedElder = false>>
+<<declare $crateTries = 0>>
 	Josh: ...
 ===
+
 
 title: square_initial
 ---
@@ -406,15 +408,53 @@ Josh: Guys can we <i>please</i> focus? How do we solve this?
 Marcus: Meh, I suck at puzzles.
 Erika: Same. This one's on you, Josh.
 Josh: Great, you guys are great.
+<<progress PuzzleTalkDone>>
 ===
 
 title: puzzle_inside
 ---
-Josh: Huh, it's that same statue from Elder's.
-Haze: I feel it calling to me.
+Josh: Huh, it's that same statue from Amos'.
+Haze: It's calling me...
+<<ghosttutorial>>
 Erika: What? How did you do that?
 Marcus: Way to go Joshy!
-Haze: Seems they didn't notice me...
+Haze: Seems like they didn't notice me...
+===
+
+title: josh_confiner
+---
+Haze: <i>We haven't solved the puzzle yet, Josh!</i>
+===
+
+title: haze_confiner
+---
+Haze: <i>The statue...</i>
+===
+
+title: on_first_puzzle_block
+---
+Haze: <i>I think something's blocking the way.</i>
+===
+
+title: crate_refused
+---
+<<if $crateTries == 0>>
+  Haze: I don't think we should do that.
+  <<elseif $crateTries == 1>>
+  Haze: Why are you still doing that?!
+  <<else>>
+  Haze: ... I guess...you're stupid.
+  Josh: ...
+  <<endif>>
+  <<set $crateTries = $crateTries + 1>>
+  ===
+
+title: raven_conversation
+---
+Raven: Gawk!
+Josh: ...
+Raven: ...
+<<progress KeyGrabbed>>
 ===
 
 // PLACEHOLDER — troca o texto do Haze pela fala que voce quiser.

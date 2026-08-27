@@ -84,7 +84,8 @@ public class InteractButton : MonoBehaviour
     // Fala na tela: o E some e o E nao responde. Some porque disputa a atencao com a fala;
     // nao responde porque um aperto no meio da frase dispara a interacao seguinte sem que
     // ninguem veja o que aconteceu.
-    private static bool Suppressed => BarkDirector.AnyBarkShowing || BarkConversation.AnyRunning;
+    private static bool Suppressed => BarkDirector.AnyBarkShowing || BarkConversation.AnyRunning
+                                      || TutorialHint.DialogoBloqueandoInput;
 
     private void Update()
     {

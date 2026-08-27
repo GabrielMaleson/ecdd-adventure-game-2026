@@ -249,7 +249,7 @@ public class FadeZone : MonoBehaviour
         }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        if (Input.GetKeyDown(KeyCode.F4)) DumpAroundPlayer();
+        if (Input.GetKeyDown(KeyCode.F9)) DumpAroundPlayer();
 #endif
 
         Vector2 pos = player.position;
@@ -295,7 +295,7 @@ public class FadeZone : MonoBehaviour
         }
     }
 
-    // F4 em Play: por que ESTA arvore nao apagou.
+    // F9 em Play: por que ESTA arvore nao apagou.
     //
     // "Nao apagou" tem tres causas que de fora sao identicas — ela nao entrou na zona, ela
     // entrou mas o jogador esta longe do pe dela, ou ela entrou e esta perto mas o jogador
@@ -310,7 +310,7 @@ public class FadeZone : MonoBehaviour
         const float perto = 6f;
 
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine($"[FadeZone] F4 — jogador em {pos}. Raio={raio}, Only When Behind={onlyWhenBehind}.");
+        sb.AppendLine($"[FadeZone] F9 — jogador em {pos}. Raio={raio}, Only When Behind={onlyWhenBehind}.");
 
         var naZona = new HashSet<Transform>();
         foreach (Group g in groups) if (g.root != null) naZona.Add(g.root);

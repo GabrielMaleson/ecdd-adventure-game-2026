@@ -54,12 +54,15 @@ public class StatueSwitch : MonoBehaviour
     [Tooltip("Flash whatever is in the way when a turn is refused. Needs nothing on the crates — see BlockedFlash.")]
     [SerializeField] bool flashBlocker = true;
 
-    [Tooltip("Dica mostrada na faixa do topo quando a Haze chega perto desta estatua. " +
-             "Vazio = nao mostra nada. " +
-             "Fica aqui, e nao num gatilho separado, porque quem sabe que a Haze esta ao " +
-             "alcance e este componente — e um segundo trigger com a mesma area seria uma " +
-             "segunda verdade para manter em sincronia.")]
-    public string dicaQuandoPerto = "";
+    [Tooltip("Conversa em bark tocada quando esta estatua e usada com sucesso. Vazio = nao " +
+             "toca nada. Ponha o BarkConversation em Start Mode = Manual. " +
+             "Referencia direta e nao UnityEvent, pelo mesmo motivo do Ativar Ao Chegar do " +
+             "NpcWalkTo: campo de objeto sobrevive a edicao do arquivo da cena por fora.")]
+    public BarkConversation conversaAoAtivar;
+
+    [Tooltip("Toca a conversa acima so na PRIMEIRA vez que esta estatua e usada. " +
+             "Desmarcado, ela repete a cada giro — que vira ruido depois da segunda vez.")]
+    public bool conversaSoNaPrimeiraVez = true;
 
     // Quantas vezes QUALQUER estatua foi usada com sucesso na sessao.
     //
@@ -68,8 +71,29 @@ public class StatueSwitch : MonoBehaviour
     // e espera ele mudar. Assim o mesmo tutorial serve para qualquer estatua do jogo.
     public static int AtivacoesTotais { get; private set; }
 
+    // Quantas vezes ESTA estatua foi usada. Separado do total porque a conversa de estreia
+    // e desta estatua, e nao do puzzle inteiro.
+    public int AtivacoesDesta { get; private set; }
+
+    // Quantas estatuas tem a Haze dentro do alcance AGORA.
+    //
+    // Contador e nao bool porque duas estatuas podem ter alcances que se tocam: com bool, a
+    // segunda a receber a saida zeraria o estado enquanto a Haze ainda esta dentro da
+    // primeira. O tutorial usa isto para saber que ela chegou em alguma, sem precisar de
+    // referencia a nenhuma especifica.
+    public static int FantasmasEmAlcance { get; private set; }
+
+    public static bool FantasmaPertoDeAlgumaEstatua => FantasmasEmAlcance > 0;
+
+    [Tooltip("Progresso que marca 'a regra do bloqueio ja foi explicada'. Vazio = a fala " +
+             "repete a cada primeira recusa de CADA estatua. " +
+             "Fica no SaveManager e nao num bool do componente porque a licao e do JOGO, " +
+             "nao desta estatua: uma vez que a Haze explicou que algo esta no caminho, " +
+             "repetir isso na estatua seguinte, ou na cripta, e ruido. Como e progresso, " +
+             "atravessa cena e sobrevive a save.")]
+    public string progressoDaExplicacao = "PuzzleBlockExplained";
+
     bool ghostInRange;
-    bool refusedBefore;
 
     // Identify the ghost by its FragmentFollow component (on the root), so no tag
     // string has to be kept in sync. The collider may sit on a child.
@@ -80,9 +104,8 @@ public class StatueSwitch : MonoBehaviour
         if (!IsGhost(other)) return;
 
         ghostInRange = true;
+        FantasmasEmAlcance++;
         RefreshPrompt();
-
-        if (!string.IsNullOrEmpty(dicaQuandoPerto)) TutorialHint.Mostrar(dicaQuandoPerto);
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -90,28 +113,60 @@ public class StatueSwitch : MonoBehaviour
         if (!IsGhost(other)) return;
 
         ghostInRange = false;
+        FantasmasEmAlcance = Mathf.Max(0, FantasmasEmAlcance - 1);
         RefreshPrompt();
-
-        if (!string.IsNullOrEmpty(dicaQuandoPerto)) TutorialHint.Esconder();
     }
 
     // The ghost sitting inside the trigger while the statue is disabled or the
     // scene unloads would otherwise leave ghostInRange stuck true.
     void OnDisable()
     {
+        // Desligar com a Haze dentro deixaria o contador alto para sempre.
+        if (ghostInRange) FantasmasEmAlcance = Mathf.Max(0, FantasmasEmAlcance - 1);
+
         ghostInRange = false;
         InteractButton.Instance?.ClearInteraction(this);
     }
 
     // E works whenever the ghost is in range — piloted or parked, no parked-only
     // restriction. Only the ghost's presence in the trigger gates it.
+    //
+    // A excecao e o tutorial. Enquanto ele esta ensinando a mecanica, a instrucao vive na
+    // faixa do topo ("Press E to interact with the statue") e o E flutuante fica de fora:
+    // duas instrucoes dizendo a mesma coisa em lugares diferentes dividem a atencao no
+    // exato momento em que o jogador ainda nao sabe onde olhar. Passado o tutorial, a
+    // estatua volta a ser um objeto interagivel como qualquer outro e o E aparece em cima
+    // dela normalmente.
     void RefreshPrompt()
     {
-        if (ghostInRange)
-            InteractButton.Instance?.SetInteraction(this, interactLabel, OnInteractPressed);
-        else
+        if (!ghostInRange)
+        {
             InteractButton.Instance?.ClearInteraction(this);
+            return;
+        }
+
+        // O tutorial tem DOIS estados diferentes aqui, e confundi-los foi o bug:
+        //
+        //   RECUSANDO  — a faixa esta pedindo o Q. O E nao pode nem existir, senao o
+        //                jogador usa a estatua antes de estacionar a Haze e pula o passo
+        //                que esta escrito na tela. Nao registra nada.
+        //
+        //   SUPRIMINDO — a faixa ja esta pedindo o E. Ele FUNCIONA, mas o rotulo fica vazio:
+        //                a instrucao ja esta na faixa, e o mesmo pedido em dois lugares
+        //                divide a atencao de quem ainda nao sabe onde olhar.
+        if (TutorialHint.EstatuaRecusandoE)
+        {
+            InteractButton.Instance?.ClearInteraction(this);
+            return;
+        }
+
+        string rotulo = TutorialHint.SuprimindoPromptDaEstatua ? string.Empty : interactLabel;
+        InteractButton.Instance?.SetInteraction(this, rotulo, OnInteractPressed);
     }
+
+    // O tutorial libera o E no instante em que a estatua e usada. Sem alguem chamar isto,
+    // o prompt so voltaria quando a Haze saisse do alcance e entrasse de novo.
+    public void ReavaliarPrompt() => RefreshPrompt();
 
     // InteractButton blanks the prompt the instant E is pressed (so it can't be
     // spammed mid-activation); the statue's own use is instantaneous, so re-arm right
@@ -144,6 +199,15 @@ public class StatueSwitch : MonoBehaviour
                 return;
             }
             if (entry.group.IsCleared) continue;
+
+            // Ainda girando NAO e bloqueio: e a animacao anterior terminando.
+            //
+            // O CanRotate devolve false com "it's still mid-spin", e tratar isso como
+            // recusa fazia a Haze dizer que algo estava no caminho quando nao havia nada —
+            // bastava apertar E duas vezes seguidas. O TryRotate ja separava os dois casos
+            // ("silent: spam-clicking isn't blocked"); aqui faltava.
+            if (entry.group.IsRotating) return;
+
             if (!entry.group.CanRotate(DirectionFor(entry), out string reason, out GameObject blocker))
             {
                 Debug.Log($"{name}: won't turn because group '{entry.group.name}' can't rotate — {reason}.", entry.group);
@@ -161,6 +225,10 @@ public class StatueSwitch : MonoBehaviour
                 return;
             }
             if (c.IsCleared) continue;
+
+            // Mesma coisa do grupo: meio-passo e animacao, nao obstaculo.
+            if (c.IsStepping) return;
+
             if (!c.CanStep(out string reason, out GameObject blocker))
             {
                 Debug.Log($"{name}: won't turn because cycle '{c.name}' can't step — {reason}.", c);
@@ -179,7 +247,13 @@ public class StatueSwitch : MonoBehaviour
         // atrás nela é usar a estátua de novo, não apertar Z.
         foreach (var entry in groups) if (!entry.group.IsCleared) entry.group.TryRotate(DirectionFor(entry));
         foreach (var c in cycles) if (!c.IsCleared) c.TryStep();
+        bool primeiraVezDesta = AtivacoesDesta == 0;
+        AtivacoesDesta++;
         AtivacoesTotais++;
+
+        if (conversaAoAtivar != null && (!conversaSoNaPrimeiraVez || primeiraVezDesta))
+            conversaAoAtivar.Play();
+
         onActivated?.Invoke();
     }
 
@@ -189,6 +263,25 @@ public class StatueSwitch : MonoBehaviour
     //
     // The blocker may be null — an empty Inspector slot or a mid-spin refusal has no
     // single culprit to point at — and only the flash cares, so the rest still fires.
+    // A explicacao do bloqueio e uma licao unica do jogo inteiro. Sem progresso configurado,
+    // cai para o comportamento antigo: uma vez por estatua.
+    bool JaExplicado()
+    {
+        if (string.IsNullOrEmpty(progressoDaExplicacao)) return recusouAntesNesta;
+        return SaveManager.Instance != null &&
+               SaveManager.Instance.HasProgress(progressoDaExplicacao);
+    }
+
+    void MarcarExplicado()
+    {
+        recusouAntesNesta = true;
+        if (string.IsNullOrEmpty(progressoDaExplicacao)) return;
+        if (SaveManager.Instance != null)
+            SaveManager.Instance.AddProgress(progressoDaExplicacao);
+    }
+
+    bool recusouAntesNesta;
+
     void Refuse(GameObject blocker)
     {
         onRefused?.Invoke();
@@ -196,15 +289,22 @@ public class StatueSwitch : MonoBehaviour
         if (flashBlocker && blocker != null)
             BlockedFlash.Play(blocker);
 
-        if (!refusedBefore)
+        if (!JaExplicado())
         {
-            refusedBefore = true;
+            MarcarExplicado();
             onRefusedFirstTime?.Invoke();
 
             // Pelo mesmo funil que todo dialogo do jogo usa, e nao pelo DialogueManager na
             // mao: e ele que trava o jogador enquanto a fala roda e o destrava no fim.
-            if (!string.IsNullOrEmpty(noAoRecusarPrimeiraVez))
-                DialogueStarter.EvaluateConditionsAndStart(noAoRecusarPrimeiraVez, false, null, false);
+            // O campo desta estatua manda; sem ele, o do asset, que vale para o jogo todo.
+            string no = !string.IsNullOrEmpty(noAoRecusarPrimeiraVez)
+                ? noAoRecusarPrimeiraVez
+                : (TutorialHintSettings.Current != null
+                       ? TutorialHintSettings.Current.noDaPrimeiraRecusaDoPuzzle
+                       : null);
+
+            if (!string.IsNullOrEmpty(no))
+                DialogueStarter.EvaluateConditionsAndStart(no, false, null, false);
         }
     }
 

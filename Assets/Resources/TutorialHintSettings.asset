@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c43325e63b1fd7945a24943162c383c6, type: 3}
+  m_Name: TutorialHintSettings
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialHintSettings
+  fontSize: 46
+  font: {fileID: 0}
+  cor: {r: 1, g: 1, b: 1, a: 1}
+  espessuraDoContorno: 0.2
+  corDoContorno: {r: 0, g: 0, b: 0, a: 1}
+  distanciaDoTopo: 60
+  deslocamentoX: 0
+  textoAssumirHaze: Press Q to control Haze and get to the statue
+  textoEstacionarHaze: Press Q to leave Haze in position
+  textoVoltarAoJosh: Press Q again for Haze to come back
+  textoUsarEstatua: Press E to interact with the statue
+  textoDesfazer: Press Z if you need to undo your last move
+  progressoAoTerminar: PuzzleTutorialDone
+  segundosDaDicaDoZ: 25
+  noDaPrimeiraRecusaDoPuzzle: on_first_puzzle_block
+  fade: 0.15

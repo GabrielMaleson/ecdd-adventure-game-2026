@@ -297,6 +297,25 @@ public class PushableCrate : GridOccupant
             return;
         }
 
+        // Fora da area do puzzle. Conferido DEPOIS da ocupacao e nao antes porque parede e
+        // caixa sao recusa muda, e esta aqui tem fala: se as duas valessem ao mesmo tempo,
+        // a Haze comentaria um empurrao que ja tinha sido barrado por outro motivo.
+        //
+        // Sem nenhum CrateBounds na cena isto e sempre verdadeiro, entao puzzle antigo
+        // nenhum muda de comportamento.
+        Vector2 destinoNoMundo = grid.CellCenter(target);
+        if (!CrateBounds.Permitido(destinoNoMundo))
+        {
+            if (Logging)
+                Debug.Log($"{name}: PUSH {dir} recusado — a celula {target} esta fora da area " +
+                          "de caixas (CrateBounds).", this);
+
+            CrateBounds fora = CrateBounds.QueBloqueia(destinoNoMundo);
+            if (fora != null) fora.Avisar();
+
+            return;
+        }
+
         lastRefusedCell = null;
 
         // Snapshot BEFORE the push so undo can put both the crate and the player

@@ -95,6 +95,13 @@ public class DebugSceneJump : MonoBehaviour
         [Tooltip("Nomes de NpcFollow que PARAM de seguir.")]
         public string[] unfollow;
 
+        [Header("5b. Puzzle")]
+        [Tooltip("Resolve os puzzles de caixa da cena: poe uma caixa em cima de cada alvo e " +
+                 "avisa o sistema. E o que faz o arbusto sumir e a recompensa aparecer, " +
+                 "porque dispara o mesmo caminho do jogo — nao ha atalho separado que " +
+                 "pudesse ficar diferente do de verdade.")]
+        public bool resolverPuzzles;
+
         [Header("6. Dialogo")]
         [Tooltip("No do .yarn disparado ao final. Vazio = nao dispara nada.")]
         public string startNode;
@@ -207,6 +214,8 @@ public class DebugSceneJump : MonoBehaviour
             foreach (string who in j.ghostFollow)
                 AttachGhost(who);
 
+        if (j.resolverPuzzles) yield return ResolverPuzzles();
+
         // Depois da formacao, e so agora: estes objetos medem os personagens ao acordar.
         if (j.enableAfterFormation != null)
             foreach (GameObject g in j.enableAfterFormation)
@@ -223,6 +232,71 @@ public class DebugSceneJump : MonoBehaviour
                 Debug.LogWarning($"[DebugSceneJump] Sem DialogueManager na cena — o no " +
                                  $"'{j.startNode}' nao foi disparado.");
         }
+    }
+
+    // Poe uma caixa em cima de cada alvo e manda o sistema reavaliar.
+    //
+    // Deliberadamente pelo MESMO caminho do jogo — RestoreTo + EvaluateWin — e nao por um
+    // atalho que marcasse "resolvido" direto. Atalho e um segundo caminho para o mesmo
+    // estado, e o dia em que ele divergir do verdadeiro o teste passa a mentir.
+    private IEnumerator ResolverPuzzles()
+    {
+        CrateTarget[] alvos = FindObjectsByType<CrateTarget>(FindObjectsSortMode.None);
+        var caixas = new List<PushableCrate>(
+            FindObjectsByType<PushableCrate>(FindObjectsSortMode.None));
+
+        if (alvos.Length == 0 || caixas.Count == 0)
+        {
+            Debug.LogWarning($"[DebugSceneJump] resolverPuzzles: {alvos.Length} alvos e " +
+                             $"{caixas.Count} caixas na cena — nada a fazer.");
+            yield break;
+        }
+
+        PuzzleGrid grid = PuzzleGrid.Active;
+        if (grid == null || !grid.IsReady)
+        {
+            Debug.LogWarning("[DebugSceneJump] resolverPuzzles: nao ha PuzzleGrid pronto na " +
+                             "cena — sem ele nao da para saber onde ficam as celulas.");
+            yield break;
+        }
+
+        foreach (CrateTarget alvo in alvos)
+        {
+            if (caixas.Count == 0) break;
+
+            // A caixa MAIS PERTO de cada alvo, para o resultado parecer uma solucao e nao um
+            // embaralhamento — importa quando o pulo e usado para tirar print.
+            int melhor = 0;
+            float menor = float.MaxValue;
+
+            for (int i = 0; i < caixas.Count; i++)
+            {
+                float d = (caixas[i].transform.position - alvo.transform.position).sqrMagnitude;
+                if (d < menor) { menor = d; melhor = i; }
+            }
+
+            PushableCrate c = caixas[melhor];
+            caixas.RemoveAt(melhor);
+
+            // A CELULA do tapete e a posicao da RAIZ da caixa para cair nela.
+            //
+            // Os dois passam pelo centro VISUAL e nao pela raiz, que e a regra do grid
+            // inteiro. Usar transform.position direto — como estava — poe a raiz da caixa em
+            // cima do tapete e o desenho dela na celula vizinha; o sistema le o desenho, nao
+            // acha caixa nenhuma no tapete, e o puzzle fica desmontado sem estar resolvido.
+            Vector2Int celula = grid.WorldToCell(alvo.VisualCenter);
+            Vector3 raiz = grid.CellCenter(celula) - c.VisualOffset;
+
+            c.RestoreTo(celula, raiz);
+        }
+
+        // Um quadro antes de avaliar: a varredura de caixas do CrateTarget e cacheada por
+        // frame, e no quadro em que elas acabaram de se mover o cache ainda e o antigo.
+        yield return null;
+
+        CrateTarget.EvaluateWin();
+
+        Debug.Log($"[DebugSceneJump] resolverPuzzles: {alvos.Length} alvo(s) cobertos.");
     }
 
     private void SetYarnBools(YarnBool[] vars)

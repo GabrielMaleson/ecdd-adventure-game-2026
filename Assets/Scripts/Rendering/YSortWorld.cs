@@ -182,7 +182,7 @@ public static class YSortWorld
             // casa, depois de andar ate la. Sem isto nao ha como comparar a ordem do
             // personagem com a das coisas em que ele afunda.
             var kb = UnityEngine.InputSystem.Keyboard.current;
-            if (kb != null && kb[UnityEngine.InputSystem.Key.F3].wasPressedThisFrame)
+            if (kb != null && kb[UnityEngine.InputSystem.Key.F8].wasPressedThisFrame)
                 YSortWorld.DumpAroundPlayer();
 #endif
         }
@@ -214,7 +214,7 @@ public static class YSortWorld
     public static void DumpAroundPlayer()
     {
         GameObject p = GameObject.FindGameObjectWithTag("Player");
-        if (p == null) { Debug.LogWarning("[Y-Sort] F3: nao achei objeto com a tag Player."); return; }
+        if (p == null) { Debug.LogWarning("[Y-Sort] F8: nao achei objeto com a tag Player."); return; }
 
         Vector2 c = p.transform.position;
         const float radius = 12f;
@@ -239,7 +239,7 @@ public static class YSortWorld
         rows.Sort((a, b) => a.order.CompareTo(b.order));
 
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine($"[Y-Sort] F3 — {rows.Count} sprites a menos de {radius} do jogador " +
+        sb.AppendLine($"[Y-Sort] F8 — {rows.Count} sprites a menos de {radius} do jogador " +
                       $"(que esta em Y={c.y:F1}). De TRAS para a FRENTE:");
         foreach (var row in rows) sb.AppendLine(row.line);
 
