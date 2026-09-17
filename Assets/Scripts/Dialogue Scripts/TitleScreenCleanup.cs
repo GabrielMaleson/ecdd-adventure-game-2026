@@ -16,11 +16,7 @@ public class TitleScreenCleanup : MonoBehaviour
 
     void Start()
     {
-        // Store all root objects in the current scene before any changes
-        CaptureOriginalSceneHierarchy();
-
         CheckAndEnableContinueButton();
-        StartCoroutine(CleanupAfterFrame());
     }
 
     // Aguarda um frame para que os Destroy() diferidos (ex: singletons duplicados que

@@ -80,7 +80,12 @@ public class SaveLoadManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            // So o COMPONENTE duplicado morre, nunca o gameObject inteiro — isto pode
+            // estar (por engano ou nao) no mesmo objeto que outra coisa importante, como
+            // aconteceu na TitleScreen: um SaveLoadManager colocado a mao na Main Camera
+            // fazia Destroy(gameObject) apagar a camera inteira como efeito colateral do
+            // Bootstrap abaixo, que ja tinha criado a instancia real antes da cena carregar.
+            Destroy(this);
             return;
         }
         Instance = this;

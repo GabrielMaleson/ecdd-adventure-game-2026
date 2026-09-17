@@ -69,6 +69,14 @@ public static class YSortWorld
     public static readonly string[] SkipLayers = { "Dialogue" };
     public static readonly string[] SkipNameContains = { "fog", "mist", "nevoa", "vignette" };
 
+    // Cenas onde o sistema nao deve rodar. A tela de titulo nao tem cenario de jogo para
+    // ordenar — so o menu, que e Canvas e ja fica de fora por ShouldSkip — entao escanear e
+    // aplicar la e trabalho a toa a cada load e a cada intervalo de rescan.
+    private static readonly string[] ExcludedScenes = { "TitleScreen" };
+    private static bool sceneExcluded;
+
+    private static bool IsExcludedScene(string sceneName) => System.Array.IndexOf(ExcludedScenes, sceneName) >= 0;
+
     public class Entry
     {
         public Transform root;
@@ -123,6 +131,10 @@ public static class YSortWorld
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         EnsureDriver();
+
+        sceneExcluded = IsExcludedScene(SceneManager.GetActiveScene().name);
+        if (sceneExcluded) return;
+
         Rescan();
         Apply();
 
@@ -161,6 +173,9 @@ public static class YSortWorld
 
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        sceneExcluded = IsExcludedScene(scene.name);
+        if (sceneExcluded) { Clear(); return; }
+
         Rescan();
         Apply();
     }
@@ -201,7 +216,7 @@ public static class YSortWorld
     // aplica sempre.
     public static bool Pump(float now)
     {
-        if (!YSortSettings.SystemEnabled) return false;
+        if (!YSortSettings.SystemEnabled || sceneExcluded) return false;
 
         float interval = YSortSettings.RescanInterval;
 

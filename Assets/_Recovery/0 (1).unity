@@ -1970,25 +1970,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 660786366587488579, guid: 18270aca85ac7ec459fadee57da99a03, type: 3}
   m_PrefabInstance: {fileID: 74274258}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &74385751 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3315857266513100794, guid: d33549f3cc378db49b474ee70d9a3278, type: 3}
-  m_PrefabInstance: {fileID: 2059114441}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &74385752
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 74385751}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3442eba92a8e7c74a9a509097e7f722f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueBlipPlayer
-  blipClip: {fileID: 8300000, guid: 69ef424aee926f74f8143700b9418930, type: 3}
-  pitchRange: {x: 0.95, y: 1.05}
 --- !u!1 &76349051
 GameObject:
   m_ObjectHideFlags: 0
@@ -58059,6 +58040,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1490430926}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &840697662 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8401506921409497735, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
+  m_PrefabInstance: {fileID: 7142182942047287632}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &841871964
 GameObject:
   m_ObjectHideFlags: 0
@@ -67554,11 +67540,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 5141951973917360511, guid: 39da750d074167945b5c7daa4b099a1c, type: 3}
   m_PrefabInstance: {fileID: 1200741932}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1204237005 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8401506921409497735, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
-  m_PrefabInstance: {fileID: 7142182942047287632}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1207091955
 PrefabInstance:
@@ -86571,6 +86552,25 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7233394036857339045, guid: 52dcec8bf054e3a49b3c6a7d6651d06c, type: 3}
   m_PrefabInstance: {fileID: 431327179}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1735289444 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3315857266513100794, guid: d33549f3cc378db49b474ee70d9a3278, type: 3}
+  m_PrefabInstance: {fileID: 2059114441}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1735289445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1735289444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3442eba92a8e7c74a9a509097e7f722f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueBlipPlayer
+  blipClip: {fileID: 8300000, guid: 69ef424aee926f74f8143700b9418930, type: 3}
+  pitchRange: {x: 0.95, y: 1.05}
 --- !u!1001 &1737535266
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -202227,7 +202227,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3315857266513100794, guid: d33549f3cc378db49b474ee70d9a3278, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 74385752}
+      addedObject: {fileID: 1735289445}
   m_SourcePrefab: {fileID: 100100000, guid: d33549f3cc378db49b474ee70d9a3278, type: 3}
 --- !u!114 &2059114442 stripped
 MonoBehaviour:
@@ -205307,7 +205307,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8611197130652425574, guid: 04a7ac92637a8b9479a86dcedfa46a31, type: 3}
   m_PrefabInstance: {fileID: 7142182942047287632}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1204237005}
+  m_GameObject: {fileID: 840697662}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ea55a8118e164d41b1e9cb5fe2927d2, type: 3}
@@ -205319,7 +205319,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1204237005}
+  m_GameObject: {fileID: 840697662}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26e80beedb9b3694c904125fe4df1647, type: 3}
