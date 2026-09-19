@@ -22,3 +22,68 @@ TODO — ECDD adventure game
   Por que e MAYBE: o BarkConversation ja cobre troca curta de duas ou tres
   linhas, que e o formato de quase todo AD do roteiro. Isto so vale a pena
   quando aparecer uma conversa longa que faca sentido morar no .yarn.
+
+
+================================================================================
+BUG - A CONVERSA DA CRIPTA TRAVA NA FALA DA ERIKA (so no EDITOR)
+================================================================================
+
+SINTOMA
+  No no crypt_final, a caixa mostra "ERIKA / !" e nao sai mais dali. Nenhuma
+  excecao no Console, o dialogo comecou normal, o jogador fica congelado.
+
+  NO BUILD FUNCIONA. So trava no editor.
+
+CAUSA PROVAVEL (identificada, corrigida, mas ainda NAO confirmada no editor)
+
+  Uma fala cujo texto nao tem NENHUMA palavra — "!", "...", "…" — atravessa o
+  typewriter sem nunca esperar: o laco de tempo e pulado e todo handler devolve
+  tarefa ja completa. RunTypewriter entao termina de forma SINCRONA, dentro da
+  propria chamada de RunLineAsync do LinePresenter.
+
+  Isso inverte a ordem que o LineAdvancer espera:
+
+    1. LinePresenter.RunLineAsync  -> typewriter roda inteiro AQUI e chama
+                                      OnLineDisplayComplete(), que poe o estado
+                                      em "LineWaiting" (o unico em que apertar
+                                      AVANCA)
+    2. LineAdvancer.RunLineAsync   -> ResetLineTracking() devolve o estado para
+                                      "LineBegan"
+
+  E OnLineDisplayComplete() nao acontece de novo, porque a fala ja foi exibida.
+  O estado fica preso em "LineBegan", e nesse estado apertar so pede "corre com
+  essa fala", nunca "proxima fala".
+
+  Numa fala normal o typewriter espera pelo menos um quadro, o
+  OnLineDisplayComplete() cai DEPOIS dos avisos, e o estado final e o certo.
+  Por isso so trava em pontuacao pura.
+
+  Existem 15 linhas assim no gamescript.yarn (varios "Josh: ..."), entao NAO e
+  problema do texto da Erika. Na MainScene isso nunca apareceu porque la a seta
+  de continuar existia, e o clique chama RequestNextLine() direto, sem passar
+  por esse estado.
+
+O QUE JA FOI FEITO
+  - Assets/Scripts/Dialogue Scripts/YieldOncePerLine.cs
+    Cede UM quadro no primeiro caractere de cada fala. Com isso RunTypewriter
+    nunca mais termina sincrono e OnLineDisplayComplete() sempre cai depois de
+    todos os RunLineAsync.
+    Ligado no eventHandlers do Line Presenter, no prefab e nas DUAS cenas
+    (eventHandlers.Array.size = 2, data[1] -> YieldOncePerLine).
+
+  - Continue Button restaurado com a Image em alpha 0: invisivel, mas clicavel.
+    E um segundo caminho de avanco que ignora o estado quebrado.
+
+POR QUE AINDA TRAVA NO EDITOR
+  O build le a cena do DISCO e funciona. O editor roda a cena que esta na
+  MEMORIA dele, carregada antes dessas edicoes. Recarregar a cena do disco
+  (reabrir o projeto) deve alinhar os dois.
+
+  ISSO PRECISA SER CONFIRMADO. Se depois de recarregar continuar travando no
+  editor, a causa acima esta incompleta e vale investigar de novo — nesse caso
+  o proximo passo e olhar o campo "status" do LineAdvancer em tempo de execucao
+  na hora da fala da Erika.
+
+NAO MEXER NO TEXTO
+  As linhas "Erika: !" e "Marcus: !" sao do roteiro e ficam como estao. O
+  problema e do sistema, nao da escrita.

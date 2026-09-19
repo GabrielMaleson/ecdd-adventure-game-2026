@@ -2,6 +2,7 @@
 ---
 <<declare $YarnTalkedElder = false>>
 <<declare $crateTries = 0>>
+<<declare $warnPerson = "">>
 	Josh: ...
 ===
 
@@ -530,5 +531,30 @@ Josh: Good eye. Let me check.
 <<sprite map map>>
 Josh: It's a map. Seems like we know where to go now.
 <<removesprite map>>
+// Branch da apresentacao: avisar a vila ou nao, e quem vai. A ultima fala antes de
+// cada "->" e o que a caixa mostra como pergunta em cima das opcoes.
+Erika: Guys, I just thought about something... the people in the village don't know about all this... it will be dangerous, but I think someone ought to warn them.
+Marcus: I don't know Eri, it could be <i>really</i> dangerous.
+Haze: What do you think, Josh?
+-> Yes
+    // PLACEHOLDER — troca pela fala que voce quiser; e ela que aparece em cima de "Erika / Marcus".
+    Josh: Who should go?
+    -> Erika
+        <<set $warnPerson = "Erika">>
+    -> Marcus
+        <<set $warnPerson = "Marcus">>
+    Josh: I think it's a good idea, {$warnPerson}, can you go? Stay at your house right after, until we pick you up again.
+    <<if $warnPerson == "Marcus">>
+        Marcus: Sure thing, Joshy.
+    <<else>>
+        Erika: Ok, but you owe me one.
+    <<endif>>
+    // Quem vai sai de cena: para de seguir e anda ate a marca CryptExit (fora da tela,
+    // no corredor de baixo). Nao bloqueia — o "Ok, let's go" roda enquanto ele anda.
+    <<unfollow {$warnPerson}>>
+    <<walkto {$warnPerson} CryptExit>>
+    Josh: Ok, let's go.
+-> No
+    Josh: I don't think so guys, it could be unnecessarily dangerous. Let's keep going.
 <<progress CryptFinalTalkDone>>
 ===
