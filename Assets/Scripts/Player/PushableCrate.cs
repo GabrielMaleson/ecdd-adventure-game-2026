@@ -29,6 +29,11 @@ public class PushableCrate : GridOccupant
     [Tooltip("Print to the console why a push was refused, naming whatever holds the target cell. Debug aid — turn off when done.")]
     [SerializeField] bool logRefusedPushes = false;
 
+    [Header("Audio")]
+    [Tooltip("Som tocado toda vez que esta caixa é empurrada com sucesso.")]
+    [SerializeField] AudioClip pushSound;
+    [Range(0f, 1f)] [SerializeField] float pushVolume = 0.7f;
+
     [Header("Encaixe no portal (só visual)")]
     [Tooltip("Quanto o DESENHO fica deslocado do centro da célula quando esta caixa para em cima de um portal (qualquer CrateTarget). Serve pra arte cuja base não é o meio do sprite: a estátua sobe um pouco e a base dela cai dentro da elipse do portal. A CÉLULA não muda — isto é só aparência. Y positivo = sobe. Ajusta no olho com o jogo rodando.")]
     [SerializeField] Vector2 portalLandingOffset = new Vector2(0f, 0.25f);
@@ -354,7 +359,13 @@ public class PushableCrate : GridOccupant
             Debug.Log($"{name}: PUSH {dir}  cell {crateFromCell}->{target}  " +
                       $"(player feet {grid.WorldToCell(playerFromPos)}, behind-cell {crateFromCell - dir}).", this);
 
+        PlayPushSound();
         StartCoroutine(StepTo(target));
+    }
+
+    void PlayPushSound()
+    {
+        SFXManager.Instance?.Play(pushSound, pushVolume);
     }
 
     // Puts the crate back on a cell instantly (undo). Cancels any slide in flight

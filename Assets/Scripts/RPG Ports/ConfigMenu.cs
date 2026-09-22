@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
 /// UI controller for the Config scene (loaded additively via ConfigSceneManager).
+/// Pure UI: reads and writes through SettingsManager, which owns persistence and keeps
+/// settings applied everywhere — this menu doesn't need to exist in a scene for that
+/// scene's settings to be correct, only to let the player change them.
 ///
 /// Setup in Inspector:
-///   masterMixer       — assign the Master.mixer asset
 ///   mixerSliders      — one entry per mixer group exposed parameter:
 ///                         exposedParameterName: the name you exposed in the AudioMixer
 ///                                               (e.g. "MasterVolume", "MusicVolume", "SFXVolume")
@@ -19,7 +20,7 @@ using TMPro;
 /// Important AudioMixer setup:
 ///   In the AudioMixer window, right-click each group's Volume and choose
 ///   "Expose parameter", then rename the exposed parameter to match
-///   exposedParameterName above.
+///   exposedParameterName above. Assign the mixer itself on SettingsManager, not here.
 /// </summary>
 public class ConfigMenu : MonoBehaviour
 {
@@ -31,15 +32,13 @@ public class ConfigMenu : MonoBehaviour
         public Slider slider;
     }
 
-    [Header("Audio Mixer")]
-    public AudioMixer masterMixer;
+    [Header("Mixer Sliders")]
     public List<MixerSliderEntry> mixerSliders = new List<MixerSliderEntry>();
 
     [Header("Resolution")]
     public TMP_Dropdown resolutionDropdown;
     public Toggle fullscreenToggle;
 
-    private Resolution[] availableResolutions;
     private bool hasInitialized = false;
 
     private void OnEnable()
@@ -56,53 +55,25 @@ public class ConfigMenu : MonoBehaviour
 
     private void SetupResolutionDropdown()
     {
-        if (resolutionDropdown == null) return;
+        if (resolutionDropdown == null || SettingsManager.Instance == null) return;
 
-        availableResolutions = Screen.resolutions;
+        Resolution[] resolutions = SettingsManager.Instance.AvailableResolutions;
         resolutionDropdown.ClearOptions();
 
         List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>();
-        int currentIndex = 0;
-
-        for (int i = 0; i < availableResolutions.Length; i++)
-        {
-            string label = $"{availableResolutions[i].width} x {availableResolutions[i].height}";
-            options.Add(new TMP_Dropdown.OptionData(label));
-
-            if (availableResolutions[i].width == Screen.currentResolution.width &&
-                availableResolutions[i].height == Screen.currentResolution.height)
-                currentIndex = i;
-        }
+        for (int i = 0; i < resolutions.Length; i++)
+            options.Add(new TMP_Dropdown.OptionData($"{resolutions[i].width} x {resolutions[i].height}"));
 
         resolutionDropdown.AddOptions(options);
-        resolutionDropdown.value = currentIndex;
-        resolutionDropdown.RefreshShownValue();
         resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
 
         if (fullscreenToggle != null)
-        {
-            fullscreenToggle.isOn = Screen.fullScreen;
             fullscreenToggle.onValueChanged.AddListener(OnFullscreenChanged);
-        }
     }
 
-    public void OnResolutionChanged(int index)
-    {
-        if (availableResolutions == null || index >= availableResolutions.Length) return;
+    public void OnResolutionChanged(int index) => SettingsManager.Instance?.SetResolution(index);
 
-        Resolution res = availableResolutions[index];
-        Screen.SetResolution(res.width, res.height, Screen.fullScreen);
-
-        PlayerPrefs.SetInt("ResolutionIndex", index);
-        PlayerPrefs.Save();
-    }
-
-    public void OnFullscreenChanged(bool isFullscreen)
-    {
-        Screen.fullScreen = isFullscreen;
-        PlayerPrefs.SetInt("Fullscreen", isFullscreen ? 1 : 0);
-        PlayerPrefs.Save();
-    }
+    public void OnFullscreenChanged(bool isFullscreen) => SettingsManager.Instance?.SetFullscreen(isFullscreen);
 
     // ── Audio Mixer ────────────────────────────────────────────────────────
 
@@ -114,74 +85,40 @@ public class ConfigMenu : MonoBehaviour
     /// </summary>
     public void OnMixerSliderChanged(int sliderIndex)
     {
-        if (masterMixer == null || sliderIndex >= mixerSliders.Count) return;
+        if (SettingsManager.Instance == null || sliderIndex >= mixerSliders.Count) return;
 
         MixerSliderEntry entry = mixerSliders[sliderIndex];
         if (entry.slider == null || string.IsNullOrEmpty(entry.exposedParameterName)) return;
 
-        float db = SliderToDb(entry.slider.value);
-        masterMixer.SetFloat(entry.exposedParameterName, db);
-
-        PlayerPrefs.SetFloat("Vol_" + entry.exposedParameterName, entry.slider.value);
-        PlayerPrefs.Save();
+        SettingsManager.Instance.SetVolume(entry.exposedParameterName, entry.slider.value);
     }
 
     // ── Settings Persistence ───────────────────────────────────────────────
 
     private void LoadSettings()
     {
-        // Resolution
-        if (resolutionDropdown != null && availableResolutions != null)
+        if (SettingsManager.Instance == null) return;
+
+        if (resolutionDropdown != null)
         {
-            int savedIndex = PlayerPrefs.GetInt("ResolutionIndex", -1);
-            if (savedIndex >= 0 && savedIndex < availableResolutions.Length)
-            {
-                resolutionDropdown.value = savedIndex;
-                resolutionDropdown.RefreshShownValue();
-                Resolution res = availableResolutions[savedIndex];
-                Screen.SetResolution(res.width, res.height, Screen.fullScreen);
-            }
+            resolutionDropdown.value = SettingsManager.Instance.CurrentResolutionIndex();
+            resolutionDropdown.RefreshShownValue();
         }
 
-        // Fullscreen
-        if (fullscreenToggle != null && PlayerPrefs.HasKey("Fullscreen"))
-            fullscreenToggle.isOn = PlayerPrefs.GetInt("Fullscreen") == 1;
+        if (fullscreenToggle != null)
+            fullscreenToggle.isOn = SettingsManager.Instance.IsFullscreen;
 
-        // Mixer volumes
-        if (masterMixer != null)
+        foreach (var entry in mixerSliders)
         {
-            foreach (var entry in mixerSliders)
-            {
-                if (entry.slider == null || string.IsNullOrEmpty(entry.exposedParameterName)) continue;
-
-                float savedValue = PlayerPrefs.GetFloat("Vol_" + entry.exposedParameterName, 0.75f);
-                entry.slider.value = savedValue;
-                masterMixer.SetFloat(entry.exposedParameterName, SliderToDb(savedValue));
-            }
+            if (entry.slider == null || string.IsNullOrEmpty(entry.exposedParameterName)) continue;
+            entry.slider.value = SettingsManager.Instance.GetVolume(entry.exposedParameterName);
         }
     }
-
-    // ── Helpers ────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Converts a 0–1 slider value to decibels.
-    /// 0   → -80 dB (silence)
-    /// 0.75→   0 dB (unity)
-    /// 1   →  +3 dB (slight boost)
-    /// Uses logarithmic scaling so the slider feels natural.
-    /// </summary>
-    private float SliderToDb(float value)
-    {
-        value = Mathf.Clamp(value, 0.0001f, 1f);
-        return Mathf.Log10(value) * 20f;
-    }
-
-    // ── Close ──────────────────────────────────────────────────────────────
 
     // ── Close ──────────────────────────────────────────────────────────────
 
     public void CloseConfig()
     {
-            gameObject.SetActive(false); // fallback
+        gameObject.SetActive(false); // fallback
     }
 }

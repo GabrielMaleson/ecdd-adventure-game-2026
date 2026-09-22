@@ -23,15 +23,19 @@ public class FootstepPlayer : MonoBehaviour
 
     private PlayerController controller;
     private float stepTimer;
+    private bool indoors;
 
     private void Awake()
     {
         controller = GetComponent<PlayerController>();
     }
 
+    /// <summary>Liga/desliga o som de passo. Chamado por IndoorZone ao entrar/sair de um interior.</summary>
+    public void SetIndoors(bool value) => indoors = value;
+
     private void Update()
     {
-        if (controller.MoveDirection == Vector2.zero)
+        if (indoors || controller.MoveDirection == Vector2.zero)
         {
             // Zerado para que o PRÓXIMO passo toque assim que ele voltar a andar,
             // em vez de esperar o intervalo inteiro de novo.

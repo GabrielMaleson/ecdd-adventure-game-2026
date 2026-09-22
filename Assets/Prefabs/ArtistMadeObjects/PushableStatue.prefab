@@ -185,4 +185,6 @@ MonoBehaviour:
   moveDuration: 0.15
   minLineupOverlap: 0.18
   logRefusedPushes: 0
+  pushSound: {fileID: 8300000, guid: 648a1767d2f0257469fde2f030e18aa4, type: 3}
+  pushVolume: 0.156
   portalLandingOffset: {x: 0, y: 0.35}
