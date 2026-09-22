@@ -17,6 +17,10 @@ public class FootstepPlayer : MonoBehaviour
     [Min(0.01f)]
     public float stepsPerSecond = 3f;
 
+    [Tooltip("Volume do passo (0 a 1). Grass_Footsteps.mp3 é normalizado no import, então soa mais alto do que outros SFX no volume cheio.")]
+    [Range(0f, 1f)]
+    public float volume = 0.5f;
+
     private PlayerController controller;
     private float stepTimer;
 
@@ -40,6 +44,6 @@ public class FootstepPlayer : MonoBehaviour
         if (stepTimer < interval) return;
 
         stepTimer -= interval;
-        SFXManager.Instance?.Play(footstepClip);
+        SFXManager.Instance?.Play(footstepClip, volume);
     }
 }

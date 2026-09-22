@@ -65,12 +65,12 @@ public class SFXManager : MonoBehaviour
     }
 
     /// <summary>Reproduz um clip de efeito sonoro (one-shot).</summary>
-    public void Play(AudioClip clip)
+    public void Play(AudioClip clip, float volumeScale = 1f)
     {
         if (clip == null) { Debug.Log("[SFXManager] Play ignorado — clip é null."); return; }
         if (sfxSource == null) { Debug.LogWarning("[SFXManager] sfxSource é null."); return; }
         Debug.Log($"[SFXManager] Tocando SFX: '{clip.name}'");
-        sfxSource.PlayOneShot(clip);
+        sfxSource.PlayOneShot(clip, volumeScale);
     }
 
     /// <summary>Inicia um som em loop (ambientação). Substitui qualquer loop anterior.</summary>

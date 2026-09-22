@@ -19,8 +19,12 @@ public class DialogueBlipPlayer : ActionMarkupHandler
     [Tooltip("Som tocado a cada letra visível da fala (espaços são pulados).")]
     public AudioClip blipClip;
 
+    [Tooltip("Volume do blip (0 a 1).")]
+    [Range(0f, 1f)]
+    public float volume = 0.5f;
+
     [Tooltip("Variação aleatória de pitch por letra, para não soar igual toda vez.")]
-    public Vector2 pitchRange = new Vector2(0.95f, 1.05f);
+    public Vector2 pitchRange = new Vector2(0.475f, 0.525f);
 
     private AudioSource audioSource;
     private string currentText = string.Empty;
@@ -49,7 +53,7 @@ public class DialogueBlipPlayer : ActionMarkupHandler
         if (!char.IsWhiteSpace(c) && blipClip != null)
         {
             audioSource.pitch = Random.Range(pitchRange.x, pitchRange.y);
-            audioSource.PlayOneShot(blipClip);
+            audioSource.PlayOneShot(blipClip, volume);
         }
 
         return YarnTask.CompletedTask;
