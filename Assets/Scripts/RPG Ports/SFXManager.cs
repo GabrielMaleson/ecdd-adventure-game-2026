@@ -45,7 +45,6 @@ public class SFXManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            gameObject.AddComponent<AudioListener>();
 
             sfxSource  = gameObject.AddComponent<AudioSource>();
             sfxSource.playOnAwake = false;
