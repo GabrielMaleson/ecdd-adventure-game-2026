@@ -63,7 +63,6 @@ public class DialogueManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
             gameObject.tag = "Inventory";
 
             if (dialogueCanvas == null)

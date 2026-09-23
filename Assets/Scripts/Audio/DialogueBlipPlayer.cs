@@ -46,6 +46,12 @@ public class DialogueBlipPlayer : ActionMarkupHandler
 
     public override YarnTask OnCharacterWillAppear(int currentCharacterIndex, MarkupParseResult line, CancellationToken cancellationToken)
     {
+        // O GameObject dono deste handler pode morrer (fim de cena, cutscene) enquanto o
+        // LinePresenter — que pode ser persistente — ainda guarda a referência na sua
+        // lista de Event Handlers. Sem esta checagem, a chamada seguinte joga um
+        // MissingReferenceException que aborta a linha inteira e corrompe o resto do diálogo.
+        if (audioSource == null) return YarnTask.CompletedTask;
+
         char c = (currentCharacterIndex >= 0 && currentCharacterIndex < currentText.Length)
             ? currentText[currentCharacterIndex]
             : ' ';
